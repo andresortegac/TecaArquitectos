@@ -12,19 +12,18 @@ class Arriendo extends Model
     protected $fillable = [
         'cliente_id',
         'producto_id',
+        'cantidad',
         'fecha_inicio',
         'fecha_fin',
-        'precio',
+        'precio_total',
         'estado',
     ];
 
-    // Relación: un arriendo pertenece a un cliente
     public function cliente()
     {
         return $this->belongsTo(Cliente::class);
     }
 
-    // Relación: un arriendo pertenece a un producto
     public function producto()
     {
         return $this->belongsTo(Producto::class);

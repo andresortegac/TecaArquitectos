@@ -2,63 +2,66 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Producto;
 use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $productos = Producto::latest()->paginate(10);
+        return view('productos.index', compact('productos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('productos.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'nombre'    => 'required|string|max:255',
+            'categoria' => 'nullable|string|max:255',
+            'cantidad'  => 'required|integer|min:0',
+            'costo'     => 'required|numeric|min:0',
+            'ubicacion' => 'nullable|string|max:255',
+            'estado'    => 'required|in:disponible,dañado,reservado',
+        ]);
+
+        Producto::create($data);
+
+        return redirect()->route('productos.index')
+            ->with('success', 'Producto agregado a bodega correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Producto $producto)
     {
-        //
+        return view('productos.edit', compact('producto'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Producto $producto)
     {
-        //
+        $data = $request->validate([
+            'nombre'    => 'required|string|max:255',
+            'categoria' => 'nullable|string|max:255',
+            'cantidad'  => 'required|integer|min:0',
+            'costo'     => 'required|numeric|min:0',
+            'ubicacion' => 'nullable|string|max:255',
+            'estado'    => 'required|in:disponible,dañado,reservado',
+        ]);
+
+        $producto->update($data);
+
+        return redirect()->route('productos.index')
+            ->with('success', 'Producto actualizado correctamente');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Producto $producto)
     {
-        //
-    }
+        $producto->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('productos.index')
+            ->with('success', 'Producto eliminado de bodega');
     }
 }

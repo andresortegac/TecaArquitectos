@@ -2,63 +2,79 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Arriendo;
+use App\Models\Cliente;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 
 class ArriendoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $arriendos = Arriendo::with(['cliente','producto'])
+            ->latest()
+            ->paginate(10);
+
+        return view('arriendos.index', compact('arriendos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $clientes  = Cliente::orderBy('nombre')->get();
+        $productos = Producto::orderBy('nombre')->get();
+
+        return view('arriendos.create', compact('clientes','productos'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'cliente_id'   => 'required|exists:clientes,id',
+            'producto_id'  => 'required|exists:productos,id',
+            'cantidad'     => 'required|integer|min:1',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin'    => 'nullable|date|after_or_equal:fecha_inicio',
+            'precio_total' => 'required|numeric|min:0',
+            'estado'       => 'required|in:activo,devuelto,vencido',
+        ]);
+
+        Arriendo::create($data);
+
+        return redirect()->route('arriendos.index')
+            ->with('success', 'Arriendo creado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Arriendo $arriendo)
     {
-        //
+        $clientes  = Cliente::orderBy('nombre')->get();
+        $productos = Producto::orderBy('nombre')->get();
+
+        return view('arriendos.edit', compact('arriendo','clientes','productos'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Arriendo $arriendo)
     {
-        //
+        $data = $request->validate([
+            'cliente_id'   => 'required|exists:clientes,id',
+            'producto_id'  => 'required|exists:productos,id',
+            'cantidad'     => 'required|integer|min:1',
+            'fecha_inicio' => 'required|date',
+            'fecha_fin'    => 'nullable|date|after_or_equal:fecha_inicio',
+            'precio_total' => 'required|numeric|min:0',
+            'estado'       => 'required|in:activo,devuelto,vencido',
+        ]);
+
+        $arriendo->update($data);
+
+        return redirect()->route('arriendos.index')
+            ->with('success', 'Arriendo actualizado correctamente');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Arriendo $arriendo)
     {
-        //
-    }
+        $arriendo->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('arriendos.index')
+            ->with('success', 'Arriendo eliminado');
     }
 }
