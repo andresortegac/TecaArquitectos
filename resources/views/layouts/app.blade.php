@@ -51,6 +51,13 @@
                 <a href="{{ route('clientes.create') }}" class="nav-item">
                     Agregar Cliente Nuevo
                 </a>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="nav-item nav-logout">
+                        CERRAR SESIÓN
+                    </button>
+                </form>
             </nav>
         </aside>
 
