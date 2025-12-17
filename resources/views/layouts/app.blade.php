@@ -22,6 +22,11 @@
                 <a href="{{ route('dashboard') }}" class="nav-item">
                     BIENVENIDOS
                 </a>
+                
+                <div class="nav-section">Bodega / Solicitud</div>
+                <a href="{{ route('productos.index') }}" class="nav-item">
+                    Solicitudes
+                </a>
 
                 <div class="nav-section">Bodega / Inventario</div>
                 <a href="{{ route('productos.index') }}" class="nav-item">
