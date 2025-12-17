@@ -1,0 +1,178 @@
+/* ====== CONTENEDOR PRINCIPAL ====== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ====== BUSCADOR Y FILTRO ====== */
+#search,
+#filterCategoria {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+}
+
+#search:focus,
+#filterCategoria:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+#search,
+#filterProducto {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+}
+
+#search:focus,
+#filterProducto:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+
+/* ====== GRID DE TARJETAS ====== */
+#cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+/* ====== TARJETA ====== */
+.producto-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.06);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.producto-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(0,0,0,.12);
+}
+
+/* ====== IMAGEN ====== */
+.producto-card img {
+    display: block;
+    margin: 0 auto 12px;
+    width: 170px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #0a0a0a;
+}
+
+/* ====== TEXTO ====== */
+.producto-card h3 {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.producto-card p {
+    font-size: 14px;
+    color: #4b5563;
+    margin: 2px 0;
+}
+
+.producto-card strong {
+    color: #111827;
+}
+
+/* ====== ESTADO ====== */
+.estado {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.estado.disponible {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.estado.reservado {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.estado.dañado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* ====== ACCIONES ====== */
+.producto-acciones {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 14px;
+}
+
+.producto-acciones a,
+.producto-acciones button {
+    font-size: 13px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.producto-acciones a {
+    color: #2563eb;
+}
+
+.producto-acciones button {
+    color: #dc2626;
+}
+
+.producto-acciones a:hover,
+.producto-acciones button:hover {
+    text-decoration: underline;
+}
+.stock-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: #fff;
+    padding: 0px 14px;
+    border-radius: 16px;   
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    max-width: 360px;
+    
+}
+.stock-wrapper {
+    display: flex;
+    justify-content: flex-end; /* 👉 derecha */
+    margin-bottom: 12px;
+}
+.stock-icon {
+    font-size: 42px;
+}
+
+.stock-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stock-number {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stock-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+.import-wrapper {
+    display: flex;
+    justify-content: flex-end; /* 👉 derecha */
+}

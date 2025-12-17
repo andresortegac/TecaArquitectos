@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('nombre');
-            $table->string('categoria')->nullable();
+            $table->string('categorias')->nullable();
             $table->integer('cantidad')->default(0);
             $table->decimal('costo', 12, 2)->default(0);
             $table->string('ubicacion')->nullable(); // estante, rack, etc
