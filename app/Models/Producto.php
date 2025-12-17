@@ -11,16 +11,29 @@ class Producto extends Model
 
     protected $fillable = [
         'nombre',
-        'categoria',
+        'categorias',
         'cantidad',
         'costo',
         'ubicacion',
         'estado',
+        'imagen',
     ];
 
+    // 👇 Lo que ya tenías (intocable)
     public function arriendos()
     {
         return $this->hasMany(Arriendo::class);
     }
+
+    // 🆕 NUEVO: relación con solicitudes
+    public function solicitudes()
+    {
+        return $this->belongsToMany(
+            Solicitud::class,
+            'solicitud_productos'
+        )->withPivot(
+            'cantidad_solicitada',
+            'cantidad_aprobada'
+        )->withTimestamps();
+    }
 }
- 
