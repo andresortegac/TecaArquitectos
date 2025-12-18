@@ -24,7 +24,7 @@
                 </a>
                 
                 <div class="nav-section">Bodega / Solicitud</div>
-                <a href="{{ route('productos.index') }}" class="nav-item">
+                <a href="{{ route('solicitudes.index') }}" class="nav-item">
                     Solicitudes
                 </a>
 
