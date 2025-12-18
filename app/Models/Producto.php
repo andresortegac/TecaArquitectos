@@ -16,6 +16,7 @@ class Producto extends Model
         'costo',
         'ubicacion',
         'estado',
+        'tarifa_diaria'
     ];
 
     public function arriendos()
@@ -23,4 +24,5 @@ class Producto extends Model
         return $this->hasMany(Arriendo::class);
     }
 }
+
  
