@@ -5,7 +5,8 @@
 @section('content')
 <h2>Nuevo producto</h2>
 
-<form action="{{ route('productos.store') }}" method="POST" class="form">
+<form action="{{ route('productos.store') }}"  method="POST" enctype="multipart/form-data" class="form">
+
     @csrf
 
     <label>Nombre</label>
@@ -34,10 +35,21 @@
         @endforeach
     </select>
 
+     {{-- Imagen --}}
+            <div class="mt-6">
+                <label class="block text-sm text-gray-600 mb-2">Ingresar Imagen</label>
+                <div class="flex items-center gap-4">
+                    <img src="{{ asset('img/tool-placeholder.png') }}"
+                         class="w-20 h-20 rounded-lg border object-cover">
+                    <input type="file" name="imagen"
+                        class="block w-full text-sm text-gray-500">
+                </div>
+            </div>
+
     <div class="form-actions">
         <button class="btn">Guardar</button>
         <a class="btn-secondary" href="{{ route('productos.index') }}">Volver</a>
-    </div>
+    </div>   
 
     @if($errors->any())
         <div class="alert danger">
@@ -49,4 +61,6 @@
         </div>
     @endif
 </form>
+
+
 @endsection

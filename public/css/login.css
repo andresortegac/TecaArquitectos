@@ -1,0 +1,210 @@
+:root{
+  /* 🟦 FONDOS */
+  --bg:#070b12;
+  --bg2:#0c1220;
+  --bg3:#111827;
+  --line:rgba(245,179,1,.22);
+
+  /* 🟡 AMARILLO QUEMADO */
+  --primary:#f5b301;
+  --primary-soft:#ffd36a;
+  --primary-dark:#c49102;
+
+  /* 🔴 ESTADOS */
+  --danger:#dc2626;
+
+  /* 📝 TEXTO */
+  --text:#f1f5f9;
+  --muted:#a1a1aa;
+}
+
+body{
+  min-height:100vh;
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+  display:grid;
+  place-items:center;
+  position:relative;
+  overflow:hidden;
+  background:
+    url("/img/LOGIN/fondo-login.jpg")
+    center/cover no-repeat fixed;
+}
+
+body::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(
+      1200px 700px at 10% -10%,
+      rgba(245,179,1,.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      1000px 650px at 105% 0%,
+      rgba(255,183,3,.16),
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(2,6,23,.55),
+      rgba(2,6,23,.9)
+    );
+  z-index:0;
+}
+
+/* CARD */
+.login-card{
+  width:100%;
+  max-width:460px;
+  background: linear-gradient(
+    180deg,
+    rgba(17,24,39,.94),
+    rgba(12,18,32,.97)
+  );
+  border:1px solid rgba(245,179,1,.25);
+  border-radius:1.6rem;
+  box-shadow:0 20px 70px rgba(0,0,0,.75);
+  padding:2.2rem;
+  backdrop-filter:blur(10px);
+  animation:fadeUp .45s ease;
+  position:relative;
+  z-index:1;
+}
+
+/* BRAND */
+.brand-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.65rem;
+  padding:.55rem 1.15rem;
+  border-radius:999px;
+  font-weight:900;
+  font-size:1.05rem;
+  color:#fff7cc;
+  background:linear-gradient(
+    135deg,
+    rgba(245,179,1,.18),
+    rgba(255,183,3,.12)
+  );
+  border:1.5px solid var(--primary);
+  box-shadow:
+    0 0 6px rgba(245,179,1,.9),
+    0 0 16px rgba(255,183,3,.6);
+}
+
+.brand-title{
+  font-family: Oswald, sans-serif;
+  font-size:2rem;
+  color:#fff;
+  margin-top:.8rem;
+}
+
+.brand-sub{
+  color:var(--muted);
+  font-size:.95rem;
+}
+
+/* FORM */
+.form-label{
+  font-weight:700;
+  color:#e5e7eb;
+}
+
+.input-wrap{ position:relative; }
+
+.input-icon{
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  opacity:.85;
+}
+
+.form-control{
+  background:rgba(2,6,23,.85);
+  border:1px solid rgba(245,179,1,.28);
+  color:var(--text);
+  border-radius:1rem;
+  padding:.9rem .95rem .9rem 2.5rem;
+}
+
+.form-control::placeholder{
+  color:#9ca3af;
+}
+
+.form-control:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 .25rem rgba(245,179,1,.18);
+  background:rgba(2,6,23,.95);
+}
+
+/* BOTONES */
+.btn-brand{
+  background:linear-gradient(
+    135deg,
+    var(--primary),
+    var(--primary-dark)
+  );
+  border:none;
+  font-weight:800;
+  border-radius:1rem;
+  padding:.9rem;
+  color:#1f2933;
+  box-shadow:0 12px 26px rgba(245,179,1,.45);
+}
+
+.btn-brand:hover{
+  filter:brightness(1.08);
+}
+
+.btn-soft{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:1rem;
+  padding:.75rem;
+  color:#fff7cc;
+  text-decoration:none;
+  background:rgba(245,179,1,.08);
+  border:1px solid rgba(245,179,1,.85);
+  box-shadow:
+    0 0 8px rgba(245,179,1,.9),
+    0 0 18px rgba(255,183,3,.7);
+}
+
+.btn-soft:hover{
+  background:rgba(245,179,1,.16);
+  transform:translateY(-1px);
+}
+
+/* FOOTER */
+.small-note{
+  text-align:center;
+  font-size:.82rem;
+  color:var(--muted);
+  margin-top:1rem;
+}
+
+/* ALERT */
+.alert-danger-custom{
+  background:rgba(220,38,38,.15);
+  border:1px solid rgba(220,38,38,.6);
+  color:#fecaca;
+  border-radius:.9rem;
+  padding:.5rem;
+}
+
+/* ANIMATION */
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(10px) scale(.98);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}

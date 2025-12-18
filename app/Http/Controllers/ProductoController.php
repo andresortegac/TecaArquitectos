@@ -4,21 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\Producto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Imports\ProductosImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductoController extends Controller
 {
-    public function index()
+            public function index()
     {
-        $productos = Producto::latest()->paginate(10);
-        return view('productos.index', compact('productos'));
+        $productos = Producto::all();
+
+        $categorias = Producto::select('categorias')
+            ->distinct()
+            ->whereNotNull('categorias')
+            ->pluck('categorias');
+
+        return view('productos.index', compact('productos', 'categorias'));
     }
+
 
     public function create()
     {
         return view('productos.create');
     }
 
-    public function store(Request $request)
+        public function store(Request $request)
     {
         $data = $request->validate([
             'nombre'    => 'required|string|max:255',
@@ -27,13 +37,21 @@ class ProductoController extends Controller
             'costo'     => 'required|numeric|min:0',
             'ubicacion' => 'nullable|string|max:255',
             'estado'    => 'required|in:disponible,dañado,reservado',
+            'imagen'    => 'nullable|image|max:5120',
         ]);
+
+        // 👉 Guardar imagen
+        if ($request->hasFile('imagen')) {
+            $data['imagen'] = $request->file('imagen')
+                ->store('productos', 'public');
+        }
 
         Producto::create($data);
 
         return redirect()->route('productos.index')
-            ->with('success', 'Producto agregado a bodega correctamente');
+            ->with('success', 'Producto agregado correctamente');
     }
+
 
     public function edit(Producto $producto)
     {
@@ -44,12 +62,26 @@ class ProductoController extends Controller
     {
         $data = $request->validate([
             'nombre'    => 'required|string|max:255',
-            'categoria' => 'nullable|string|max:255',
+            'categoriass' => 'nullable|string|max:255',
             'cantidad'  => 'required|integer|min:0',
             'costo'     => 'required|numeric|min:0',
             'ubicacion' => 'nullable|string|max:255',
             'estado'    => 'required|in:disponible,dañado,reservado',
+            'imagen' => 'nullable|image|max:5120',
+
         ]);
+
+        // 📸 ACTUALIZAR IMAGEN
+        if ($request->hasFile('imagen')) {
+
+            // borrar imagen anterior si existe
+            if ($producto->imagen) {
+                Storage::disk('public')->delete($producto->imagen);
+            }
+
+            $data['imagen'] = $request->file('imagen')
+                ->store('productos', 'public');
+        }
 
         $producto->update($data);
 
@@ -59,9 +91,25 @@ class ProductoController extends Controller
 
     public function destroy(Producto $producto)
     {
+        // 🗑️ borrar imagen del storage
+        if ($producto->imagen) {
+            Storage::disk('public')->delete($producto->imagen);
+        }
+
         $producto->delete();
 
         return redirect()->route('productos.index')
             ->with('success', 'Producto eliminado de bodega');
     }
+    public function import(Request $request)
+{
+    $request->validate([
+        'archivo' => 'required|file|mimes:xlsx,csv'
+    ]);
+
+    Excel::import(new ProductosImport, $request->file('archivo'));
+
+    return redirect()->route('productos.index')
+        ->with('success', 'Productos importados correctamente');
+}
 }
