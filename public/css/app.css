@@ -143,3 +143,24 @@ body {
   background: #fee2e2;
   color: #991b1b;
 }
+
+/* BOTÓN CERRAR SESIÓN */
+#logout-btn {
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+
+  color: #e5e7eb;
+  padding: 10px 12px;
+  border-radius: 8px;
+
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Hover */
+#logout-btn:hover {
+  background: #1f2937;
+  color: #ffffff;
+}
