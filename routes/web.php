@@ -43,3 +43,4 @@ Route::controller(LoginController::class)->group(function () {
 /* NUEVO: cerrar/devolver arriendo (calcula domingos + lluvia + merma + saldo + semáforo) */
 Route::post('/arriendos/{arriendo}/cerrar', [ArriendoController::class, 'cerrar'])
     ->name('arriendos.cerrar');
+    
