@@ -146,7 +146,7 @@ body {
 
 /* BOTÓN CERRAR SESIÓN */
 #logout-btn {
-  background: transparent;
+  background: #ca2e2e;
   border: none;
   width: 100%;
   text-align: left;
@@ -161,6 +161,6 @@ body {
 
 /* Hover */
 #logout-btn:hover {
-  background: #1f2937;
+  background: #db0f0f;
   color: #ffffff;
 }
