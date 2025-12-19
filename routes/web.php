@@ -4,21 +4,47 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ArriendoController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\LoginController;
-
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\SolicitudController;
 
+use Illuminate\Support\Facades\Route;
+
+
 // DASHBOARD
-Route::middleware(['auth', 'role:admin|asistente|bodega'])->group(function () {
-    Route::view('/dashboard', 'dashboard')->name('dashboard');
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->name('dashboard');
 });
 
 // INVENTARIO / BODEGA
-Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
     Route::resource('productos', ProductoController::class);
 
     Route::post('/productos/import', [ProductoController::class, 'import'])
         ->name('productos.import');
+});
+
+// ruta para solicitud
+
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+    Route::get('/solicitudes/create', [SolicitudController::class, 'create'])
+        ->name('solicitudes.create');
+
+    Route::post('/solicitudes', [SolicitudController::class, 'store'])
+        ->name('solicitudes.store');
+    
+    Route::resource('solicitudes', SolicitudController::class);
+});
+//---------------------------------------------------
+    //ruta Movimiento
+
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+    Route::get('/movimientos', [MovimientoController::class, 'create'])
+        ->name('movimientos.create');
+
+    Route::post('/movimientos', [MovimientoController::class, 'store'])
+        ->name('movimientos.store');
 });
 
 // ARRIENDOS
@@ -32,11 +58,6 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 // CLIENTES
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::resource('clientes', ClienteController::class);
-});
-
-// SOLICITUDES
-Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
-    Route::resource('solicitudes', SolicitudController::class);
 });
 
 // LOGIN

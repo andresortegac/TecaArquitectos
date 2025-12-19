@@ -20,51 +20,113 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="{{ route('dashboard') }}" class="nav-item">
-                    Dashboard General
-                </a>
-                
-               <div class="nav-section">Bodega / Solicitud</div>
+                @role('admin')
+                    <a href="{{ route('dashboard') }}" class="nav-item">
+                        Dashboard General
+                    </a>
+                    
+                    <div class="nav-section">Bodega / Solicitud</div>
 
-                <div class="nav-dropdown">
-                    <a href="javascript:void(0)" class="nav-item dropdown-toggle" onclick="toggleMenu()">
-                        Solicitud
-                        <span class="arrow">▾</span>
+                    <div class="nav-dropdown">
+                        <a href="javascript:void(0)" class="nav-item dropdown-toggle" onclick="toggleMenu()">
+                            Solicitud
+                            <span class="arrow">▾</span>
+                        </a>
+
+                        <div class="dropdown-menu" id="bodegaMenu">
+                            <a href="{{ route('productos.create') }}" class="nav-item">Nuevo Producto</a>
+                            <a href="{{ route('solicitudes.index') }}" class="nav-item">Solicitud</a>
+                            <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos</a>
+                            <a href="{{ route('productos.index') }}" class="nav-item">Inventario</a>
+                            <a href="#" class="nav-item">Reportes</a>
+                            <a href="#" class="nav-item">Configuración</a>
+                        </div>
+                    </div>           
+                
+
+                    <div class="nav-section">Alquiler / Bodega</div>
+                    <a href="{{ route('arriendos.index') }}" class="nav-item">
+                        Generar Alquiler
+                    </a>
+                    <a href="{{ route('arriendos.create') }}" class="nav-item">
+                        Nuevo Alquiler
                     </a>
 
-                    <div class="dropdown-menu" id="bodegaMenu">
-                         <a href="{{ route('productos.create') }}" class="nav-item">Nuevo Producto</a>
-                        <a href="{{ route('solicitudes.index') }}" class="nav-item">Solicitud</a>
-                        <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos</a>
-                        <a href="{{ route('productos.index') }}" class="nav-item">Inventario</a>
-                        <a href="#" class="nav-item">Reportes</a>
-                        <a href="#" class="nav-item">Configuración</a>
-                    </div>
-                </div>           
-               
+                    <div class="nav-section">Clientes</div>
+                    <a href="{{ route('clientes.index') }}" class="nav-item">
+                        Lista de Clientes
+                    </a>
+                    <a href="{{ route('clientes.create') }}" class="nav-item">
+                        Agregar Cliente Nuevo
+                    </a>
 
-                <div class="nav-section">Alquiler / Bodega</div>
-                <a href="{{ route('arriendos.index') }}" class="nav-item">
-                    Generar Alquiler
-                </a>
-                <a href="{{ route('arriendos.create') }}" class="nav-item">
-                    Nuevo Alquiler
-                </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" id="logout-btn" class="nav-item nav-logout">
+                            CERRAR SESIÓN
+                        </button>
+                    </form>
+                @endrole
 
-                <div class="nav-section">Clientes</div>
-                <a href="{{ route('clientes.index') }}" class="nav-item">
-                    Lista de Clientes
-                </a>
-                <a href="{{ route('clientes.create') }}" class="nav-item">
-                    Agregar Cliente Nuevo
-                </a>
+                @role('asistente')
+                    <a href="{{ route('dashboard') }}" class="nav-item">
+                        Dashboard General
+                    </a>   
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" id="logout-btn" class="nav-item nav-logout">
-                        CERRAR SESIÓN
-                    </button>
-                </form>
+                    <div class="nav-section">Alquiler / Bodega</div>
+                    <a href="{{ route('arriendos.index') }}" class="nav-item">
+                        Generar Alquiler
+                    </a>
+                    <a href="{{ route('arriendos.create') }}" class="nav-item">
+                        Nuevo Alquiler
+                    </a>
+
+                    <div class="nav-section">Clientes</div>
+                    <a href="{{ route('clientes.index') }}" class="nav-item">
+                        Lista de Clientes
+                    </a>
+                    <a href="{{ route('clientes.create') }}" class="nav-item">
+                        Agregar Cliente Nuevo
+                    </a>
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" id="logout-btn" class="nav-item nav-logout">
+                            CERRAR SESIÓN
+                        </button>
+                    </form>
+                @endrole
+
+                @role('bodega')
+                    <a href="{{ route('dashboard') }}" class="nav-item">
+                        Dashboard General
+                    </a>
+                    
+                    <div class="nav-section">Bodega / Solicitud</div>
+
+                    <div class="nav-dropdown">
+                        <a href="javascript:void(0)" class="nav-item dropdown-toggle" onclick="toggleMenu()">
+                            Solicitud
+                            <span class="arrow">▾</span>
+                        </a>
+
+                        <div class="dropdown-menu" id="bodegaMenu">
+                            <a href="{{ route('productos.create') }}" class="nav-item">Nuevo Producto</a>
+                            <a href="{{ route('solicitudes.index') }}" class="nav-item">Solicitud</a>
+                            <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos</a>
+                            <a href="{{ route('productos.index') }}" class="nav-item">Inventario</a>
+                            <a href="#" class="nav-item">Reportes</a>
+                            <a href="#" class="nav-item">Configuración</a>
+                        </div>
+                    </div>  
+                    
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" id="logout-btn" class="nav-item nav-logout">
+                            CERRAR SESIÓN
+                        </button>
+                    </form>
+                @endrole
             </nav>
         </aside>
 
@@ -78,6 +140,7 @@
                 @yield('content')
             </section>
         </main>
+        
     </div>
     <script>
         function toggleMenu() {
