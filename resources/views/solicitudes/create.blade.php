@@ -8,28 +8,23 @@
 <form action="{{ route('solicitudes.store') }}" method="POST" class="form">
 @csrf
 
-<label>Cliente</label>
-<input name="cliente_nombre" required>
+<label>Nombre del Cliente</label>
+<input type="text" name="nombre_cliente" required>
 
-<label>Obra</label>
-<input name="obra_nombre" required>
+<label>Teléfono del Cliente</label>
+<input type="text" name="telefono_cliente" required>
 
-<label>Dirección de la obra</label>
-<input name="obra_direccion" required>
+<label>Fecha de Solicitud</label>
+<input type="date" name="fecha_solicitud" required>
 
-<label>
-    <input type="checkbox" name="usa_transporte">
-    Usa transporte
-</label>
-
-<h3>Productos</h3>
+<h3>Productos solicitados</h3>
 
 <table class="table">
     <thead>
         <tr>
             <th>Producto</th>
             <th>Stock</th>
-            <th>Cantidad</th>
+            <th>Cantidad solicitada</th>
         </tr>
     </thead>
     <tbody>
@@ -49,7 +44,8 @@
     </tbody>
 </table>
 
-<button class="btn">Enviar a bodega</button>
+<button class="btn btn-primary">Enviar Solicitud a Bodega</button>
 </form>
+
 
 @endsection

@@ -18,12 +18,19 @@ class Solicitud extends Model
         'estado',
     ];
 
+    /**
+     * Relación con productos (muchos a muchos)
+     */
     public function productos()
     {
         return $this->belongsToMany(
             Producto::class,
-            'solicitud_productos'
-        )->withPivot('cantidad_solicitada', 'cantidad_aprobada')
-         ->withTimestamps();
+            'solicitud_productos',
+            'solicitud_id',
+            'producto_id'
+        )->withPivot([
+            'cantidad_solicitada',
+            'cantidad_aprobada'
+        ])->withTimestamps();
     }
 }

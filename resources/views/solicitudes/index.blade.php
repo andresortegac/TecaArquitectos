@@ -11,7 +11,7 @@
     <thead>
         <tr>
             <th>Cliente</th>
-            <th>Obra</th>
+            <th>Fecha Solicitud</th>
             <th>Estado</th>
             <th>Acción</th>
         </tr>
@@ -19,11 +19,11 @@
     <tbody>
         @foreach($solicitudes as $s)
         <tr>
-            <td>{{ $s->cliente_nombre }}</td>
-            <td>{{ $s->obra_nombre }}</td>
-            <td>{{ ucfirst($s->estado) }}</td>
+            <td>{{ $s->nombre_cliente }}</td>
+            <td>{{ $s->fecha_solicitud }}</td>
+            <td>{{ ucfirst(str_replace('_',' ',$s->estado)) }}</td>
             <td>
-                <a class="btn-sm" href="{{ route('solicitudes.show',$s) }}">
+                <a class="btn btn-warning" href="{{ route('solicitudes.show', $s->id) }}">
                     Revisar
                 </a>
             </td>

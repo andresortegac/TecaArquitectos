@@ -6,7 +6,8 @@
     <title>@yield('title', 'TECA ARQUITECTOS')</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/productos.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}">
     <script src="{{ asset('js/app.js') }}" defer></script>
 
 </head>
@@ -20,25 +21,31 @@
 
             <nav class="sidebar-nav">
                 <a href="{{ route('dashboard') }}" class="nav-item">
-                    BIENVENIDOS
+                    Dashboard General
                 </a>
                 
-                <div class="nav-section">Bodega / Solicitud</div>
-                <a href="{{ route('solicitudes.index') }}" class="nav-item">
-                    Solicitudes
-                </a>
+               <div class="nav-section">Bodega / Solicitud</div>
 
-                <div class="nav-section">Bodega / Inventario</div>
-                <a href="{{ route('productos.index') }}" class="nav-item">
-                    Inventario bodega
-                </a>
-                <a href="{{ route('productos.create') }}" class="nav-item">
-                    Ingresar a bodega
-                </a>
+                <div class="nav-dropdown">
+                    <a href="javascript:void(0)" class="nav-item dropdown-toggle" onclick="toggleMenu()">
+                        Solicitud
+                        <span class="arrow">▾</span>
+                    </a>
+
+                    <div class="dropdown-menu" id="bodegaMenu">
+                         <a href="{{ route('productos.create') }}" class="nav-item">Nuevo Producto</a>
+                        <a href="{{ route('solicitudes.index') }}" class="nav-item">Solicitud</a>
+                        <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos</a>
+                        <a href="{{ route('productos.index') }}" class="nav-item">Inventario</a>
+                        <a href="#" class="nav-item">Reportes</a>
+                        <a href="#" class="nav-item">Configuración</a>
+                    </div>
+                </div>           
+               
 
                 <div class="nav-section">Alquiler / Bodega</div>
                 <a href="{{ route('arriendos.index') }}" class="nav-item">
-                    Generar Alquilar
+                    Generar Alquiler
                 </a>
                 <a href="{{ route('arriendos.create') }}" class="nav-item">
                     Nuevo Alquiler
@@ -72,5 +79,15 @@
             </section>
         </main>
     </div>
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('bodegaMenu');
+            const parent = menu.parentElement;
+
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+            parent.classList.toggle('open');
+        }
+    </script>
+
 </body>
 </html>

@@ -1,0 +1,106 @@
+.nav-dropdown {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-menu {
+    display: none;
+    flex-direction: column;
+    margin-left: 15px;
+}
+
+.dropdown-menu .nav-item {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.arrow {
+    transition: transform 0.2s ease;
+}
+
+.nav-dropdown.open .arrow {
+    transform: rotate(180deg);
+}
+
+/* ===== FORMULARIO SOLICITUD ===== */
+.form {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Labels */
+.form label {
+    display: block;
+    font-weight: 600;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    color: #1f2937;
+}
+
+/* Inputs */
+.form input[type="text"],
+.form input[type="date"],
+.form input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* Título sección */
+.form h3 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e3a8a;
+}
+
+/* ===== TABLA ===== */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.table thead {
+    background: #f1f5f9;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.table th {
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.table td {
+    font-size: 14px;
+}
+
+/* Input dentro de tabla */

@@ -1,0 +1,107 @@
+/* ===== MOVIMIENTOS ===== */
+
+.mov-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,.08);
+    max-width: 900px;
+    margin: auto;
+}
+
+.mov-card-header {
+    background: #eef6fb;
+    padding: 15px;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 12px 12px 0 0;
+}
+
+.mov-card-body {
+    padding: 25px;
+}
+
+.mov-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.mov-grid .full {
+    grid-column: span 2;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.mov-actions {
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+/* ===== TABLA MOVIMIENTOS ===== */
+
+.mov-title {
+    margin: 30px 0 15px;
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+}
+
+.mov-table-wrapper {
+    overflow-x: auto;
+}
+
+.mov-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.06);
+}
+
+.mov-table th {
+    background: #f1f5f9;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.mov-table td {
+    padding: 10px 12px;
+    border-top: 1px solid #eaeaea;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.badge.ingreso {
+    background: #28a745;
+}
+
+.badge.salida {
+    background: #dc3545;
+}
+
+.badge.ajuste_positivo {
+    background: #17a2b8;
+}
+
+.badge.ajuste_negativo {
+    background: #fd7e14;
+}
