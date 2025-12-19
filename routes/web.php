@@ -8,23 +8,38 @@ use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SolicitudController;
 
-
-Route::view('/dashboard', 'dashboard')->name('dashboard');
+// DASHBOARD
+Route::middleware(['auth', 'role:admin|asistente|bodega'])->group(function () {
+    Route::view('/dashboard', 'dashboard')->name('dashboard');
+});
 
 // INVENTARIO / BODEGA
-Route::resource('productos', ProductoController::class);
+Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
+    Route::resource('productos', ProductoController::class);
 
-Route::post('/productos/import', [ProductoController::class, 'import'])
-    ->name('productos.import');
+    Route::post('/productos/import', [ProductoController::class, 'import'])
+        ->name('productos.import');
+});
 
 // ARRIENDOS
-Route::resource('arriendos', ArriendoController::class);
+Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
+    Route::resource('arriendos', ArriendoController::class);
+
+    Route::post('/arriendos/{arriendo}/cerrar', [ArriendoController::class, 'cerrar'])
+    ->name('arriendos.cerrar');
+});
 
 // CLIENTES
-Route::resource('clientes', ClienteController::class);
+Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
+    Route::resource('clientes', ClienteController::class);
+});
 
- Route::resource('solicitudes', SolicitudController::class);
+// SOLICITUDES
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+    Route::resource('solicitudes', SolicitudController::class);
+});
 
+// LOGIN
 Route::controller(LoginController::class)->group(function () {
 
     // ?? Login en la raiz
@@ -39,8 +54,3 @@ Route::controller(LoginController::class)->group(function () {
     Route::post('/logout', 'logout')
         ->name('logout');
 });
-
-/* NUEVO: cerrar/devolver arriendo (calcula domingos + lluvia + merma + saldo + semáforo) */
-Route::post('/arriendos/{arriendo}/cerrar', [ArriendoController::class, 'cerrar'])
-    ->name('arriendos.cerrar');
-    
