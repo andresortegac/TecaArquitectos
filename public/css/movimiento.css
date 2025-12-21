@@ -87,6 +87,13 @@
     border-radius: 6px;
     font-size: 13px;
     font-weight: 600;
+    color: #3f3e3e;
+}
+.badge {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
     color: #fff;
 }
 

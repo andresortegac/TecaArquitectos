@@ -7,6 +7,9 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\ReportesStockController;
+use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\StockController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -45,7 +48,28 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
 
     Route::post('/movimientos', [MovimientoController::class, 'store'])
         ->name('movimientos.store');
+
+
+
 });
+//ruta para alerta de stock
+Route::get('/alertas-stock', [ProductoController::class, 'alertasStock'])
+    ->name('productos.alertas');
+
+//rura de reporte de movimiento
+Route::prefix('reportes')->group(function () {
+    Route::get('/', [ReportesStockController::class, 'index'])->name('reportes.index');
+    Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
+    Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
+});
+//ruta para configuracion
+Route::get('/configuracion', [ConfiguracionController::class, 'index'])
+    ->name('configuracion.index');
+// ruta para stock actual
+Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+Route::get('/stock/{producto}', [StockController::class, 'show'])->name('stock.show');
+Route::get('/stock-exportar', [StockController::class, 'export'])->name('stock.export');
+
 
 // ARRIENDOS
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {

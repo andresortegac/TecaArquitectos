@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'TECA ARQUITECTOS')</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/productos.css') }}">
     <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}">
     <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}">
+    
+       
     <script src="{{ asset('js/app.js') }}" defer></script>
 
+     <!-- CSS de vistas -->
+    @stack('styles')
 </head>
 <body>
     <div class="app">
@@ -38,9 +42,10 @@
                             <a href="{{ route('solicitudes.index') }}" class="nav-item">Solicitud</a>
                             <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos</a>
                             <a href="{{ route('productos.index') }}" class="nav-item">Inventario</a>
-                            <a href="#" class="nav-item">Reportes</a>
-                            <a href="#" class="nav-item">Configuración</a>
+                            <a href="{{ route('reportes.index') }}" class="nav-item">Reportes</a>
+                            <a href="{{ route('configuracion.index') }}" class="nav-item">Configuración</a>
                         </div>
+
                     </div>           
                 
 
@@ -115,8 +120,8 @@
                             <a href="{{ route('solicitudes.index') }}" class="nav-item">Solicitud</a>
                             <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos</a>
                             <a href="{{ route('productos.index') }}" class="nav-item">Inventario</a>
-                            <a href="#" class="nav-item">Reportes</a>
-                            <a href="#" class="nav-item">Configuración</a>
+                            <a href="{{ route('reportes.index') }}" class="nav-item">Reportes</a>
+                            <a href="{{ route('configuracion.index') }}" class="nav-item">Configuración</a>
                         </div>
                     </div>  
                     

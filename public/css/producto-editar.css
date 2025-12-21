@@ -1,0 +1,118 @@
+/* ===== CONTENEDOR GENERAL ===== */
+.edit_producto-page {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 30px 35px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== TITULO ===== */
+.edit_producto-page h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+/* ===== FORM ===== */
+.form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+/* ===== LABELS ===== */
+.form label {
+    font-weight: 600;
+    color: #333;
+}
+
+/* ===== INPUTS / SELECT ===== */
+.form input,
+.form select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    font-size: 14px;
+}
+
+.form input:focus,
+.form select:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+}
+
+/* ===== IMAGEN ===== */
+.form img {
+    border: 1px solid #ddd;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== INPUT FILE ===== */
+.form input[type="file"] {
+    border: none;
+    font-size: 14px;
+}
+
+/* ===== BOTONES ===== */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.btn {
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #0b5ed7;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: #5c636a;
+}
+
+/* ===== ALERTA ERRORES ===== */
+.alert.danger {
+    margin-top: 20px;
+    background: #f8d7da;
+    color: #842029;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.alert.danger ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .edit_producto-page {
+        padding: 20px;
+    }
+}

@@ -34,8 +34,12 @@
             Actualizar Dashboard
         </a>
 
-        <a href="{{ route('productos.index') }}" class="btn btn-warning">
+        <a href="{{ route('productos.alertas') }}" class="btn btn-warning">
             Ver Alertas de Stock
+        </a>
+
+        <a href="{{ route('stock.index') }}" class="btn btn-success">
+            Ver Stock Actual
         </a>
     </div>
 </div>

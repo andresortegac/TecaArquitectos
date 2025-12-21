@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ProductoController extends Controller
 {
-            public function index()
+        public function index()
     {
         $productos = Producto::all();
 
@@ -23,7 +23,7 @@ class ProductoController extends Controller
     }
 
 
-    public function create()
+        public function create()
     {
         return view('productos.create');
     }
@@ -53,12 +53,12 @@ class ProductoController extends Controller
     }
 
 
-    public function edit(Producto $producto)
+        public function edit(Producto $producto)
     {
         return view('productos.edit', compact('producto'));
     }
 
-    public function update(Request $request, Producto $producto)
+        public function update(Request $request, Producto $producto)
     {
         $data = $request->validate([
             'nombre'    => 'required|string|max:255',
@@ -89,7 +89,7 @@ class ProductoController extends Controller
             ->with('success', 'Producto actualizado correctamente');
     }
 
-    public function destroy(Producto $producto)
+        public function destroy(Producto $producto)
     {
         // 🗑️ borrar imagen del storage
         if ($producto->imagen) {
@@ -101,15 +101,23 @@ class ProductoController extends Controller
         return redirect()->route('productos.index')
             ->with('success', 'Producto eliminado de bodega');
     }
-    public function import(Request $request)
-{
-    $request->validate([
-        'archivo' => 'required|file|mimes:xlsx,csv'
-    ]);
+        public function import(Request $request)
+    {
+        $request->validate([
+            'archivo' => 'required|file|mimes:xlsx,csv'
+        ]);
 
-    Excel::import(new ProductosImport, $request->file('archivo'));
+        Excel::import(new ProductosImport, $request->file('archivo'));
 
-    return redirect()->route('productos.index')
-        ->with('success', 'Productos importados correctamente');
-}
+        return redirect()->route('productos.index')
+            ->with('success', 'Productos importados correctamente');
+    }
+        public function alertasStock()
+    {
+        $productos = Producto::where('cantidad', '<=', 10) // stock mínimo
+            ->orderBy('cantidad', 'asc')
+            ->get();
+
+        return view('productos.alertas', compact('productos'));
+    }
 }
