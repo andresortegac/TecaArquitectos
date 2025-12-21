@@ -1,10 +1,18 @@
 @extends('layouts.app')
 
-
+@section('title','Reportes')
+@section('header','REPORTES MENSUAL')
 @section('content')
 <div class="container1">
     <h2 class="mb-4">📅 Reporte General Mensual</h2>
+        <br>
+            <div class="d-flex gap-2 mb-3">                
 
+                <a href="{{ route('reporte.mensual.export') }}" class="btn btn-success">
+                    📥 Exportar Excel
+                </a>
+            </div>
+        <br>
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>

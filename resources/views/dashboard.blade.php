@@ -41,6 +41,11 @@
         <a href="{{ route('stock.index') }}" class="btn btn-success">
             Ver Stock Actual
         </a>
+
+        <a href="{{ route('metricas.index') }}" class="btn btn-outline-dark">
+            Métricas
+        </a>
+
     </div>
 </div>
 @endsection

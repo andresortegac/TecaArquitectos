@@ -136,12 +136,12 @@
         </aside>
 
         {{-- Contenido --}}
-        <main class="content">
-            <header class="topbar">
+        <main class="principal-content">
+            <header class="principal-topbar">
                 <h1>@yield('header', 'Panel')</h1>
             </header>
 
-            <section class="page">
+            <section class="principal-page">
                 @yield('content')
             </section>
         </main>

@@ -1,83 +1,94 @@
 @extends('layouts.app')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/configuracion.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/configuracion.css') }}">
 @endpush
 
-@section('content')
-<div class="container config-container">
+@section('title', 'Configuracion')
+@section('header', 'VER CONFIGURACION')
 
-    <h2 class="mb-4 config-title">⚙️ Configuración del Sistema</h2>
+    @section('content')
+        <div class="conf-container">
 
-    <ul class="nav nav-tabs config-tabs">
-        <li class="nav-item">
-            <a class="nav-link active" data-bs-toggle="tab" href="#stock">📦 Stock</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#reportes">📊 Reportes</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#inventario">🏗️ Inventario</a>
-        </li>
-    </ul>
+            <h2 class="conf-title">⚙️ Configuración del Sistema</h2>
 
-    <div class="tab-content mt-4">
+            {{-- TABS --}}
+            <ul class="conf-tabs">
+                <li class="conf-tab-item">
+                    <a class="conf-tab-link active" data-tab="stock">📦 Stock</a>
+                </li>
+                <li class="conf-tab-item">
+                    <a class="conf-tab-link" data-tab="reportes">📊 Reportes</a>
+                </li>
+                <li class="conf-tab-item">
+                    <a class="conf-tab-link" data-tab="inventario">🏗️ Inventario</a>
+                </li>
+            </ul>
 
-        <!-- STOCK -->
-        <div class="tab-pane fade show active config-section" id="stock">
-            <div class="card config-card">
-                <div class="card-body">
-                    <h5>Stock mínimo</h5>
+            {{-- CONTENIDO --}}
+            <div class="conf-content">
 
-                    <div class="mb-3">
-                        <label class="form-label">Stock mínimo global</label>
-                        <input type="number" class="form-control" value="10">
-                    </div>
+                {{-- STOCK --}}
+                <div class="conf-pane active" id="stock">
+                    <div class="conf-card">
+                        <h5>Stock mínimo</h5>
 
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" checked>
-                        <label class="form-check-label">
-                            Activar alertas de stock bajo
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <div class="conf-group">
+                            <label class="conf-label">Stock mínimo global</label>
+                            <input type="number" class="conf-input" value="10">
+                        </div>
 
-        <!-- REPORTES -->
-        <div class="tab-pane fade config-section" id="reportes">
-            <div class="card config-card">
-                <div class="card-body">
-                    <h5>Configuración de Reportes</h5>
-
-                    <div class="mb-3">
-                        <label class="form-label">Mes por defecto</label>
-                        <select class="form-select">
-                            <option>Enero</option>
-                            <option>Febrero</option>
-                            <option>Marzo</option>
-                        </select>
+                        <div class="conf-check">
+                            <input type="checkbox" checked>
+                            <label>Activar alertas de stock bajo</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- INVENTARIO -->
-        <div class="tab-pane fade config-section" id="inventario">
-            <div class="card config-card">
-                <div class="card-body">
-                    <h5>Opciones de Inventario</h5>
+                {{-- REPORTES --}}
+                <div class="conf-pane" id="reportes">
+                    <div class="conf-card">
+                        <h5>Configuración de Reportes</h5>
 
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" checked>
-                        <label class="form-check-label">
-                            Bloquear salidas sin stock
-                        </label>
+                        <div class="conf-group">
+                            <label class="conf-label">Mes por defecto</label>
+                            <select class="conf-select">
+                                <option>Enero</option>
+                                <option>Febrero</option>
+                                <option>Marzo</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
+
+                {{-- INVENTARIO --}}
+                <div class="conf-pane" id="inventario">
+                    <div class="conf-card">
+                        <h5>Opciones de Inventario</h5>
+
+                        <div class="conf-check">
+                            <input type="checkbox" checked>
+                            <label>Bloquear salidas sin stock</label>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
+        <script>
+            document.querySelectorAll('.conf-tab-link').forEach(tab => {
+                tab.addEventListener('click', () => {
 
-    </div>
-</div>
-@endsection
+                    document.querySelectorAll('.conf-tab-link')
+                        .forEach(t => t.classList.remove('active'));
+
+                    document.querySelectorAll('.conf-pane')
+                        .forEach(p => p.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+        </script>
+
+    @endsection

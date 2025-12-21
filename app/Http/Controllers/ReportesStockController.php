@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Movimiento;
 use Illuminate\Http\Request;
+use App\Exports\ReporteMensualExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 
 class ReportesStockController extends Controller
@@ -35,5 +37,10 @@ class ReportesStockController extends Controller
             ->get();
 
         return view('reportes.mensual', compact('reporte'));
+    }
+
+        public function exportMensual()
+    {
+        return Excel::download(new ReporteMensualExport, 'reporte_mensual.xlsx');
     }
 }

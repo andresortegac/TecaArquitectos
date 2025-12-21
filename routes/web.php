@@ -10,6 +10,7 @@ use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\ReportesStockController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\MetricasController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +63,12 @@ Route::prefix('reportes')->group(function () {
     Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
     Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
 });
+Route::get('/movimientos/export', [MovimientoController::class, 'export'])
+    ->name('movimientos.export');
+
+Route::get('/reporte/mensual/export', [ReportesStockController::class, 'exportMensual'])
+    ->name('reporte.mensual.export');
+
 //ruta para configuracion
 Route::get('/configuracion', [ConfiguracionController::class, 'index'])
     ->name('configuracion.index');
@@ -70,6 +77,9 @@ Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
 Route::get('/stock/{producto}', [StockController::class, 'show'])->name('stock.show');
 Route::get('/stock-exportar', [StockController::class, 'export'])->name('stock.export');
 
+//ruta de metricas 
+Route::get('/metricas', [MetricasController::class, 'index'])
+    ->name('metricas.index');
 
 // ARRIENDOS
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {

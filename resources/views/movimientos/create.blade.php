@@ -97,7 +97,7 @@
                             <td>{{ $mov->fecha }}</td>
                             <td>{{ $mov->producto->nombre }}</td>
                             <td>
-                                <span class="badge {{ $mov->tipo }}">
+                                <span class="movi-badge {{ $mov->tipo }}">
                                     {{ ucfirst(str_replace('_', ' ', $mov->tipo)) }}
                                 </span>
                             </td>
