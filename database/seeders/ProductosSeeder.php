@@ -299,6 +299,42 @@ class ProductosSeeder extends Seeder
                 'estado'     => 'disponible',
                 'imagen'     => 'img/img_producto/estencion_larga.jpeg',
             ],
+            [
+                'nombre'     => 'Formaletas-Tableros-chapetas-Angulos 20 A 3m',
+                'categorias' => 'Expecial',
+                'cantidad'   => 100,
+                'costo'      => 22000,
+                'ubicacion'  => 'B/ Jardin',
+                'estado'     => 'disponible',
+                'imagen'     => 'img/img_producto/plataforma_copleta.jpeg',
+            ],
+            [
+                'nombre'     => 'Formaletas-Tableros-chapetas-Angulos 25 A 3m',
+                'categorias' => 'Expecial',
+                'cantidad'   => 1,
+                'costo'      => 25000,
+                'ubicacion'  => 'B/ Jardin',
+                'estado'     => 'disponible',
+                'imagen'     => 'img/img_producto/plataforma_copleta.jpeg',
+            ],
+            [
+                'nombre'     => 'Formaletas-Tableros-chapetas-Angulos 30 A 3m',
+                'categorias' => 'Expecial',
+                'cantidad'   => 1,
+                'costo'      => 30000,
+                'ubicacion'  => 'B/ Jardin',
+                'estado'     => 'disponible',
+                'imagen'     => 'img/img_producto/plataforma_copleta.jpeg',
+            ],
+            [
+                'nombre'     => 'Formaletas-Tableros-chapetas-Angulos 40 A 3m',
+                'categorias' => 'Expecial',
+                'cantidad'   => 1,
+                'costo'      => 40000,
+                'ubicacion'  => 'B/ Jardin',
+                'estado'     => 'disponible',
+                'imagen'     => 'img/img_producto/plataforma_copleta.jpeg',
+            ],
 
                     ];
 

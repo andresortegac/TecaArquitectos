@@ -46,6 +46,7 @@
             <option value="accesorio de seguridad">Accesorios de Seguridad</option>
             <option value="herramientas y equipos">Herramientas y Equipos</option>
             <option value="electricidad">Electricidad</option>
+            <option value="Expecial">Expecial</option>
         </select>
 
 
@@ -64,11 +65,12 @@
 
 
             {{-- Imagen --}}
-            <img
-                src="{{ $producto->imagen
-                    ? asset('storage/'.$producto->imagen)
-                    : asset('img/tool-placeholder.png') }}"
-            >
+            <img 
+            src="{{ asset($producto->imagen) }}" 
+            alt="{{ $producto->nombre }}" 
+            class="img-fluid"
+            style="height:180px; object-fit:contain;">
+
 
             {{-- Nombre --}}
             <h3>{{ $producto->nombre }}</h3>
@@ -122,14 +124,14 @@
     $totalStock = $productos->sum('cantidad');
 @endphp
 
-    <div class="stock-wrapper">
+    <div class="producstock-wrapper">
         <div class="flex gap-4 my-6">
-            <div class="stock-card bg-blue">
+            <div class="producstock-card bg-blue">
                 <h2>{{ $totalProductos }}</h2>
                 <p>Productos</p>
             </div>
 
-            <div class="stock-card bg-green">
+            <div class="producstock-card bg-green">
                 <h2>{{ $totalStock }}</h2>
                 <p>Unidades en stock</p>
             </div>

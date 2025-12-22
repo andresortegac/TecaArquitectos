@@ -8,7 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\ReportesStockController;
-use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\MetricasController;
 
@@ -50,13 +50,13 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
     Route::post('/movimientos', [MovimientoController::class, 'store'])
         ->name('movimientos.store');
 
-
-
-});
 //ruta para alerta de stock
 Route::get('/alertas-stock', [ProductoController::class, 'alertasStock'])
     ->name('productos.alertas');
 
+});
+
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
 //rura de reporte de movimiento
 Route::prefix('reportes')->group(function () {
     Route::get('/', [ReportesStockController::class, 'index'])->name('reportes.index');
@@ -70,8 +70,18 @@ Route::get('/reporte/mensual/export', [ReportesStockController::class, 'exportMe
     ->name('reporte.mensual.export');
 
 //ruta para configuracion
-Route::get('/configuracion', [ConfiguracionController::class, 'index'])
+Route::get('/configuracion', [ConfigController::class, 'index'])
     ->name('configuracion.index');
+
+Route::post('/configuracion/stock', [ConfigController::class, 'stock'])
+    ->name('config.stock');
+
+Route::post('/configuracion/reportes', [ConfigController::class, 'reportes'])
+    ->name('config.reportes');
+
+Route::post('/configuracion/inventario', [ConfigController::class, 'inventario'])
+    ->name('config.inventario');
+    
 // ruta para stock actual
 Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
 Route::get('/stock/{producto}', [StockController::class, 'show'])->name('stock.show');
@@ -80,7 +90,7 @@ Route::get('/stock-exportar', [StockController::class, 'export'])->name('stock.e
 //ruta de metricas 
 Route::get('/metricas', [MetricasController::class, 'index'])
     ->name('metricas.index');
-
+});
 // ARRIENDOS
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::resource('arriendos', ArriendoController::class);
