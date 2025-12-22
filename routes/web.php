@@ -15,7 +15,7 @@ use App\Http\Controllers\MetricasController;
 use Illuminate\Support\Facades\Route;
 
 
-// DASHBOARD
+// DASHBOARD---------admin y bodega--------------------->
 Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
@@ -57,12 +57,14 @@ Route::get('/alertas-stock', [ProductoController::class, 'alertasStock'])
 });
 
 Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
-//rura de reporte de movimiento
-Route::prefix('reportes')->group(function () {
-    Route::get('/', [ReportesStockController::class, 'index'])->name('reportes.index');
-    Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
-    Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
+    //rura de reporte de movimiento
+    Route::prefix('reportes')->group(function () {
+        Route::get('/', [ReportesStockController::class, 'index'])->name('reportes.index');
+        Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
+        Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
+    });
 });
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
 Route::get('/movimientos/export', [MovimientoController::class, 'export'])
     ->name('movimientos.export');
 
@@ -91,19 +93,23 @@ Route::get('/stock-exportar', [StockController::class, 'export'])->name('stock.e
 Route::get('/metricas', [MetricasController::class, 'index'])
     ->name('metricas.index');
 });
+//---------------------fin---------------------------------------->
+
+//---------------solo asistente------------------------------>
 // ARRIENDOS
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::resource('arriendos', ArriendoController::class);
 
     Route::post('/arriendos/{arriendo}/cerrar', [ArriendoController::class, 'cerrar'])
     ->name('arriendos.cerrar');
+
 });
 
 // CLIENTES
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::resource('clientes', ClienteController::class);
 });
-
+//----------------------fin-------------------------------------------
 // LOGIN
 Route::controller(LoginController::class)->group(function () {
 
