@@ -11,6 +11,7 @@ use App\Http\Controllers\ReportesStockController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\MetricasController;
+use App\Http\Controllers\ObraController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -91,8 +92,18 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 
 // CLIENTES
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
+
+    // CLIENTES
     Route::resource('clientes', ClienteController::class);
+
+    // OBRAS (dependen de un cliente)
+    Route::get('clientes/{cliente}/obras/create', [ObraController::class, 'create'])
+        ->name('obras.create');
+
+    Route::post('clientes/{cliente}/obras', [ObraController::class, 'store'])
+        ->name('obras.store');
 });
+
 
 // LOGIN
 Route::controller(LoginController::class)->group(function () {
