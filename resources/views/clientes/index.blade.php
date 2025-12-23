@@ -27,8 +27,17 @@
                 <td>{{ $cliente->nombre }}</td>
                 <td>{{ $cliente->documento }}</td>
                 <td>
-                    <a class="btn-sm" href="{{ route('clientes.show', $cliente) }}">Ver</a>
-                    <a class="btn-sm" href="{{ route('clientes.edit', $cliente) }}">Editar</a>
+                    <div class="acciones">
+                        <a href="{{ route('clientes.show', $cliente) }}"
+                           class="btn-accion btn-ver">
+                            Ver
+                        </a>
+
+                        <a href="{{ route('clientes.edit', $cliente) }}"
+                           class="btn-accion btn-editar">
+                            Editar
+                        </a>
+                    </div>
                 </td>
             </tr>
         @empty
