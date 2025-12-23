@@ -127,6 +127,8 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 
     Route::post('clientes/{cliente}/obras', [ObraController::class, 'store'])
         ->name('obras.store');
+        
+    Route::get('/clientes/{cliente}/obras', [ClienteController::class, 'obras']);
 });
 
 // LOGIN

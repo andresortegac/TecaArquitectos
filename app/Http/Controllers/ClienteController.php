@@ -74,10 +74,11 @@ class ClienteController extends Controller
      */
     public function obras(Cliente $cliente)
     {
-        // Requiere que exista relación en el modelo Cliente: obras()
-        return $cliente->obras()
-            ->select('id', 'nombre')
-            ->orderBy('nombre')
-            ->get();
+        return response()->json(
+            $cliente->obras()
+                ->select('id', 'direccion')
+                ->get()
+        );
     }
 }
+ 

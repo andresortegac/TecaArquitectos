@@ -104,12 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
             obras.forEach(o => {
                 const op = document.createElement('option');
                 op.value = o.id;
-                op.textContent = o.nombre;
+                op.textContent = o.direccion;
                 if (oldObraId && String(oldObraId) === String(o.id)) {
                     op.selected = true;
                 }
                 obraSelect.appendChild(op);
-            });
+            }); 
 
         } catch (e) {
             console.error(e);
