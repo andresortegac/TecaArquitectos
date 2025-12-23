@@ -102,7 +102,6 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 
     Route::post('/arriendos/{arriendo}/cerrar', [ArriendoController::class, 'cerrar'])
     ->name('arriendos.cerrar');
-
 });
 
 // CLIENTES

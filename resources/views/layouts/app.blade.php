@@ -75,7 +75,6 @@
 
                 @role('asistente')
                       
-
                     <div class="nav-section">Alquiler / Bodega</div>
                     <a href="{{ route('arriendos.index') }}" class="nav-item">
                         Generar Alquiler
@@ -83,10 +82,7 @@
                     <a href="{{ route('arriendos.create') }}" class="nav-item">
                         Nuevo Alquiler
                     </a>
-                    <a href="#" class="nav-item">
-                        Devolucion de Alquiler
-                    </a>
- 
+                   
                     <div class="nav-section">Clientes</div>
                     <a href="{{ route('clientes.index') }}" class="nav-item">
                         Lista de Clientes
