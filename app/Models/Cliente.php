@@ -23,4 +23,9 @@ class Cliente extends Model
         return $this->hasMany(Arriendo::class);
     }
 
+    public function obras()
+    {
+        return $this->hasMany(Obra::class);
+    }
+
 }

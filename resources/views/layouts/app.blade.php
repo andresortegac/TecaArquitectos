@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="{{ asset('css/productos.css') }}">
     <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}">
     <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/clientes-obras.css') }}">
+    
     
        
     <script src="{{ asset('js/app.js') }}" defer></script>

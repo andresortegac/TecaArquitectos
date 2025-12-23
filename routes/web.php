@@ -120,14 +120,14 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 
     // CLIENTES
     Route::resource('clientes', ClienteController::class);
-});
 
-// OBRAS (dependen de un cliente)
+    // OBRAS (dependen de un cliente)
     Route::get('clientes/{cliente}/obras/create', [ObraController::class, 'create'])
         ->name('obras.create');
 
     Route::post('clientes/{cliente}/obras', [ObraController::class, 'store'])
         ->name('obras.store');
+});
 
 // LOGIN
 Route::controller(LoginController::class)->group(function () {
