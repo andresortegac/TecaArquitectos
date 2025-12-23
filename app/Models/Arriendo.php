@@ -38,7 +38,7 @@ class Arriendo extends Model
     ];
 
     protected $casts = [
-        'fecha_inicio' => 'date',
+        'fecha_inicio' => 'datetime',
         'fecha_fin' => 'date',
         'fecha_entrega' => 'date',
         'fecha_devolucion_real' => 'date',

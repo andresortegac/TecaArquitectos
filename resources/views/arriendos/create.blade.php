@@ -34,7 +34,7 @@
     <input type="number" id="cantidad" name="cantidad" min="1" value="{{ old('cantidad',1) }}" required>
 
     <label>Fecha inicio</label>
-    <input type="date" name="fecha_inicio" value="{{ old('fecha_inicio') }}" required>
+    <input type="datetime-local" name="fecha_inicio" value="{{ old('fecha_inicio') }}" required>
 
     <label>Precio total</label>
     <input type="number" id="precio_total" step="0.01" name="precio_total"

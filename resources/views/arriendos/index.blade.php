@@ -86,7 +86,7 @@
             <td>{{ $a->cliente->nombre ?? '—' }}</td>
             <td>{{ $a->producto->nombre ?? '—' }}</td>
             <td>{{ $a->cantidad }}</td>
-            <td>{{ $a->fecha_inicio }}</td>
+            <td>{{ $a->fecha_inicio?->format('d/m/Y H:i') }}</td>
             <td>{{ $a->fecha_fin ?? '—' }}</td>
             <td>${{ number_format((float)$a->precio_total, 2) }}</td>
 
@@ -100,7 +100,7 @@
 @if(($a->semaforo_pago ?? 'VERDE') === 'ROJO')
     <span style="display:inline-block; padding:3px 8px; border-radius:10px; color:#fff; background:#d9534f;">
         ROJO
-    </span>
+    </span> 
 @elseif(($a->semaforo_pago ?? 'VERDE') === 'AMARILLO')
     <span style="display:inline-block; padding:3px 8px; border-radius:10px; color:#fff; background:#f0ad4e;">
         AMARILLO
