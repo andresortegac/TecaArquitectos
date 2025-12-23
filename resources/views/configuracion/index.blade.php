@@ -4,91 +4,131 @@
     <link rel="stylesheet" href="{{ asset('css/configuracion.css') }}">
 @endpush
 
-@section('title', 'Configuracion')
-@section('header', 'VER CONFIGURACION')
+@section('title', 'Configuración')
+@section('header', 'VER CONFIGURACIÓN')
 
-    @section('content')
-        <div class="conf-container">
+@section('content')
+<div class="conf-container">
 
-            <h2 class="conf-title">⚙️ Configuración del Sistema</h2>
+    <h2 class="conf-title">⚙️ Configuración del Sistema</h2>
 
-            {{-- TABS --}}
-            <ul class="conf-tabs">
-                <li class="conf-tab-item">
-                    <a class="conf-tab-link active" data-tab="stock">📦 Stock</a>
-                </li>
-                <li class="conf-tab-item">
-                    <a class="conf-tab-link" data-tab="reportes">📊 Reportes</a>
-                </li>
-                <li class="conf-tab-item">
-                    <a class="conf-tab-link" data-tab="inventario">🏗️ Inventario</a>
-                </li>
-            </ul>
+    {{-- TABS --}}
+    <ul class="conf-tabs">
+        <li class="conf-tab-item">
+            <a class="conf-tab-link active" data-tab="stock">📦 Stock</a>
+        </li>
+        <li class="conf-tab-item">
+            <a class="conf-tab-link" data-tab="reportes">📊 Reportes</a>
+        </li>
+        <li class="conf-tab-item">
+            <a class="conf-tab-link" data-tab="inventario">🏗️ Inventario</a>
+        </li>
+    </ul>
 
-            {{-- CONTENIDO --}}
-            <div class="conf-content">
-
-                {{-- STOCK --}}
-                <div class="conf-pane active" id="stock">
-                    <div class="conf-card">
-                        <h5>Stock mínimo</h5>
-
-                        <div class="conf-group">
-                            <label class="conf-label">Stock mínimo global</label>
-                            <input type="number" class="conf-input" value="10">
-                        </div>
-
-                        <div class="conf-check">
-                            <input type="checkbox" checked>
-                            <label>Activar alertas de stock bajo</label>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- REPORTES --}}
-                <div class="conf-pane" id="reportes">
-                    <div class="conf-card">
-                        <h5>Configuración de Reportes</h5>
-
-                        <div class="conf-group">
-                            <label class="conf-label">Mes por defecto</label>
-                            <select class="conf-select">
-                                <option>Enero</option>
-                                <option>Febrero</option>
-                                <option>Marzo</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- INVENTARIO --}}
-                <div class="conf-pane" id="inventario">
-                    <div class="conf-card">
-                        <h5>Opciones de Inventario</h5>
-
-                        <div class="conf-check">
-                            <input type="checkbox" checked>
-                            <label>Bloquear salidas sin stock</label>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+    {{-- MENSAJE DE ÉXITO --}}
+    @if(session('success'))
+        <div class="alert alert-success mt-3">
+            {{ session('success') }}
         </div>
-        <script>
-            document.querySelectorAll('.conf-tab-link').forEach(tab => {
-                tab.addEventListener('click', () => {
+    @endif
 
-                    document.querySelectorAll('.conf-tab-link')
-                        .forEach(t => t.classList.remove('active'));
+    {{-- CONTENIDO --}}
+    <div class="conf-content">
 
-                    document.querySelectorAll('.conf-pane')
-                        .forEach(p => p.classList.remove('active'));
+        {{-- ================= STOCK ================= --}}
+        <div class="conf-pane active" id="stock">
+            <form method="POST" action="{{ route('config.stock') }}" class="conf-card">
+                @csrf
 
-                    tab.classList.add('active');
-                    document.getElementById(tab.dataset.tab).classList.add('active');
-                });
-            });
-        </script>
+                <h5>Stock mínimo</h5>
 
-    @endsection
+                <div class="conf-group">
+                    <label class="conf-label">Stock mínimo global</label>
+                    <input
+                        type="number"
+                        name="stock_minimo"
+                        class="conf-input"
+                        min="0"
+                        value="{{ old('stock_minimo', $config->stock_minimo) }}"
+                        required
+                    >
+                </div>
+
+                <div class="conf-check">
+                    <input
+                        type="checkbox"
+                        name="alerta_stock"
+                        {{ old('alerta_stock', $config->alerta_stock) ? 'checked' : '' }}
+                    >
+                    <label>Activar alertas de stock bajo</label>
+                </div>
+
+                <br>
+                <button type="submit" class="btn btn-praimary">Guardar</button>
+            </form>
+        </div>
+
+        {{-- ================= REPORTES ================= --}}
+        <div class="conf-pane" id="reportes">
+            <form method="POST" action="{{ route('config.reportes') }}" class="conf-card">
+                @csrf
+
+                <h5>Configuración de Reportes</h5>
+
+                <div class="conf-group">
+                    <label class="conf-label">Mes por defecto</label>
+                    <select name="mes_defecto" class="conf-select">
+                        @foreach($meses as $mes)
+                            <option value="{{ $mes }}"
+                                {{ old('mes_defecto', $config->mes_defecto) === $mes ? 'selected' : '' }}>
+                                {{ $mes }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <br>
+                <button type="submit" class="btn btn-praimary">Guardar</button>
+            </form>
+        </div>
+
+        {{-- ================= INVENTARIO ================= --}}
+        <div class="conf-pane" id="inventario">
+            <form method="POST" action="{{ route('config.inventario') }}" class="conf-card">
+                @csrf
+
+                <h5>Opciones de Inventario</h5>
+
+                <div class="conf-check">
+                    <input
+                        type="checkbox"
+                        name="bloquear_sin_stock"
+                        {{ old('bloquear_sin_stock', $config->bloquear_sin_stock) ? 'checked' : '' }}
+                    >
+                    <label>Bloquear salidas sin stock</label>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-praimary">Guardar</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{{-- JS TABS --}}
+<script>
+document.querySelectorAll('.conf-tab-link').forEach(tab => {
+    tab.addEventListener('click', () => {
+
+        document.querySelectorAll('.conf-tab-link')
+            .forEach(t => t.classList.remove('active'));
+
+        document.querySelectorAll('.conf-pane')
+            .forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+});
+</script>
+@endsection

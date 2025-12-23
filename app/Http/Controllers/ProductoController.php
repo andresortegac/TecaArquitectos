@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Imports\ProductosImport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Configuracion;
 
 class ProductoController extends Controller
 {
@@ -112,12 +113,23 @@ class ProductoController extends Controller
         return redirect()->route('productos.index')
             ->with('success', 'Productos importados correctamente');
     }
-        public function alertasStock()
+        /* =========================
+       ALERTAS DE STOCK
+    ========================== */
+    public function alertasStock()
     {
-        $productos = Producto::where('cantidad', '<=', 10) // stock mínimo
+        $config = Configuracion::first();
+
+        $stockMinimo = $config?->stock_minimo ?? 10;
+
+        $productos = Producto::where('cantidad', '<=', $stockMinimo)
             ->orderBy('cantidad', 'asc')
             ->get();
 
-        return view('productos.alertas', compact('productos'));
+        return view('productos.alertas', compact(
+            'productos',
+            'stockMinimo'
+        ));
     }
+     
 }
