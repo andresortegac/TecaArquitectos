@@ -60,4 +60,18 @@ class ClienteController extends Controller
         return redirect()->route('clientes.index')
             ->with('success', 'Cliente eliminado');
     }
+
+    /**
+     * ✅ NUEVO: Devuelve las obras del cliente para el select "Obra" en arriendos/create
+     * Ruta: GET /clientes/{cliente}/obras
+     * Respuesta: JSON [{id, nombre}, ...]
+     */
+    public function obras(Cliente $cliente)
+    {
+        // Requiere que exista relación en el modelo Cliente: obras()
+        return $cliente->obras()
+            ->select('id', 'nombre')
+            ->orderBy('nombre')
+            ->get();
+    }
 }

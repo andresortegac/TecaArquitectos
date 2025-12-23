@@ -13,9 +13,14 @@ class Cliente extends Model
         'nombre','telefono','email','documento','direccion'
     ];
 
-        public function arriendos()
+    public function arriendos()
     {
         return $this->hasMany(Arriendo::class);
     }
 
+    // ✅ NUEVO: relación con obras (para cargar obras según cliente)
+    public function obras()
+    {
+        return $this->hasMany(\App\Models\Obra::class);
+    }
 }

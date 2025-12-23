@@ -39,10 +39,13 @@ class ArriendoController extends Controller
 
         // ✅ SEMÁFORO “VIVO”: recalcula mora/semáforo al mostrar el listado
         foreach ($arriendos as $a) {
-            $fechaDev = $a->fecha_devolucion_real ? Carbon::parse($a->fecha_devolucion_real)->toDateString() : null;
+            $fechaDev = $a->fecha_devolucion_real
+                ? Carbon::parse($a->fecha_devolucion_real)->toDateString()
+                : null;
+
             $sem = $this->calcularSemaforoMoroso($fechaDev, (float)$a->saldo);
 
-            // Solo actualizamos en memoria (para mostrar). Si quieres persistir en BD, lo hacemos también.
+            // Solo actualizamos en memoria (para mostrar).
             $a->dias_mora = $sem['dias_mora'];
             $a->semaforo_pago = $sem['semaforo'];
         }
@@ -62,13 +65,13 @@ class ArriendoController extends Controller
         $clientes  = Cliente::orderBy('nombre')->get();
         $productos = Producto::orderBy('nombre')->get();
 
-        return view('arriendos.create', compact('clientes','productos'));
+        return view('arriendos.create', compact('clientes', 'productos'));
     }
 
     /* ============================================================
      * 3) GUARDAR NUEVO ARRIENDO (STORE)
-     *    - Aquí NO se calcula el total final
-     *    - Se calcula al CERRAR (cuando devuelven)
+     *    - IMPORTANTE: aquí NO se calcula el total final
+     *    - El total se calcula al CERRAR (cuando devuelven)
      * ============================================================ */
     public function store(Request $request)
     {
@@ -86,23 +89,23 @@ class ArriendoController extends Controller
             'producto_id' => $data['producto_id'],
             'cantidad' => $data['cantidad'],
 
-            // Puedes seguir usando fecha_inicio como inicio del arriendo
+            // Inicio del arriendo
             'fecha_inicio' => $data['fecha_inicio'],
 
-            // ✅ fecha_entrega = inicio real del cobro
+            // ✅ Inicio real del cobro (si lo manejas así)
             'fecha_entrega' => $data['fecha_inicio'],
 
-            // si usas fecha_fin, puedes dejarla nula al crear
+            // Aún no ha devuelto
             'fecha_fin' => null,
 
             // obra
             'obra_id' => $data['obra_id'] ?? null,
 
-            // ✅ estados: activo, devuelto, vencido (según tu validación previa)
+            // Estados
             'estado' => 'activo',
             'cerrado' => 0,
 
-            // totales iniciales
+            // Totales iniciales (todo en 0 hasta que se cierre)
             'precio_total' => 0,
             'dias_transcurridos' => 0,
             'domingos_desc' => 0,
@@ -128,7 +131,7 @@ class ArriendoController extends Controller
         $clientes  = Cliente::orderBy('nombre')->get();
         $productos = Producto::orderBy('nombre')->get();
 
-        return view('arriendos.edit', compact('arriendo','clientes','productos'));
+        return view('arriendos.edit', compact('arriendo', 'clientes', 'productos'));
     }
 
     /* ============================================================
@@ -165,11 +168,27 @@ class ArriendoController extends Controller
     }
 
     /* ============================================================
-     * 7) CERRAR / DEVOLVER ARRIENDO (LO MÁS IMPORTANTE)
-     *    - Pregunta incidencias (lluvia/daño)
+     * 7) MOSTRAR FORMULARIO PARA CERRAR / DEVOLVER (NUEVO)
+     *    - Esta función solo muestra la vista del formulario
+     *    - La ruta GET que agregaste en web.php apunta acá:
+     *        Route::get('/arriendos/{arriendo}/cerrar', ...)->name('arriendos.cerrar.form');
+     * ============================================================ */
+    public function showCerrar(Arriendo $arriendo)
+    {
+        // Cargamos relaciones para mostrar cliente/producto en el formulario
+        $arriendo->load(['cliente', 'producto']);
+
+        // Vista sugerida: resources/views/arriendos/cerrar.blade.php
+        return view('arriendos.cerrar', compact('arriendo'));
+    }
+
+    /* ============================================================
+     * 8) CERRAR / DEVOLVER ARRIENDO (LO MÁS IMPORTANTE)
+     *    - Se usa FECHA REAL de devolución para cobrar
      *    - Resta domingos automático
-     *    - Resta días lluvia manual
-     *    - Suma merma
+     *    - Resta días de lluvia (manual)
+     *    - Suma merma (manual)
+     *    - Suma pago (opcional)
      *    - Calcula saldo
      *    - Aplica semáforo morosos: amarillo 0–9, rojo 10+
      * ============================================================ */
@@ -193,12 +212,19 @@ class ArriendoController extends Controller
 
         $arriendo->load('producto');
 
-        // ✅ FECHA ENTREGA: si no está, usamos fecha_inicio
+        // ✅ FECHA ENTREGA: si no está, usamos fecha_inicio (inicio del cobro)
         $fechaEntrega = $arriendo->fecha_entrega ?? $arriendo->fecha_inicio;
         $fechaEntrega = Carbon::parse($fechaEntrega)->toDateString();
 
-        // ✅ FECHA DEVOLUCIÓN REAL
-        $fechaDevol = $data['fecha_devolucion_real'];
+        // ✅ FECHA DEVOLUCIÓN REAL (la que digitó el usuario al cerrar)
+        $fechaDevol = Carbon::parse($data['fecha_devolucion_real'])->toDateString();
+
+        // ✅ VALIDACIÓN EXTRA (por seguridad): devolución no puede ser antes de entrega
+        if (Carbon::parse($fechaDevol)->lt(Carbon::parse($fechaEntrega))) {
+            return back()
+                ->withErrors(['fecha_devolucion_real' => 'La fecha de devolución no puede ser anterior a la fecha de entrega/inicio.'])
+                ->withInput();
+        }
 
         // ✅ DÍAS TRANSCURRIDOS (incluye ambos días)
         $diasTrans = Carbon::parse($fechaEntrega)->diffInDays(Carbon::parse($fechaDevol)) + 1;
@@ -212,11 +238,14 @@ class ArriendoController extends Controller
         // ✅ DÍAS COBRABLES
         $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
 
-        // ✅ TARIFA DIARIA POR PRODUCTO
-        $tarifa = (float)($arriendo->producto->tarifa_diaria ?? 0);
 
-        // ✅ TOTAL ALQUILER (días trabajados)
-        $totalAlquiler = $diasCobrables * $tarifa;
+        // ✅ TARIFA DIARIA POR PRODUCTO (según tu BD: costo)
+        $tarifa = (float)($arriendo->producto->costo ?? 0);
+
+
+        // ✅ TOTAL ALQUILER (días cobrables)
+        $totalAlquiler = $diasCobrables * $tarifa * (int)$arriendo->cantidad;
+
 
         // ✅ TOTAL MERMA
         $totalMerma = (float)($data['costo_merma'] ?? 0);
@@ -229,10 +258,10 @@ class ArriendoController extends Controller
         $totalFinal = $totalAlquiler + $totalMerma;
         $saldo = max(0, $totalFinal - $totalPagado);
 
-        // ✅ SEMÁFORO MOROSOS
+        // ✅ SEMÁFORO MOROSOS (regla tuya: 🟡 0–9 | 🔴 10+)
         $sem = $this->calcularSemaforoMoroso($fechaDevol, $saldo);
 
-        // ✅ ACTUALIZAR ARRIENDO
+        // ✅ ACTUALIZAR ARRIENDO (se “cierra” y queda devuelto)
         $arriendo->update([
             'fecha_devolucion_real' => $fechaDevol,
             'fecha_fin' => $fechaDevol,
@@ -257,9 +286,9 @@ class ArriendoController extends Controller
             'semaforo_pago' => $sem['semaforo'],
         ]);
 
-        /* ==========================
-         * GUARDAR INCIDENCIAS (opcional pero recomendado)
-         * ========================== */
+        /* ============================================================
+         * GUARDAR INCIDENCIAS (OPCIONAL PERO RECOMENDADO)
+         * ============================================================ */
         $desc = $data['descripcion_incidencia'] ?? null;
 
         if ($diasLluvia > 0) {
@@ -287,7 +316,7 @@ class ArriendoController extends Controller
     }
 
     /* ============================================================
-     * 8) FUNCIONES INTERNAS (DOMINGOS Y SEMÁFORO)
+     * 9) FUNCIONES INTERNAS (DOMINGOS Y SEMÁFORO)
      * ============================================================ */
 
     // ✅ Cuenta domingos entre dos fechas (incluyendo inicio y fin)
@@ -318,7 +347,7 @@ class ArriendoController extends Controller
         $hoy = Carbon::today();
         $dev = Carbon::parse($fechaDevolucionReal)->startOfDay();
 
-        // Dias desde la devolución hasta hoy
+        // Días desde la devolución hasta hoy
         $dias_mora = max(0, $dev->diffInDays($hoy));
 
         if ($dias_mora <= 9) {
