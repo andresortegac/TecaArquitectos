@@ -21,7 +21,7 @@
             <input name="nombre" value="{{ old('nombre') }}" required>
 
             <label>Categoría</label>
-            <input name="categoria" value="{{ old('categoria') }}">
+            <input name="categorias" value="{{ old('categorias') }}">
 
             <label>Cantidad</label>
             <input type="number" name="cantidad" min="0"

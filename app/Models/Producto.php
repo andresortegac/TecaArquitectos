@@ -17,8 +17,10 @@ class Producto extends Model
         'costo',
         'ubicacion',
         'estado',
-        'tarifa_diaria'
+        'imagen',
+        'tarifa_diaria',
     ];
+
 
     // 👇 Lo que ya tenías (intocable)
     public function arriendos()

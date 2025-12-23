@@ -74,7 +74,13 @@
                 @endrole
 
                 @role('asistente')
-                      
+                     <a href="{{ route('dashboard') }}" class="nav-item">
+                        Dashboard General
+                    </a>
+                    
+                             
+                
+
                     <div class="nav-section">Alquiler / Bodega</div>
                     <a href="{{ route('arriendos.index') }}" class="nav-item">
                         Generar Alquiler
@@ -82,7 +88,7 @@
                     <a href="{{ route('arriendos.create') }}" class="nav-item">
                         Nuevo Alquiler
                     </a>
-                   
+
                     <div class="nav-section">Clientes</div>
                     <a href="{{ route('clientes.index') }}" class="nav-item">
                         Lista de Clientes

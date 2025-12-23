@@ -65,11 +65,20 @@
 
 
             {{-- Imagen --}}
-            <img 
-            src="{{ asset($producto->imagen) }}" 
-            alt="{{ $producto->nombre }}" 
-            class="img-fluid"
-            style="height:180px; object-fit:contain;">
+            @if($producto->imagen)
+    <img 
+        src="{{ asset('storage/' . $producto->imagen) }}"
+        alt="{{ $producto->nombre }}"
+        class="w-full h-48 object-cover rounded"
+    >
+@else
+    <img 
+        src="{{ asset('img/tool-placeholder.jpg') }}"
+        alt="Sin imagen"
+        class="w-full h-48 object-cover rounded"
+    >
+@endif
+
 
 
             {{-- Nombre --}}

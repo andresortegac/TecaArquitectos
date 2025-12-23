@@ -17,7 +17,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 3500,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/andamio_verde.jpeg',
+                
             ],
             [
                 'nombre'     => 'Andamio metálico CAFÉ - 1,50x1,50m',
@@ -26,7 +26,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 3500,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/andamio_gris.jpeg',
+                
             ],
             [
                 'nombre'     => 'Ángulo metálico 1,20m',
@@ -35,7 +35,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 3000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/angulometalicos.jpeg',
+                
             ],
             [
                 'nombre'     => 'Ángulo metálico 0,60m',
@@ -44,7 +44,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 2000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/angulometalicos.jpeg',
+                
             ],
             [
                 'nombre'     => 'Chapetas',
@@ -53,7 +53,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 800,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/chapetas.jpeg',
+                
             ],
             [
                 'nombre'     => 'Cercha metálicas 2m',
@@ -62,7 +62,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 7000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/sercha_azul.jpeg',
+                
             ],
             [
                 'nombre'     => 'Cercha metálicas 3m',
@@ -71,7 +71,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 10000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/sercha_roja.jpeg',
+                
             ],
             [
                 'nombre'     => 'Puntal 2m (Ext. 3,80m) VERDE',
@@ -80,7 +80,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 9000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/puntales_verde.jpeg',
+                
             ],
             [
                 'nombre'     => 'Puntal 2m (Ext. 3,80m) ROJO',
@@ -89,7 +89,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 2500,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/puntales_rojo.jpeg',
+                
             ],
             [
                 'nombre'     => 'Puntal GRIS (para subalquiler)',
@@ -98,7 +98,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 2000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/puntales_gris.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaleta - Tablero 0.20 m x 1.20 m',
@@ -107,7 +107,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 4300,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/formaleta_20.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaleta - Tablero 0.20 m x 1.20 m',
@@ -116,7 +116,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 4300,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/formaleta_20.jpeg',
+                
             ],
          
             [
@@ -126,7 +126,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 10000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/formaleta_20.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaleta - Tablero 0.25 m x 0.60 m',
@@ -135,7 +135,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 250000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/formaleta_20.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaleta - Tablero 0.30 m x 1.20 m',
@@ -144,7 +144,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 1200,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/formaleta_30.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaleta - Tablero 0.30 m x 0.60 m',
@@ -153,7 +153,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 1200,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/formaleta_30.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaleta - Tablero 0.40 m x 1.20 m',
@@ -162,7 +162,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 2500,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/formaleta_40.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaleta - Tablero 0.40 m x 0.60 m',
@@ -171,7 +171,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 2000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/formaleta_40.jpeg',
+                
             ],
             [
                 'nombre'     => 'Plataforma metálica de seguridad',
@@ -180,7 +180,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 4300,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/plancha_metaloca.jpeg',
+                
             ],
             [
                 'nombre'     => 'Tensores',
@@ -189,7 +189,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 2000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/estensor.jpeg',
+                
             ],
             [
                 'nombre'     => 'Apisonador tipo canguro - Gasolina',
@@ -198,7 +198,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 10000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/apisonador.jpeg',
+                
             ],
             [
                 'nombre'     => 'Pluma grúa eléctrica 220V - 300 kg',
@@ -207,7 +207,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 250000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/pluma.jpeg',
+                
             ],
             [
                 'nombre'     => 'Columnas tipo L de 0,25m x 3m',
@@ -216,7 +216,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 1200,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/coluna_tipo_l.jpeg',
+                
             ],
             [
                 'nombre'     => 'Juego de ruedas para andamios',
@@ -225,7 +225,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 5000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/ruedas.jpeg',
+                
             ],
             [
                 'nombre'     => 'Escalera metálica tipo tijera (8 pasos)',
@@ -234,7 +234,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 3000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/escalera.jpeg',
+                
             ],
             [
                 'nombre'     => 'Tablón de madera',
@@ -243,7 +243,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 3000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/tablon.jpeg',
+                
             ],
             [
                 'nombre'     => 'Tijera metálica corta',
@@ -252,7 +252,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 2000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/tijera_corta.jpeg',
+                
             ],
             [
                 'nombre'     => 'Tijera metálica larga',
@@ -261,7 +261,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 3000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/tijera_larga.jpeg',
+                
             ],
             [
                 'nombre'     => 'Extensión eléctrica 110V de 10 m',
@@ -270,7 +270,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 9000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/estencion.jpeg',
+                
             ],
             [
                 'nombre'     => 'Extensión eléctrica 110V de 20 m',
@@ -279,7 +279,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 10000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/estencion.jpeg',
+                
             ],
             [
                 'nombre'     => 'Extensión eléctrica 110V de 50 m',
@@ -288,7 +288,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 15000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/estencion.jpeg',
+                
             ],
             [
                 'nombre'     => 'Extensión eléctrica 110V de 100 m',
@@ -297,7 +297,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 20000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/estencion_larga.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaletas-Tableros-chapetas-Angulos 20 A 3m',
@@ -306,7 +306,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 22000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/plataforma_copleta.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaletas-Tableros-chapetas-Angulos 25 A 3m',
@@ -315,7 +315,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 25000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/plataforma_copleta.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaletas-Tableros-chapetas-Angulos 30 A 3m',
@@ -324,7 +324,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 30000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/plataforma_copleta.jpeg',
+                
             ],
             [
                 'nombre'     => 'Formaletas-Tableros-chapetas-Angulos 40 A 3m',
@@ -333,7 +333,7 @@ class ProductosSeeder extends Seeder
                 'costo'      => 40000,
                 'ubicacion'  => 'B/ Jardin',
                 'estado'     => 'disponible',
-                'imagen'     => 'img/img_producto/plataforma_copleta.jpeg',
+                
             ],
 
                     ];

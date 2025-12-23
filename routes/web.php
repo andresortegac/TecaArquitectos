@@ -17,13 +17,13 @@ use Illuminate\Support\Facades\Route;
 
 
 // DASHBOARD---------admin y bodega--------------------->
-Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 });
 
 // INVENTARIO / BODEGA
-Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::resource('productos', ProductoController::class);
 
     Route::post('/productos/import', [ProductoController::class, 'import'])
@@ -31,7 +31,7 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
 });
 
 // ruta para solicitud
-Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::get('/solicitudes/create', [SolicitudController::class, 'create'])
         ->name('solicitudes.create');
 
@@ -43,16 +43,18 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
 
 //---------------------------------------------------
 // ruta Movimiento
-Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::get('/movimientos', [MovimientoController::class, 'create'])
         ->name('movimientos.create');
 
     Route::post('/movimientos', [MovimientoController::class, 'store'])
         ->name('movimientos.store');
+});
 
-//ruta para alerta de stock
-Route::get('/alertas-stock', [ProductoController::class, 'alertasStock'])
-    ->name('productos.alertas');
+Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
+    //ruta para alerta de stock
+    Route::get('/alertas-stock', [ProductoController::class, 'alertasStock'])
+        ->name('productos.alertas');
 
 });
 
@@ -64,34 +66,37 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
         Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
     });
 });
+
 Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
-Route::get('/movimientos/export', [MovimientoController::class, 'export'])
-    ->name('movimientos.export');
+    Route::get('/movimientos/export', [MovimientoController::class, 'export'])
+        ->name('movimientos.export');
 
-Route::get('/reporte/mensual/export', [ReportesStockController::class, 'exportMensual'])
-    ->name('reporte.mensual.export');
+    Route::get('/reporte/mensual/export', [ReportesStockController::class, 'exportMensual'])
+        ->name('reporte.mensual.export');
 
-//ruta para configuracion
-Route::get('/configuracion', [ConfigController::class, 'index'])
-    ->name('configuracion.index');
+    //ruta para configuracion
+    Route::get('/configuracion', [ConfigController::class, 'index'])
+        ->name('configuracion.index');
 
-Route::post('/configuracion/stock', [ConfigController::class, 'stock'])
-    ->name('config.stock');
+    Route::post('/configuracion/stock', [ConfigController::class, 'stock'])
+        ->name('config.stock');
 
-Route::post('/configuracion/reportes', [ConfigController::class, 'reportes'])
-    ->name('config.reportes');
+    Route::post('/configuracion/reportes', [ConfigController::class, 'reportes'])
+        ->name('config.reportes');
 
-Route::post('/configuracion/inventario', [ConfigController::class, 'inventario'])
-    ->name('config.inventario');
-    
-// ruta para stock actual
-Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
-Route::get('/stock/{producto}', [StockController::class, 'show'])->name('stock.show');
-Route::get('/stock-exportar', [StockController::class, 'export'])->name('stock.export');
+    Route::post('/configuracion/inventario', [ConfigController::class, 'inventario'])
+        ->name('config.inventario');
+});        
 
-//ruta de metricas 
-Route::get('/metricas', [MetricasController::class, 'index'])
-    ->name('metricas.index');
+Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
+    // ruta para stock actual
+    Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+    Route::get('/stock/{producto}', [StockController::class, 'show'])->name('stock.show');
+    Route::get('/stock-exportar', [StockController::class, 'export'])->name('stock.export');
+
+    //ruta de metricas 
+    Route::get('/metricas', [MetricasController::class, 'index'])
+        ->name('metricas.index');
 });
 //---------------------fin---------------------------------------->
 
@@ -105,6 +110,9 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 
     Route::get('/arriendos/{arriendo}/cerrar', [ArriendoController::class, 'showCerrar'])
         ->name('arriendos.cerrar.form');
+    
+    //alerta-stock_actual-metricas----
+    
 });
 
 // CLIENTES
