@@ -82,26 +82,27 @@
 }
 
 /* ===== BADGES ===== */
-.badge {
+
+.movi-badge{
     padding: 5px 10px;
     border-radius: 6px;
     font-size: 13px;
     font-weight: 600;
-    color: #fff;
+    color: #f0e7e7;
 }
 
-.badge.ingreso {
+.movi-badge.ingreso {
     background: #28a745;
 }
 
-.badge.salida {
+.movi-badge.salida {
     background: #dc3545;
 }
 
-.badge.ajuste_positivo {
+.movi-badge.ajuste_positivo {
     background: #17a2b8;
 }
 
-.badge.ajuste_negativo {
+.movi-badge.ajuste_negativo {
     background: #fd7e14;
 }

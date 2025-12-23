@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Imports\ProductosImport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Configuracion;
 
 class ProductoController extends Controller
 {
-            public function index()
+        public function index()
     {
         $productos = Producto::all();
 
@@ -23,7 +24,7 @@ class ProductoController extends Controller
     }
 
 
-    public function create()
+        public function create()
     {
         return view('productos.create');
     }
@@ -53,12 +54,12 @@ class ProductoController extends Controller
     }
 
 
-    public function edit(Producto $producto)
+        public function edit(Producto $producto)
     {
         return view('productos.edit', compact('producto'));
     }
 
-    public function update(Request $request, Producto $producto)
+        public function update(Request $request, Producto $producto)
     {
         $data = $request->validate([
             'nombre'    => 'required|string|max:255',
@@ -89,7 +90,7 @@ class ProductoController extends Controller
             ->with('success', 'Producto actualizado correctamente');
     }
 
-    public function destroy(Producto $producto)
+        public function destroy(Producto $producto)
     {
         // 🗑️ borrar imagen del storage
         if ($producto->imagen) {
@@ -101,15 +102,34 @@ class ProductoController extends Controller
         return redirect()->route('productos.index')
             ->with('success', 'Producto eliminado de bodega');
     }
-    public function import(Request $request)
-{
-    $request->validate([
-        'archivo' => 'required|file|mimes:xlsx,csv'
-    ]);
+        public function import(Request $request)
+    {
+        $request->validate([
+            'archivo' => 'required|file|mimes:xlsx,csv'
+        ]);
 
-    Excel::import(new ProductosImport, $request->file('archivo'));
+        Excel::import(new ProductosImport, $request->file('archivo'));
 
-    return redirect()->route('productos.index')
-        ->with('success', 'Productos importados correctamente');
-}
+        return redirect()->route('productos.index')
+            ->with('success', 'Productos importados correctamente');
+    }
+        /* =========================
+       ALERTAS DE STOCK
+    ========================== */
+    public function alertasStock()
+    {
+        $config = Configuracion::first();
+
+        $stockMinimo = $config?->stock_minimo ?? 10;
+
+        $productos = Producto::where('cantidad', '<=', $stockMinimo)
+            ->orderBy('cantidad', 'asc')
+            ->get();
+
+        return view('productos.alertas', compact(
+            'productos',
+            'stockMinimo'
+        ));
+    }
+     
 }

@@ -4,13 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Obra;
+use App\Models\Arriendo;
 
 class Cliente extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'nombre','telefono','email','documento','direccion'
+        'nombre',
+        'telefono',
+        'email',
+        'documento',
     ];
 
     public function arriendos()
@@ -18,9 +23,4 @@ class Cliente extends Model
         return $this->hasMany(Arriendo::class);
     }
 
-    // ✅ NUEVO: relación con obras (para cargar obras según cliente)
-    public function obras()
-    {
-        return $this->hasMany(\App\Models\Obra::class);
-    }
 }

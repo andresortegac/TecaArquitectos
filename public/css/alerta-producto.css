@@ -1,0 +1,135 @@
+/* ===== CONTENEDOR GENERAL ===== */
+.aler-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* ===== TARJETA PRINCIPAL ===== */
+.alerta-stilo {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 20px 45px rgba(0,0,0,.08);
+    animation: fadeIn .4s ease;
+}
+
+/* ===== TÍTULO ===== */
+.aler-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #111827;
+}
+
+/* ===== TABLA ===== */
+.aler-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.aler-table thead th {
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #6b7280;
+    padding: 12px 14px;
+}
+
+.aler-table tbody tr {
+    background: #f9fafb;
+    border-radius: 14px;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.aler-table tbody tr:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.1);
+}
+
+.aler-table td {
+    padding: 14px;
+    font-size: 14px;
+    color: #374151;
+}
+
+/* ===== FILAS POR ESTADO ===== */
+.fila-danger {
+    background: #fef2f2;
+}
+
+.fila-warning {
+    background: #fffbeb;
+}
+
+/* ===== BADGES ===== */
+.aler-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+.bodega-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.bodega-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* ===== ALERTA VACÍA ===== */
+.aler-alert {
+    padding: 18px 22px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 20px;
+}
+
+.aler-alert-success {
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+/* ===== ANIMACIÓN ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .aler-table thead {
+        display: none;
+    }
+
+    .aler-table tbody tr {
+        display: block;
+        padding: 16px;
+    }
+
+    .aler-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+    }
+
+    .aler-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #6b7280;
+    }
+}

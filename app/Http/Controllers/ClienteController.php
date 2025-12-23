@@ -33,6 +33,12 @@ class ClienteController extends Controller
             ->with('success', 'Cliente creado correctamente');
     }
 
+    public function show(Cliente $cliente)
+    {
+        $cliente->load('obras');
+        return view('clientes.show', compact('cliente'));
+    }
+
     public function edit(Cliente $cliente)
     {
         return view('clientes.edit', compact('cliente'));

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Movimiento;
 use App\Models\Producto;
+use App\Exports\MovimientosExport;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MovimientoController extends Controller
 {
@@ -48,5 +50,9 @@ class MovimientoController extends Controller
         Movimiento::create($request->all());
 
         return redirect()->back()->with('success', 'Movimiento registrado correctamente');
+    }
+        public function export()
+    {
+        return Excel::download(new MovimientosExport, 'movimientos.xlsx');
     }
 }

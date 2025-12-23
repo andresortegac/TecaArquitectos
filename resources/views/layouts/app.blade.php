@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'TECA ARQUITECTOS')</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/productos.css') }}">
     <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}">
     <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}">
+    
+       
     <script src="{{ asset('js/app.js') }}" defer></script>
 
+     <!-- CSS de vistas -->
+    @stack('styles')
 </head>
 <body>
     <div class="app">
@@ -38,9 +42,10 @@
                             <a href="{{ route('solicitudes.index') }}" class="nav-item">Solicitud</a>
                             <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos</a>
                             <a href="{{ route('productos.index') }}" class="nav-item">Inventario</a>
-                            <a href="#" class="nav-item">Reportes</a>
-                            <a href="#" class="nav-item">Configuración</a>
+                            <a href="{{ route('reportes.index') }}" class="nav-item">Reportes</a>
+                            <a href="{{ route('configuracion.index') }}" class="nav-item">Configuración</a>
                         </div>
+
                     </div>           
                 
 
@@ -69,10 +74,7 @@
                 @endrole
 
                 @role('asistente')
-                    <a href="{{ route('dashboard') }}" class="nav-item">
-                        Dashboard General
-                    </a>   
-
+                      
                     <div class="nav-section">Alquiler / Bodega</div>
                     <a href="{{ route('arriendos.index') }}" class="nav-item">
                         Generar Alquiler
@@ -80,7 +82,7 @@
                     <a href="{{ route('arriendos.create') }}" class="nav-item">
                         Nuevo Alquiler
                     </a>
-
+                   
                     <div class="nav-section">Clientes</div>
                     <a href="{{ route('clientes.index') }}" class="nav-item">
                         Lista de Clientes
@@ -115,8 +117,8 @@
                             <a href="{{ route('solicitudes.index') }}" class="nav-item">Solicitud</a>
                             <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos</a>
                             <a href="{{ route('productos.index') }}" class="nav-item">Inventario</a>
-                            <a href="#" class="nav-item">Reportes</a>
-                            <a href="#" class="nav-item">Configuración</a>
+                            <a href="{{ route('reportes.index') }}" class="nav-item">Reportes</a>
+                            <a href="{{ route('configuracion.index') }}" class="nav-item">Configuración</a>
                         </div>
                     </div>  
                     
@@ -131,12 +133,12 @@
         </aside>
 
         {{-- Contenido --}}
-        <main class="content">
-            <header class="topbar">
+        <main class="principal-content">
+            <header class="principal-topbar">
                 <h1>@yield('header', 'Panel')</h1>
             </header>
 
-            <section class="page">
+            <section class="principal-page">
                 @yield('content')
             </section>
         </main>

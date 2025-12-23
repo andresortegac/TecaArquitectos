@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Cliente;
 use App\Models\Producto;
 
+
 class Arriendo extends Model
 {
     use HasFactory;
+
 
     protected $fillable = [
         'cliente_id',
@@ -41,7 +43,14 @@ class Arriendo extends Model
         'fecha_entrega' => 'date',
         'fecha_devolucion_real' => 'date',
         'cerrado' => 'boolean',
+        'total_alquiler' => 'decimal:2',
+        'total_pagado' => 'decimal:2',
+        'saldo' => 'decimal:2',
     ];
+
+    /* =======================
+       RELACIONES
+    ======================= */
 
     public function cliente()
     {
@@ -51,5 +60,21 @@ class Arriendo extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class);
+    }
+
+    /* =======================
+       SCOPES ÚTILES PARA MÉTRICAS
+    ======================= */
+
+    // Solo dinero realmente cobrado
+    public function scopePagados($query)
+    {
+        return $query->where('total_pagado', '>', 0);
+    }
+
+    // Solo con saldo pendiente
+    public function scopeConSaldo($query)
+    {
+        return $query->where('saldo', '>', 0);
     }
 }

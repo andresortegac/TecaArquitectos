@@ -37,5 +37,10 @@ class Producto extends Model
             'cantidad_aprobada'
         )->withTimestamps();
     }
+        public function getImagenUrlAttribute()
+    {
+        return asset($this->imagen);
+    }
+
 }
  

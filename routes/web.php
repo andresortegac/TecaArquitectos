@@ -7,11 +7,16 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\SolicitudController;
+use App\Http\Controllers\ReportesStockController;
+use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\MetricasController;
+use App\Http\Controllers\ObraController;
 
 use Illuminate\Support\Facades\Route;
 
 
-// DASHBOARD
+// DASHBOARD---------admin y bodega--------------------->
 Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
@@ -44,8 +49,53 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
 
     Route::post('/movimientos', [MovimientoController::class, 'store'])
         ->name('movimientos.store');
+
+//ruta para alerta de stock
+Route::get('/alertas-stock', [ProductoController::class, 'alertasStock'])
+    ->name('productos.alertas');
+
 });
 
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+    //rura de reporte de movimiento
+    Route::prefix('reportes')->group(function () {
+        Route::get('/', [ReportesStockController::class, 'index'])->name('reportes.index');
+        Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
+        Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
+    });
+});
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+Route::get('/movimientos/export', [MovimientoController::class, 'export'])
+    ->name('movimientos.export');
+
+Route::get('/reporte/mensual/export', [ReportesStockController::class, 'exportMensual'])
+    ->name('reporte.mensual.export');
+
+//ruta para configuracion
+Route::get('/configuracion', [ConfigController::class, 'index'])
+    ->name('configuracion.index');
+
+Route::post('/configuracion/stock', [ConfigController::class, 'stock'])
+    ->name('config.stock');
+
+Route::post('/configuracion/reportes', [ConfigController::class, 'reportes'])
+    ->name('config.reportes');
+
+Route::post('/configuracion/inventario', [ConfigController::class, 'inventario'])
+    ->name('config.inventario');
+    
+// ruta para stock actual
+Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+Route::get('/stock/{producto}', [StockController::class, 'show'])->name('stock.show');
+Route::get('/stock-exportar', [StockController::class, 'export'])->name('stock.export');
+
+//ruta de metricas 
+Route::get('/metricas', [MetricasController::class, 'index'])
+    ->name('metricas.index');
+});
+//---------------------fin---------------------------------------->
+
+//---------------solo asistente------------------------------>
 // ARRIENDOS
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::resource('arriendos', ArriendoController::class);
@@ -59,12 +109,17 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 
 // CLIENTES
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
-    Route::resource('clientes', ClienteController::class);
 
-    // ✅ NUEVA RUTA: devolver obras de un cliente (para el select "Obra" en arriendos/create)
-    Route::get('/clientes/{cliente}/obras', [ClienteController::class, 'obras'])
-        ->name('clientes.obras');
+    // CLIENTES
+    Route::resource('clientes', ClienteController::class);
 });
+
+// OBRAS (dependen de un cliente)
+    Route::get('clientes/{cliente}/obras/create', [ObraController::class, 'create'])
+        ->name('obras.create');
+
+    Route::post('clientes/{cliente}/obras', [ObraController::class, 'store'])
+        ->name('obras.store');
 
 // LOGIN
 Route::controller(LoginController::class)->group(function () {

@@ -63,7 +63,7 @@ body {
 }
 
 /* CONTENT */
-.content {
+.principal-content {
   margin-left: 260px;
   height: 100vh;
   overflow-y: auto;
@@ -72,7 +72,7 @@ body {
 }
 
 /* TOPBAR */
-.topbar {
+.principal-topbar {
   background: white;
   padding: 14px 16px;
   border-radius: 12px;
@@ -81,7 +81,7 @@ body {
 }
 
 /* PAGE */
-.page {
+.principal-page {
   background: white;
   padding: 18px;
   border-radius: 12px;
@@ -231,5 +231,4 @@ body {
     background: #f1c40f;
     color: #000;
 }
-
 
