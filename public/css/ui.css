@@ -22,13 +22,7 @@
 .page-title{ margin:0; font-size:26px; font-weight:700; color:var(--text); }
 .page-subtitle{ margin:4px 0 0; color:var(--muted); font-size:13px; }
 
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:14px;
-}
+
 
 .card-header{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; }
 .card-title{ margin:0; font-size:16px; font-weight:700; color:var(--text); }

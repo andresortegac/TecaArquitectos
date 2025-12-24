@@ -40,14 +40,39 @@
     gap: 20px;
 }
 
-/* ====== TARJETA ====== */
 .producto-card {
-    background: #ffffff;
-    border-radius: 16px;
+    background: #ffffff85;
+    border-radius: 26px;
     padding: 18px;
-    box-shadow: 0 10px 25px rgba(0,0,0,.06);
-    transition: transform .25s ease, box-shadow .25s ease;
+    position: relative;
+    z-index: 1;
 }
+
+/* borde multicolor */
+.producto-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 2px; /* grosor del borde */
+    border-radius: 26px;
+
+    background: linear-gradient(
+        135deg,
+        #00f7f7,
+        #6a5cff,
+        #ff2f92,
+        #f7ff00
+    );
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+
+    z-index: -1;
+}
+
 
 .producto-card:hover {
     transform: translateY(-6px);
