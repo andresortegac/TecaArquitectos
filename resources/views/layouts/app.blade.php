@@ -4,18 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'TECA ARQUITECTOS')</title>
-     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+    {{-- CSS base del sistema --}}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/productos.css') }}">
     <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}">
     <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}">
     <link rel="stylesheet" href="{{ asset('css/clientes-obras.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/crear-obras.css') }}">
-    
+     {{-- ✅ UI PRO --}}
+    <link rel="stylesheet" href="{{ asset('css/ui.css') }}?v={{ time() }}">
+
+    {{-- JS base --}}
     
        
     <script src="{{ asset('js/app.js') }}" defer></script>
 
-     <!-- CSS de vistas -->
+    {{-- CSS específico por vista --}}
     @stack('styles')
 </head>
 <body>
@@ -25,22 +29,19 @@
             <div class="sidebar-header">
                 <a href="{{ route('dashboard') }}">
                     <img src="{{ asset('img/img_producto/logo.png') }}" alt="TECA Arquitectos" class="sidebar-logo">
-                </a>                
+                </a>
             </div>
 
-
             <nav class="sidebar-nav">
+
                 @role('admin')
-                    <a href="{{ route('dashboard') }}" class="nav-item">
-                        Dashboard General
-                    </a>
-                    
+                    <a href="{{ route('dashboard') }}" class="nav-item">Dashboard General</a>
+
                     <div class="nav-section">Bodega / Solicitud</div>
 
                     <div class="nav-dropdown">
                         <a href="javascript:void(0)" class="nav-item dropdown-toggle" onclick="toggleMenu()">
-                            Solicitud
-                            <span class="arrow">▾</span>
+                            Solicitud <span class="arrow">▾</span>
                         </a>
 
                         <div class="dropdown-menu" id="bodegaMenu">
@@ -51,25 +52,15 @@
                             <a href="{{ route('reportes.index') }}" class="nav-item">Reportes</a>
                             <a href="{{ route('configuracion.index') }}" class="nav-item">Configuración</a>
                         </div>
-
-                    </div>           
-                
+                    </div>
 
                     <div class="nav-section">Alquiler / Bodega</div>
-                    <a href="{{ route('arriendos.index') }}" class="nav-item">
-                        Generar Alquiler
-                    </a>
-                    <a href="{{ route('arriendos.create') }}" class="nav-item">
-                        Nuevo Alquiler
-                    </a>
+                    <a href="{{ route('arriendos.index') }}" class="nav-item">Generar Alquiler</a>
+                    <a href="{{ route('arriendos.create') }}" class="nav-item">Nuevo Alquiler</a>
 
                     <div class="nav-section">Clientes</div>
-                    <a href="{{ route('clientes.index') }}" class="nav-item">
-                        Lista de Clientes
-                    </a>
-                    <a href="{{ route('clientes.create') }}" class="nav-item">
-                        Agregar Cliente Nuevo
-                    </a>
+                    <a href="{{ route('clientes.index') }}" class="nav-item">Lista de Clientes</a>
+                    <a href="{{ route('clientes.create') }}" class="nav-item">Agregar Cliente Nuevo</a>
 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -80,28 +71,15 @@
                 @endrole
 
                 @role('asistente')
-                     <a href="{{ route('dashboard') }}" class="nav-item">
-                        Dashboard General
-                    </a>
-                    
-                             
-                
+                    <a href="{{ route('dashboard') }}" class="nav-item">Dashboard General</a>
 
                     <div class="nav-section">Alquiler / Bodega</div>
-                    <a href="{{ route('arriendos.index') }}" class="nav-item">
-                        Generar Alquiler
-                    </a>
-                    <a href="{{ route('arriendos.create') }}" class="nav-item">
-                        Nuevo Alquiler
-                    </a>
+                    <a href="{{ route('arriendos.index') }}" class="nav-item">Generar Alquiler</a>
+                    <a href="{{ route('arriendos.create') }}" class="nav-item">Nuevo Alquiler</a>
 
                     <div class="nav-section">Clientes</div>
-                    <a href="{{ route('clientes.index') }}" class="nav-item">
-                        Lista de Clientes
-                    </a>
-                    <a href="{{ route('clientes.create') }}" class="nav-item">
-                        Agregar Cliente Nuevo
-                    </a>
+                    <a href="{{ route('clientes.index') }}" class="nav-item">Lista de Clientes</a>
+                    <a href="{{ route('clientes.create') }}" class="nav-item">Agregar Cliente Nuevo</a>
 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -112,16 +90,13 @@
                 @endrole
 
                 @role('bodega')
-                    <a href="{{ route('dashboard') }}" class="nav-item">
-                        Dashboard General
-                    </a>
-                    
+                    <a href="{{ route('dashboard') }}" class="nav-item">Dashboard General</a>
+
                     <div class="nav-section">Bodega / Solicitud</div>
 
                     <div class="nav-dropdown">
                         <a href="javascript:void(0)" class="nav-item dropdown-toggle" onclick="toggleMenu()">
-                            Solicitud
-                            <span class="arrow">▾</span>
+                            Solicitud <span class="arrow">▾</span>
                         </a>
 
                         <div class="dropdown-menu" id="bodegaMenu">
@@ -132,8 +107,8 @@
                             <a href="{{ route('reportes.index') }}" class="nav-item">Reportes</a>
                             <a href="{{ route('configuracion.index') }}" class="nav-item">Configuración</a>
                         </div>
-                    </div>  
-                    
+                    </div>
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" id="logout-btn" class="nav-item nav-logout">
@@ -141,6 +116,7 @@
                         </button>
                     </form>
                 @endrole
+
             </nav>
         </aside>
 
@@ -154,19 +130,23 @@
                 @yield('content')
             </section>
         </main>
-        
     </div>
+
     <script>
         function toggleMenu() {
             const menu = document.getElementById('bodegaMenu');
-            const parent = menu.parentElement;
+            if (!menu) return;
 
-            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+            const parent = menu.parentElement;
+            const isOpen = menu.style.display === 'flex';
+
+            menu.style.display = isOpen ? 'none' : 'flex';
             parent.classList.toggle('open');
         }
     </script>
-    <link rel="stylesheet" href="{{ asset('css/ui.css') }}">
 
-
+    {{-- Scripts específicos por vista --}}
+    @yield('scripts')
+    @stack('scripts')
 </body>
 </html>
