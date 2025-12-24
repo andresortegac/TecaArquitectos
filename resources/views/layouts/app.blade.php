@@ -22,8 +22,11 @@
         {{-- Sidebar --}}
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>TECA ARQUITECTOS</h2>
+                <a href="{{ route('dashboard') }}">
+                    <img src="{{ asset('img/img_producto/logo.png') }}" alt="TECA Arquitectos" class="sidebar-logo">
+                </a>                
             </div>
+
 
             <nav class="sidebar-nav">
                 @role('admin')

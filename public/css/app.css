@@ -33,6 +33,10 @@ body {
   border-bottom: 1px solid #374151;
   margin-bottom: 14px;
 }
+.sidebar-logo {
+    max-width: 90%;
+    max-height: 204px;
+}
 
 .sidebar-nav {
   display: flex;
@@ -62,8 +66,9 @@ body {
   color: #fff;
 }
 
+
 /* CONTENT */
-.principal-content {
+.principal-content {    
   margin-left: 260px;
   height: 100vh;
   overflow-y: auto;
@@ -73,7 +78,7 @@ body {
 
 /* TOPBAR */
 .principal-topbar {
-  background: white;
+  background: rgb(255 255 255 / 52%);
   padding: 14px 16px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,.05);
@@ -82,7 +87,7 @@ body {
 
 /* PAGE */
 .principal-page {
-  background: white;
+  background: rgb(255 255 255 / 52%);
   padding: 18px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,.05);
@@ -172,7 +177,7 @@ body {
 }
 
 .card {
-    background: #ffffff;
+    background: #ffffffa6;
     padding: 25px;
     border-radius: 12px;
     text-align: center;
@@ -200,7 +205,7 @@ body {
 }
 
 .alertas {
-    background: #f4fbfd;
+    background: #ffffffa6;
     padding: 25px;
     border-radius: 12px;
 }
