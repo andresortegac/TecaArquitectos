@@ -1,15 +1,20 @@
 @extends('layouts.app')
 
+@section('title','STOCK')
+@section('header','VER STOCK ACTUAL')
+
 @section('content')
 <div class="container">
 
-    <h3 class="mb-4">📦 Stock Actual</h3>
+    <h1 class="mb-4">Stock Actual</h1>       
     <br>
     <br>
     <div class="mb-3 d-flex gap-2">
         <a href="{{ route('stock.index') }}" class="btn btn-primary">🔄 Actualizar Stock</a>
         <a href="{{ route('stock.export') }}" class="btn btn-success">📥 Exportar Excel</a>        
     </div>
+    <br>
+    <br>
 
     <div class="card shadow-sm">
         <div class="card-body p-0">
@@ -27,7 +32,7 @@
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
-
+                
                 <tbody>
                     @foreach ($productos as $producto)
 

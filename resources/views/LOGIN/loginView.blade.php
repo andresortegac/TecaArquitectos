@@ -16,7 +16,7 @@
   <!-- CSS PERSONALIZADO -->
   <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 
-  <title>Ingreso | Eventos Deportivos</title>
+  <title>TECA ARQUITECTOS</title>
 </head>
 
 <body>

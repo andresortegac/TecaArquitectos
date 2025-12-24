@@ -8,7 +8,7 @@ use App\Exports\StockExport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
-class StockController extends Controller
+class StockController extends Controller 
 {
     public function index()
     {
