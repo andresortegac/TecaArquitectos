@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="{{ asset('css/productos.css') }}">
     <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}">
     <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/clientes-obras.css') }}">
-     {{-- ✅ UI PRO --}}
-    <link rel="stylesheet" href="{{ asset('css/ui.css') }}?v={{ time() }}">
+    
+   
+
 
     {{-- JS base --}}
     
