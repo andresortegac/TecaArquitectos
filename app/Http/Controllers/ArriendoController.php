@@ -80,7 +80,6 @@ class ArriendoController extends Controller
             'producto_id'  => 'required|exists:productos,id',
             'cantidad'     => 'required|integer|min:1',
             'fecha_inicio' => 'required|date',
-            // obra fija (si lo manejas)
             'obra_id'      => 'nullable|integer',
         ]);
 
@@ -136,7 +135,6 @@ class ArriendoController extends Controller
 
     /* ============================================================
      * 5) ACTUALIZAR (UPDATE)
-     *    - Recomendación: no permitir modificar totales calculados manualmente
      * ============================================================ */
     public function update(Request $request, Arriendo $arriendo)
     {
@@ -168,69 +166,62 @@ class ArriendoController extends Controller
     }
 
     /* ============================================================
-     * 7) MOSTRAR FORMULARIO PARA CERRAR / DEVOLVER (NUEVO)
-     *    - Esta función solo muestra la vista del formulario
-     *    - La ruta GET que agregaste en web.php apunta acá:
-     *        Route::get('/arriendos/{arriendo}/cerrar', ...)->name('arriendos.cerrar.form');
+     * 7) MOSTRAR FORMULARIO PARA CERRAR / DEVOLVER
      * ============================================================ */
     public function showCerrar(Arriendo $arriendo)
     {
-        // Cargamos relaciones para mostrar cliente/producto en el formulario
         $arriendo->load(['cliente', 'producto']);
-
-        // Vista sugerida: resources/views/arriendos/cerrar.blade.php
         return view('arriendos.cerrar', compact('arriendo'));
     }
 
     /* ============================================================
-     * 8) CERRAR / DEVOLVER ARRIENDO (LO MÁS IMPORTANTE)
-     *    - Se usa FECHA REAL de devolución para cobrar
-     *    - Resta domingos automático
-     *    - Resta días de lluvia (manual)
-     *    - Suma merma (manual)
-     *    - Suma pago (opcional)
-     *    - Calcula saldo
-     *    - Aplica semáforo morosos: amarillo 0–9, rojo 10+
+     * 8) CERRAR / DEVOLVER ARRIENDO (CÁLCULO CORREGIDO)
+     *    REGLAS:
+     *    - NO se cobra el día de devolución
+     *    - Si devuelven el mismo día => se cobra 1
      * ============================================================ */
     public function cerrar(Request $request, Arriendo $arriendo)
     {
         $data = $request->validate([
             'fecha_devolucion_real' => 'required|date',
-
-            // Incidencia por lluvia (manual)
             'dias_lluvia' => 'nullable|integer|min:0',
-
-            // Incidencia por daño/merma (manual)
             'costo_merma' => 'nullable|numeric|min:0',
-
-            // Descripción opcional
             'descripcion_incidencia' => 'nullable|string|max:255',
-
-            // Pago opcional al momento de devolver
             'pago' => 'nullable|numeric|min:0',
         ]);
 
         $arriendo->load('producto');
 
-        // ✅ FECHA ENTREGA: si no está, usamos fecha_inicio (inicio del cobro)
+        // ✅ FECHA ENTREGA: si no está, usamos fecha_inicio
         $fechaEntrega = $arriendo->fecha_entrega ?? $arriendo->fecha_inicio;
         $fechaEntrega = Carbon::parse($fechaEntrega)->toDateString();
 
         // ✅ FECHA DEVOLUCIÓN REAL (la que digitó el usuario al cerrar)
         $fechaDevol = Carbon::parse($data['fecha_devolucion_real'])->toDateString();
 
-        // ✅ VALIDACIÓN EXTRA (por seguridad): devolución no puede ser antes de entrega
+        // ✅ VALIDACIÓN EXTRA: devolución no puede ser antes de entrega
         if (Carbon::parse($fechaDevol)->lt(Carbon::parse($fechaEntrega))) {
             return back()
                 ->withErrors(['fecha_devolucion_real' => 'La fecha de devolución no puede ser anterior a la fecha de entrega/inicio.'])
                 ->withInput();
         }
 
-        // ✅ DÍAS TRANSCURRIDOS (incluye ambos días)
-        $diasTrans = Carbon::parse($fechaEntrega)->diffInDays(Carbon::parse($fechaDevol)) + 1;
+        // ============================================================
+        // ✅ DÍAS TRANSCURRIDOS (NO se cobra el día de devolución)
+        // - Se cobra desde fechaEntrega hasta (fechaDevol - 1)
+        // - Si entrega == devolución, se cobra 1
+        // ============================================================
+        $start = Carbon::parse($fechaEntrega)->startOfDay();
+        $end   = Carbon::parse($fechaDevol)->startOfDay(); // fin NO incluido (no se cobra devolución)
 
-        // ✅ DOMINGOS AUTOMÁTICOS
-        $domingos = $this->contarDomingos($fechaEntrega, $fechaDevol);
+        $diasTrans = $start->diffInDays($end); // 23/12 -> 23/01 = 31
+
+        if ($diasTrans === 0) {
+            $diasTrans = 1; // mismo día => cobra 1
+        }
+
+        // ✅ DOMINGOS AUTOMÁTICOS (sin incluir el día de devolución)
+        $domingos = $this->contarDomingosExcluyendoFin($fechaEntrega, $fechaDevol);
 
         // ✅ LLUVIA MANUAL (se descuenta)
         $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
@@ -238,14 +229,11 @@ class ArriendoController extends Controller
         // ✅ DÍAS COBRABLES
         $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
 
-
         // ✅ TARIFA DIARIA POR PRODUCTO (según tu BD: costo)
         $tarifa = (float)($arriendo->producto->costo ?? 0);
 
-
-        // ✅ TOTAL ALQUILER (días cobrables)
+        // ✅ TOTAL ALQUILER
         $totalAlquiler = $diasCobrables * $tarifa * (int)$arriendo->cantidad;
-
 
         // ✅ TOTAL MERMA
         $totalMerma = (float)($data['costo_merma'] ?? 0);
@@ -258,12 +246,11 @@ class ArriendoController extends Controller
         $totalFinal = $totalAlquiler + $totalMerma;
         $saldo = max(0, $totalFinal - $totalPagado);
 
-        // ✅ SEMÁFORO MOROSOS (regla tuya: 🟡 0–9 | 🔴 10+)
+        // ✅ SEMÁFORO MOROSOS
         $sem = $this->calcularSemaforoMoroso($fechaDevol, $saldo);
 
-        // ✅ ACTUALIZAR ARRIENDO (se “cierra” y queda devuelto)
+        // ✅ ACTUALIZAR ARRIENDO
         $arriendo->update([
-            'fecha_devolucion_real' => $fechaDevol,
             'fecha_fin' => $fechaDevol,
 
             'cerrado' => 1,
@@ -279,16 +266,13 @@ class ArriendoController extends Controller
             'total_pagado' => $totalPagado,
             'saldo' => $saldo,
 
-            // si usas precio_total como total final
             'precio_total' => $totalFinal,
 
             'dias_mora' => $sem['dias_mora'],
             'semaforo_pago' => $sem['semaforo'],
         ]);
 
-        /* ============================================================
-         * GUARDAR INCIDENCIAS (OPCIONAL PERO RECOMENDADO)
-         * ============================================================ */
+        // ✅ INCIDENCIAS (opcional)
         $desc = $data['descripcion_incidencia'] ?? null;
 
         if ($diasLluvia > 0) {
@@ -316,18 +300,20 @@ class ArriendoController extends Controller
     }
 
     /* ============================================================
-     * 9) FUNCIONES INTERNAS (DOMINGOS Y SEMÁFORO)
+     * 9) FUNCIONES INTERNAS
      * ============================================================ */
 
-    // ✅ Cuenta domingos entre dos fechas (incluyendo inicio y fin)
-    private function contarDomingos(string $inicio, string $fin): int
+    // ✅ Cuenta domingos entre dos fechas EXCLUYENDO la fecha FIN (no se cobra devolución)
+    private function contarDomingosExcluyendoFin(string $inicio, string $fin): int
     {
         $start = Carbon::parse($inicio)->startOfDay();
-        $end   = Carbon::parse($fin)->startOfDay();
-        $count = 0;
+        $end   = Carbon::parse($fin)->startOfDay(); // fin NO incluido
 
-        for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
-            if ($d->isSunday()) $count++;
+        $count = 0;
+        for ($d = $start->copy(); $d->lt($end); $d->addDay()) {
+            if ($d->isSunday()) {
+                $count++;
+            }
         }
         return $count;
     }
@@ -340,14 +326,12 @@ class ArriendoController extends Controller
         }
 
         if (!$fechaDevolucionReal) {
-            // Aún no devolvió, no aplica morosidad
             return ['semaforo' => 'VERDE', 'dias_mora' => 0];
         }
 
         $hoy = Carbon::today();
         $dev = Carbon::parse($fechaDevolucionReal)->startOfDay();
 
-        // Días desde la devolución hasta hoy
         $dias_mora = max(0, $dev->diffInDays($hoy));
 
         if ($dias_mora <= 9) {
@@ -356,4 +340,17 @@ class ArriendoController extends Controller
 
         return ['semaforo' => 'ROJO', 'dias_mora' => $dias_mora];
     }
+    public function detalles(Arriendo $arriendo)
+{
+    $arriendo->load([
+        'cliente',
+        'producto',
+        'incidencias',   // asegúrate de tener esta relación en Arriendo.php
+        'devoluciones'   // relación hacia devoluciones_arriendo
+    ]);
+
+    return view('arriendos.detalles', compact('arriendo'));
+}
+
+
 }

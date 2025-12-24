@@ -77,4 +77,17 @@ class Arriendo extends Model
     {
         return $query->where('saldo', '>', 0);
     }
+
+   public function devoluciones()
+{
+    return $this->hasMany(\App\Models\DevolucionArriendo::class, 'arriendo_id');
+}
+
+public function incidencias()
+{
+    return $this->hasMany(\App\Models\Incidencia::class, 'arriendo_id');
+}
+
+
+
 }

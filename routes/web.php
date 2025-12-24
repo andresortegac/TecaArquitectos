@@ -12,7 +12,7 @@ use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\MetricasController;
 use App\Http\Controllers\ObraController;
-
+use App\Http\Controllers\ArriendoDevolucionController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -114,6 +114,18 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     //alerta-stock_actual-metricas----
     
 });
+
+//DETALLES ARRIENDO
+Route::get('/arriendos/{arriendo}/detalles', [App\Http\Controllers\ArriendoController::class, 'detalles'])
+    ->name('arriendos.detalles');
+
+
+//ARRIENDO-DEVOLUCION
+Route::get('/arriendos/{arriendo}/devolucion', [ArriendoDevolucionController::class, 'create'])
+    ->name('arriendos.devolucion.create');
+
+Route::post('/arriendos/{arriendo}/devolucion', [ArriendoDevolucionController::class, 'store'])
+    ->name('arriendos.devolucion.store');
 
 // CLIENTES
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {

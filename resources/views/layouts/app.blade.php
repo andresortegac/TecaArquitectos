@@ -161,6 +161,8 @@
             parent.classList.toggle('open');
         }
     </script>
+    <link rel="stylesheet" href="{{ asset('css/ui.css') }}">
+
 
 </body>
 </html>
