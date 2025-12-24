@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}">
     <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}">
     <link rel="stylesheet" href="{{ asset('css/clientes-obras.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/crear-obras.css') }}">
     
     
        

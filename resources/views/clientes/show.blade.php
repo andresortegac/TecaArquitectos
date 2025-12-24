@@ -1,26 +1,46 @@
 @extends('layouts.app')
+
 @section('title','Cliente')
 @section('header','Cliente')
 
 @section('content')
-<h2>{{ $cliente->nombre }}</h2>
 
-<p><strong>Documento:</strong> {{ $cliente->documento }}</p>
-<p><strong>Teléfono:</strong> {{ $cliente->telefono }}</p>
+<div class="cliente-container">
 
-<hr>
+    {{-- Información del cliente --}}
+    <div class="cliente-card">
+        <h2 class="cliente-nombre">{{ $cliente->nombre }}</h2>
 
-<div style="display:flex; justify-content:space-between;">
-    <h3>Obras</h3>
-    <a class="btn" href="{{ route('obras.create', $cliente) }}">+ Nueva obra</a>
+        <div class="cliente-info">
+            <p><strong>Documento:</strong> {{ $cliente->documento }}</p>
+            <p><strong>Teléfono:</strong> {{ $cliente->telefono }}</p>
+        </div>
+    </div>
+
+    {{-- Header obras --}}
+    <div class="obras-header">
+        <h3>Obras</h3>
+        <a class="btn-nueva-obra" href="{{ route('obras.create', $cliente) }}">
+            + Nueva obra
+        </a>
+    </div>
+
+    {{-- Grid de obras --}}
+    @if($cliente->obras->count())
+        <div class="obras-grid">
+            @foreach($cliente->obras as $obra)
+                <div class="obra-card">
+                    <div class="obra-card-body">
+                        <h4 class="obra-title">{{ $obra->direccion }}</h4>
+                        <p class="obra-text">{{ $obra->detalle }}</p>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @else
+        <p class="sin-obras">No hay obras registradas</p>
+    @endif
+
 </div>
 
-@forelse($cliente->obras as $obra)
-    <div class="card">
-        <strong>{{ $obra->direccion }}</strong>
-        <p>{{ $obra->detalle }}</p>
-    </div>
-@empty
-    <p>No hay obras</p>
-@endforelse
 @endsection
