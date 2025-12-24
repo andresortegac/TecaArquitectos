@@ -2,7 +2,13 @@
 @section('title','Arriendos')
 @section('header','Arriendos')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/ui.css') }}">
+@endpush
+
 @section('content')
+
+<div class="principal-page">
 
 @if(session('success'))
   <div class="alert success">{{ session('success') }}</div>
@@ -28,6 +34,8 @@
   $pctDev = $total ? round(($devueltos / $total) * 100) : 0;
   $pctMora = $total ? round((($rojo + $amarillo) / $total) * 100) : 0;
 @endphp
+<div class="alquiler-conte">
+
 
 {{-- TOPBAR + KPIs --}}
 <div class="topbar">
@@ -202,20 +210,18 @@
           @endif
         </td>
 
-        {{-- ACCIONES: SOLO MENÚ ⋯ (Editar va adentro) --}}
+        {{-- ACCIONES --}}
         <td>
           <div class="actions">
             <div class="dropdown" data-dd>
               <button type="button" class="btn-kebab" aria-label="Acciones">⋯</button>
 
               <div class="dropdown-menu">
-                {{-- Editar SIEMPRE --}}
                 <a class="menu-item item-edit" href="{{ route('arriendos.edit',$a) }}">
                   <span class="menu-left"><span class="dot"></span>Editar</span>
                   <span>›</span>
                 </a>
 
-                {{-- Detalles solo si devuelto/cerrado --}}
                 @if((int)($a->cerrado ?? 0) === 1 || $a->estado === 'devuelto')
                   <a class="menu-item item-details" href="{{ route('arriendos.detalles', $a) }}">
                     <span class="menu-left"><span class="dot"></span>Detalles</span>
@@ -223,10 +229,9 @@
                   </a>
                 @endif
 
-                {{-- Acciones solo si NO cerrado --}}
                 @if((int)($a->cerrado ?? 0) === 0)
                   <button type="button" class="menu-item item-close"
-                    onclick="document.getElementById('modalCerrar{{ $a->id }}').style.display='block'">
+                    onclick="document.getElementById('modalCerrar{{ $a->id }}').style.display='flex'">
                     <span class="menu-left"><span class="dot"></span>Cerrar</span>
                     <span>›</span>
                   </button>
@@ -239,7 +244,6 @@
                   </form>
                 @endif
 
-                {{-- Borrar SIEMPRE --}}
                 <form action="{{ route('arriendos.destroy',$a) }}" method="POST">
                   @csrf @method('DELETE')
                   <button class="menu-item item-delete" onclick="return confirm('¿Eliminar arriendo?')">
@@ -253,11 +257,11 @@
         </td>
       </tr>
 
-      {{-- MODAL CERRAR --}}
+      {{-- MODAL CERRAR (encapsulado) --}}
       @if((int)($a->cerrado ?? 0) === 0)
-        <div id="modalCerrar{{ $a->id }}" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:9999;">
-          <div class="card" style="max-width:560px; margin:7% auto; padding:16px;">
-            <div class="card-header" style="margin-bottom:10px;">
+        <div id="modalCerrar{{ $a->id }}" class="modal-backdrop" style="display:none;">
+          <div class="card modal-dialog">
+            <div class="card-header modal-header">
               <h3 class="card-title">Cerrar arriendo #{{ $a->id }}</h3>
               <button type="button" class="btn-ghost"
                 onclick="document.getElementById('modalCerrar{{ $a->id }}').style.display='none'">Cerrar</button>
@@ -266,38 +270,38 @@
             <form method="POST" action="{{ route('arriendos.cerrar', $a) }}">
               @csrf
 
-              <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <div style="flex:1;">
-                  <label class="small" style="font-size:13px;">Fecha devolución real</label>
+              <div class="modal-grid">
+                <div class="modal-field">
+                  <label class="small modal-label">Fecha devolución real</label>
                   <input class="input" type="date" name="fecha_devolucion_real" required value="{{ date('Y-m-d') }}">
                 </div>
-                <div style="flex:1;">
-                  <label class="small" style="font-size:13px;">Pago recibido (opcional)</label>
+                <div class="modal-field">
+                  <label class="small modal-label">Pago recibido (opcional)</label>
                   <input class="input" type="number" min="0" step="0.01" name="pago" value="0">
                 </div>
               </div>
 
-              <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <div style="flex:1;">
-                  <label class="small" style="font-size:13px;">Días de lluvia (se descuentan)</label>
+              <div class="modal-grid">
+                <div class="modal-field">
+                  <label class="small modal-label">Días de lluvia (se descuentan)</label>
                   <input class="input" type="number" min="0" name="dias_lluvia" value="0">
                 </div>
-                <div style="flex:1;">
-                  <label class="small" style="font-size:13px;">Costo daño/merma</label>
+                <div class="modal-field">
+                  <label class="small modal-label">Costo daño/merma</label>
                   <input class="input" type="number" min="0" step="0.01" name="costo_merma" value="0">
                 </div>
               </div>
 
-              <div style="margin-bottom:10px;">
-                <label class="small" style="font-size:13px;">Descripción (opcional)</label>
+              <div class="modal-field">
+                <label class="small modal-label">Descripción (opcional)</label>
                 <input class="input" type="text" name="descripcion_incidencia" placeholder="Ej: lluvia fuerte / mango roto">
               </div>
 
-              <div class="small" style="font-size:12px; margin-bottom:12px;">
+              <div class="small modal-help">
                 Domingos se descuentan automáticamente. Si queda saldo pendiente al cerrar, se activa semáforo (AMARILLO 0–9 / ROJO 10+).
               </div>
 
-              <div style="display:flex; justify-content:flex-end; gap:8px;">
+              <div class="modal-actions">
                 <button type="button" class="btn-ghost"
                   onclick="document.getElementById('modalCerrar{{ $a->id }}').style.display='none'">Cancelar</button>
                 <button type="submit" class="btn-primary" style="padding:8px 12px;">Cerrar y calcular</button>
@@ -321,7 +325,6 @@
 {{-- JS: filtros + dropdown --}}
 <script>
 (function () {
-  // Auto-filtros
   const form = document.getElementById('filtrosForm');
 
   function submitFormLimpio() {
@@ -336,7 +339,6 @@
     el.addEventListener('change', submitFormLimpio);
   });
 
-  // Dropdown acciones
   function closeAll(){
     document.querySelectorAll('[data-dd].open').forEach(dd => dd.classList.remove('open'));
   }
@@ -362,5 +364,9 @@
   });
 })();
 </script>
+
+</div> {{-- /principal-page --}}
+</div>
+
 
 @endsection
