@@ -11,11 +11,12 @@
     <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}">
     <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}">
     <link rel="stylesheet" href="{{ asset('css/clientes-obras.css') }}">
-
-    {{-- ✅ UI PRO --}}
+     {{-- ✅ UI PRO --}}
     <link rel="stylesheet" href="{{ asset('css/ui.css') }}?v={{ time() }}">
 
     {{-- JS base --}}
+    
+       
     <script src="{{ asset('js/app.js') }}" defer></script>
 
     {{-- CSS específico por vista --}}

@@ -51,7 +51,9 @@
 
 
     </div>
-
+    <br>
+    <br>
+    
     {{-- Tarjetas --}}
     <div id="cards">
 
