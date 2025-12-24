@@ -10,8 +10,6 @@
     <link rel="stylesheet" href="{{ asset('css/productos.css') }}">
     <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}">
     <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}">
-    
-   
 
 
     {{-- JS base --}}
