@@ -1,4 +1,9 @@
 @extends('layouts.app')
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/clientes-obras.css') }}">
+@endpush
+
 @section('title','Clientes')
 @section('header','Clientes')
 

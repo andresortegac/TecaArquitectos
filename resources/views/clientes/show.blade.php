@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/crear-obras.css') }}">
+@endpush
+
 @section('title','Cliente')
 @section('header','Cliente')
 
