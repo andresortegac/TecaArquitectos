@@ -1,0 +1,113 @@
+/* Contenedor general */
+.cliente-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Card cliente */
+.cliente-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    margin-bottom: 25px;
+}
+
+.cliente-nombre {
+    margin-bottom: 10px;
+}
+
+.cliente-info p {
+    margin: 3px 0;
+    color: #555;
+}
+
+/* Header obras */
+.obras-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-nueva-obra {
+    background: #0f172a;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.btn-nueva-obra:hover {
+    background: #1e293b;
+}
+
+/* Grid responsivo */
+.obras-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* Card obra */
+.obra-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+}
+
+.obra-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+}
+
+.obra-card-body {
+    padding: 20px;
+}
+
+.obra-title {
+    margin-bottom: 8px;
+    font-size: 18px;
+    color: #111827;
+}
+
+.obra-text {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Sin obras */
+.sin-obras {
+    color: #777;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .obras-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .obras-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .obras-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .obras-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
