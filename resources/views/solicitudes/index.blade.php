@@ -8,33 +8,45 @@
 @section('header','Solicitudes de Alquiler')
 
 @section('content')
-    <div class="solicitud-page">   
+<div class="solicitud-page">   
 
-        <h2>Solicitudes recibidas</h2>
+    <h2>Solicitudes recibidas</h2>
 
-        <table class="table">
-            <thead>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Fecha Solicitud</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($solicitudes as $s)
                 <tr>
-                    <th>Cliente</th>
-                    <th>Fecha Solicitud</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($solicitudes as $s)
-                <tr>
-                    <td>{{ $s->nombre_cliente }}</td>
-                    <td>{{ $s->fecha_solicitud }}</td>
-                    <td>{{ ucfirst(str_replace('_',' ',$s->estado)) }}</td>
+                    <td>{{ $s->cliente->nombre }}</td>
+
+                    <td>{{ $s->created_at->format('Y-m-d') }}</td>
+
                     <td>
-                        <a class="btn btn-warning" href="{{ route('solicitudes.show', $s->id) }}">
+                        <span class="estado pendiente">
+                            Pendiente
+                        </span>
+                    </td>
+
+                    <td>
+                        <a class="btn btn-warning" href="{{ route('arriendos.show', $s->id) }}">
                             Revisar
                         </a>
                     </td>
                 </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+            @empty
+                <tr>
+                    <td colspan="4">No hay solicitudes registradas</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+</div>
 @endsection

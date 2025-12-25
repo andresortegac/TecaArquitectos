@@ -38,7 +38,8 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::post('/solicitudes', [SolicitudController::class, 'store'])
         ->name('solicitudes.store');
 
-    Route::resource('solicitudes', SolicitudController::class);
+    Route::get('/solicitudes', [SolicitudController::class, 'solicitudes'])
+        ->name('solicitudes.solicitudes');
 });
 
 //---------------------------------------------------

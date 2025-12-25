@@ -4,15 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\Solicitud;
 use App\Models\Producto;
+use App\Models\Arriendo;
 use Illuminate\Http\Request;
 
 class SolicitudController extends Controller
 {
     public function index()
     {
-        $solicitudes = Solicitud::latest()->get();
+        $solicitudes = Solicitud::orderBy('created_at', 'desc')
+            ->paginate(10);
+
         return view('solicitudes.index', compact('solicitudes'));
     }
+
+
+
+    public function solicitudes()
+    {
+        $solicitudes = Arriendo::with('cliente')
+            ->whereNull('producto_id')   // 👈 clave
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('solicitudes.index', compact('solicitudes'));
+    }
+
 
     public function create()
     {

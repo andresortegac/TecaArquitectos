@@ -44,7 +44,7 @@
 
                         <div class="dropdown-menu" id="bodegaMenu">
                             <a href="{{ route('productos.create') }}" class="nav-item">Nuevo Producto</a>
-                            <a href="{{ route('solicitudes.index') }}" class="nav-item">Solicitud</a>
+                            <a href="{{ route('solicitudes.solicitudes') }}" class="nav-item">Solicitud</a>
                             <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos</a>
                             <a href="{{ route('productos.index') }}" class="nav-item">Inventario</a>
                             <a href="{{ route('reportes.index') }}" class="nav-item">Reportes</a>
@@ -99,7 +99,7 @@
 
                         <div class="dropdown-menu" id="bodegaMenu">
                             <a href="{{ route('productos.create') }}" class="nav-item">Nuevo Producto</a>
-                            <a href="{{ route('solicitudes.index') }}" class="nav-item">Solicitud</a>
+                            <a href="{{ route('solicitudes.solicitudes') }}" class="nav-item">Solicitud</a>
                             <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos</a>
                             <a href="{{ route('productos.index') }}" class="nav-item">Inventario</a>
                             <a href="{{ route('reportes.index') }}" class="nav-item">Reportes</a>
