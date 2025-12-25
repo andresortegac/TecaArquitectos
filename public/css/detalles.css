@@ -1,0 +1,23 @@
+
+  .historial-toggle{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 12px; border:1px solid #eee; border-radius:10px;
+    background:#fafafa; cursor:pointer; user-select:none;
+  }
+  .historial-toggle b{ font-size:13px; }
+  .historial-body{
+    margin-top:8px;
+    border:1px solid #eee; border-radius:10px; padding:10px;
+    background:#fff;
+  }
+  .table-wrap-x{ overflow-x:auto; }
+  .table-compact th, .table-compact td{
+    font-size:12px; padding:7px 8px;
+    white-space:nowrap;
+  }
+  .pill{
+    display:inline-block; padding:3px 8px; border-radius:999px;
+    background:#f1f1f1; font-size:12px;
+  }
+  .muted-small{ color:#666; font-size:12px; }
+

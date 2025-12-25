@@ -20,6 +20,60 @@
   .section-title { margin:16px 0 8px; }
   .btn-print { cursor:pointer; }
 
+  /* ✅ “Factura” por herramienta dentro del espacio izquierdo */
+  .item-grid {
+    display:grid;
+    grid-template-columns: 1fr 320px; /* izquierda grande, derecha resumen */
+    gap:12px;
+    align-items:start;
+  }
+  @media (max-width: 900px){
+    .item-grid { grid-template-columns:1fr; }
+  }
+  .mini-factura {
+    border:1px dashed #e6e6e6;
+    background:#fcfcfc;
+    border-radius:10px;
+    padding:10px 12px;
+    margin-top:10px;
+  }
+  .mini-head {
+    display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    margin-bottom:6px;
+  }
+  .mini-head .title { font-weight:700; font-size:13px; }
+  .mini-head .tag {
+    font-size:12px; background:#f1f1f1; border-radius:999px; padding:3px 8px;
+  }
+  .mini-lines { margin-top:6px; }
+  .mini-line {
+    display:flex; justify-content:space-between; gap:12px;
+    padding:6px 0;
+    border-bottom:1px dotted #e9e9e9;
+    font-size:12.5px;
+  }
+  .mini-line:last-child { border-bottom:0; }
+  .mini-line .lbl { color:#444; }
+  .mini-line .val { font-weight:600; white-space:nowrap; }
+  .mini-sub {
+    margin-top:8px;
+    padding-top:8px;
+    border-top:1px solid #e9e9e9;
+    font-size:12px;
+    color:#666;
+  }
+
+  .mov-table { width:100%; border-collapse:collapse; margin-top:8px; }
+  .mov-table th, .mov-table td {
+    border-bottom:1px solid #eee;
+    padding:6px 6px;
+    font-size:12px;
+    white-space:nowrap;
+  }
+  .mov-table th { background:#fafafa; text-align:left; }
+  .mov-right { text-align:right; }
+  .mov-muted { color:#666; }
+
   /* Impresión */
   @media print {
     .no-print { display:none !important; }
@@ -27,6 +81,8 @@
     .factura-wrap { padding:0; border-radius:0; }
     .box { border:0; }
     .table th { background:#f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .mini-factura { border:1px solid #ddd; background:#fff; }
+    .mov-table th { background:#f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
 
@@ -94,21 +150,40 @@
     @foreach($arriendo->items as $it)
       @php
         $tarifa = (float)($it->tarifa_diaria ?? ($it->producto->costo ?? 0));
-        $devs = $it->devoluciones ?? collect();
 
-        $resItem = [
-          'devuelto' => (int)$devs->sum('cantidad_devuelta'),
-          'cobrado'  => (float)$devs->sum('total_cobrado'),
-          'abonado'  => (float)$devs->sum('pago_recibido'),
-          'saldo_devs' => (float)$devs->sum(fn($d) => (float)($d->saldo_devolucion ?? 0)),
-        ];
+        // ✅ SOLO usamos devoluciones si ya vienen cargadas (evita consultas que revienten)
+        $devs = $it->relationLoaded('devoluciones') ? ($it->devoluciones ?? collect()) : collect();
+
+        // ✅ orden cronológico para sacar "último saldo_resultante"
+        $devsAsc = $devs->sortBy('id')->values();
+        $devsDesc = $devs->sortByDesc('id')->values();
+
         $cantidadInicial = (int)($it->cantidad_inicial ?? 0);
-        $cantidadActual  = (int)($it->cantidad_actual ?? 0);
-        $cantidadRestanteCalc = max(0, $cantidadInicial - $resItem['devuelto']);
+
+        $totalDevuelto = (int)$devs->sum('cantidad_devuelta');
+        $totalCobradoDevs = (float)$devs->sum('total_cobrado');
+        $totalAbonadoDevs = (float)$devs->sum('pago_recibido');
+
+        $cantidadRestanteCalc = max(0, $cantidadInicial - $totalDevuelto);
+
+        // ✅ saldo real: el último saldo_resultante si existe, si no el saldo del item
+        $saldoHist = $devsAsc->count() ? (float)($devsAsc->last()->saldo_resultante ?? 0) : null;
+        $saldoMostrado = is_null($saldoHist) ? (float)($it->saldo ?? 0) : $saldoHist;
+
+        // ✅ “último movimiento” para resumen rápido en factura
+        $ultimo = $devsDesc->first();
+
+        $ultimoFecha = $ultimo?->fecha_devolucion ? \Carbon\Carbon::parse($ultimo->fecha_devolucion)->format('d/m/Y') : '—';
+        $ultimoDev   = $ultimo ? (int)$ultimo->cantidad_devuelta : 0;
+        $ultimoAbono = $ultimo ? (float)$ultimo->pago_recibido : 0;
+        $ultimoTotal = $ultimo ? (float)$ultimo->total_cobrado : 0;
+        $ultimoQuedan= $ultimo ? (int)$ultimo->cantidad_restante : $cantidadRestanteCalc;
       @endphp
 
       <div class="box" style="margin-bottom:12px;">
-        <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+        <div class="item-grid">
+
+          {{-- IZQUIERDA: AQUÍ VA LA “FACTURA DETALLADA” (usa el espacio en blanco) --}}
           <div>
             <div style="font-size:15px;"><strong>{{ $it->producto->nombre ?? 'Producto' }}</strong></div>
             <div class="muted">
@@ -119,88 +194,125 @@
               @endif
             </div>
             <div class="muted">Estado item: {{ ucfirst($it->estado ?? '—') }} @if((int)($it->cerrado ?? 0)===1) | Cerrado @endif</div>
+
+            {{-- ✅ FACTURA DETALLE (en el espacio en blanco) --}}
+            <div class="mini-factura">
+              <div class="mini-head">
+                <div class="title">Detalle / Movimientos de esta herramienta</div>
+                <div class="tag">{{ $devs->count() }} movimiento(s)</div>
+              </div>
+
+              <div class="mini-lines">
+                <div class="mini-line">
+                  <div class="lbl">Cantidad inicial</div>
+                  <div class="val">{{ $cantidadInicial }}</div>
+                </div>
+                <div class="mini-line">
+                  <div class="lbl">Devuelto acumulado</div>
+                  <div class="val">{{ $totalDevuelto }}</div>
+                </div>
+                <div class="mini-line">
+                  <div class="lbl">Restante</div>
+                  <div class="val">{{ $cantidadRestanteCalc }}</div>
+                </div>
+                <div class="mini-line">
+                  <div class="lbl">Total cobrado por registros</div>
+                  <div class="val">${{ number_format($totalCobradoDevs,2) }}</div>
+                </div>
+                <div class="mini-line">
+                  <div class="lbl">Total abonado por registros</div>
+                  <div class="val">${{ number_format($totalAbonadoDevs,2) }}</div>
+                </div>
+                <div class="mini-line">
+                  <div class="lbl">Saldo actual de esta herramienta</div>
+                  <div class="val">${{ number_format($saldoMostrado,2) }}</div>
+                </div>
+              </div>
+
+              <div class="mini-sub">
+                <div><strong>Último movimiento:</strong> {{ $ultimoFecha }}</div>
+                <div class="mov-muted">
+                  Devuelto: {{ $ultimoDev }} | Abono: ${{ number_format($ultimoAbono,2) }} | Total: ${{ number_format($ultimoTotal,2) }} | Quedan: {{ $ultimoQuedan }}
+                </div>
+              </div>
+
+              {{-- ✅ TABLA DE MOVIMIENTOS (tipo factura) --}}
+              <div style="margin-top:10px;">
+                @if($devsDesc->isEmpty())
+                  <div class="muted">No hay movimientos todavía para esta herramienta.</div>
+                @else
+                  <table class="mov-table">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th class="mov-right">Dev</th>
+                        <th class="mov-right">Días</th>
+                        <th class="mov-right">Dom</th>
+                        <th class="mov-right">Lluvia</th>
+                        <th class="mov-right">Cob</th>
+                        <th class="mov-right">Tarifa</th>
+                        <th class="mov-right">Alquiler</th>
+                        <th class="mov-right">Merma</th>
+                        <th class="mov-right">Total</th>
+                        <th class="mov-right">Abono</th>
+                        <th class="mov-right">Saldo</th>
+                        <th class="mov-right">Quedan</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach($devsDesc as $d)
+                        <tr>
+                          <td>{{ \Carbon\Carbon::parse($d->fecha_devolucion)->format('d/m/Y') }}</td>
+                          <td class="mov-right">{{ (int)$d->cantidad_devuelta }}</td>
+                          <td class="mov-right">{{ (int)$d->dias_transcurridos }}</td>
+                          <td class="mov-right">{{ (int)$d->domingos_desc }}</td>
+                          <td class="mov-right">{{ (int)$d->dias_lluvia_desc }}</td>
+                          <td class="mov-right">{{ (int)$d->dias_cobrables }}</td>
+                          <td class="mov-right">${{ number_format((float)$d->tarifa_diaria,2) }}</td>
+                          <td class="mov-right">${{ number_format((float)$d->total_alquiler,2) }}</td>
+                          <td class="mov-right">${{ number_format((float)$d->total_merma,2) }}</td>
+                          <td class="mov-right"><strong>${{ number_format((float)$d->total_cobrado,2) }}</strong></td>
+                          <td class="mov-right">${{ number_format((float)$d->pago_recibido,2) }}</td>
+                          <td class="mov-right">${{ number_format((float)($d->saldo_resultante ?? 0),2) }}</td>
+                          <td class="mov-right">{{ (int)$d->cantidad_restante }}</td>
+                        </tr>
+
+                        @if(!empty($d->descripcion_incidencia) || !empty($d->nota))
+                          <tr>
+                            <td colspan="13" class="mov-muted" style="padding:6px 6px;">
+                              @if(!empty($d->descripcion_incidencia))
+                                <strong>Incidencia:</strong> {{ $d->descripcion_incidencia }}
+                              @endif
+                              @if(!empty($d->nota))
+                                @if(!empty($d->descripcion_incidencia)) &nbsp;|&nbsp; @endif
+                                <strong>Nota:</strong> {{ $d->nota }}
+                              @endif
+                            </td>
+                          </tr>
+                        @endif
+                      @endforeach
+                    </tbody>
+                  </table>
+                @endif
+              </div>
+            </div>
           </div>
 
+          {{-- DERECHA: TU RESUMEN (SE QUEDA IGUAL) --}}
           <div style="min-width:280px;">
             <table class="table" style="margin:0;">
               <tbody>
                 <tr><td><strong>Cant. inicial</strong></td><td class="right">{{ $cantidadInicial }}</td></tr>
-                <tr><td><strong>Total devuelto</strong></td><td class="right">{{ (int)$resItem['devuelto'] }}</td></tr>
+                <tr><td><strong>Total devuelto</strong></td><td class="right">{{ $totalDevuelto }}</td></tr>
                 <tr><td><strong>Restante</strong></td><td class="right">{{ (int)$cantidadRestanteCalc }}</td></tr>
                 <tr><td><strong>Tarifa/día</strong></td><td class="right">${{ number_format($tarifa,2) }}</td></tr>
-                <tr><td><strong>Total cobrado (devs)</strong></td><td class="right">${{ number_format($resItem['cobrado'],2) }}</td></tr>
-                <tr><td><strong>Total abonado (devs)</strong></td><td class="right">${{ number_format($resItem['abonado'],2) }}</td></tr>
-                <tr><td><strong>Saldo item</strong></td><td class="right"><strong>${{ number_format((float)($it->saldo ?? 0),2) }}</strong></td></tr>
+                <tr><td><strong>Total cobrado (registros)</strong></td><td class="right">${{ number_format($totalCobradoDevs,2) }}</td></tr>
+                <tr><td><strong>Total abonado (registros)</strong></td><td class="right">${{ number_format($totalAbonadoDevs,2) }}</td></tr>
+                <tr><td><strong>Saldo item</strong></td><td class="right"><strong>${{ number_format($saldoMostrado,2) }}</strong></td></tr>
               </tbody>
             </table>
           </div>
-        </div>
 
-        <div style="margin-top:10px;">
-          <div class="muted" style="margin-bottom:6px;"><strong>Registros de devoluciones (individual)</strong></div>
-
-          @if($devs->isEmpty())
-            <div class="muted">No hay devoluciones registradas para este item.</div>
-          @else
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th class="right">Devuelto</th>
-                  <th class="right">Días</th>
-                  <th class="right">Dom</th>
-                  <th class="right">Lluvia</th>
-                  <th class="right">Cobrables</th>
-                  <th class="right">Tarifa</th>
-                  <th class="right">Alquiler</th>
-                  <th class="right">Merma</th>
-                  <th class="right">Total</th>
-                  <th class="right">Abono</th>
-                  <th class="right">Saldo dev.</th>
-                  <th class="right">Quedan</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach($devs->sortByDesc('id') as $d)
-                  <tr>
-                    <td>{{ \Carbon\Carbon::parse($d->fecha_devolucion)->format('d/m/Y') }}</td>
-                    <td class="right">{{ (int)$d->cantidad_devuelta }}</td>
-                    <td class="right">{{ (int)$d->dias_transcurridos }}</td>
-                    <td class="right">{{ (int)$d->domingos_desc }}</td>
-                    <td class="right">{{ (int)$d->dias_lluvia_desc }}</td>
-                    <td class="right">{{ (int)$d->dias_cobrables }}</td>
-                    <td class="right">${{ number_format((float)$d->tarifa_diaria,2) }}</td>
-                    <td class="right">${{ number_format((float)$d->total_alquiler,2) }}</td>
-                    <td class="right">${{ number_format((float)$d->total_merma,2) }}</td>
-                    <td class="right"><strong>${{ number_format((float)$d->total_cobrado,2) }}</strong></td>
-                    <td class="right">${{ number_format((float)$d->pago_recibido,2) }}</td>
-                    <td class="right">
-                      @if(isset($d->saldo_devolucion))
-                        ${{ number_format((float)$d->saldo_devolucion,2) }}
-                      @else
-                        —
-                      @endif
-                    </td>
-                    <td class="right">{{ (int)$d->cantidad_restante }}</td>
-                  </tr>
-
-                  @if(!empty($d->descripcion_incidencia) || !empty($d->nota))
-                    <tr>
-                      <td colspan="13" class="muted">
-                        @if(!empty($d->descripcion_incidencia))
-                          <strong>Incidencia:</strong> {{ $d->descripcion_incidencia }}
-                        @endif
-                        @if(!empty($d->nota))
-                          @if(!empty($d->descripcion_incidencia)) &nbsp;|&nbsp; @endif
-                          <strong>Nota:</strong> {{ $d->nota }}
-                        @endif
-                      </td>
-                    </tr>
-                  @endif
-                @endforeach
-              </tbody>
-            </table>
-          @endif
         </div>
       </div>
     @endforeach

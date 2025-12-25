@@ -178,19 +178,15 @@ class ArriendoController extends Controller
     /* ============================================================
      * ✅ NUEVO (NECESARIO):
      *  VER REGISTROS INDIVIDUALES DE DEVOLUCIONES DEL PADRE
-     *  (esto es lo que abre el botón "Ver devoluciones")
      * ============================================================ */
     public function devoluciones(Arriendo $arriendo)
     {
-        // Traemos items + producto para etiquetar cada registro,
-        // y devoluciones para listar los registros individuales.
         $arriendo->load([
             'cliente',
             'items.producto',
             'items.devoluciones',
         ]);
 
-        // Armamos una colección plana con metadatos (item + producto)
         $registros = $arriendo->items->flatMap(function ($it) {
             return $it->devoluciones->map(function ($d) use ($it) {
                 $d->_item_id = $it->id;
@@ -398,7 +394,7 @@ class ArriendoController extends Controller
 
     public function detalles(Arriendo $arriendo)
     {
-        // ✅ ÚNICO CAMBIO: cargar ITEMS + DEVOLUCIONES (para ver todo por herramienta)
+        // ✅ ÚNICO CAMBIO NECESARIO: cargar ITEMS + DEVOLUCIONES (para ver todo por herramienta)
         $arriendo->load([
             'cliente',
             'items.producto',

@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class DevolucionArriendo extends Model
 {
-    protected $table = 'devoluciones_arriendo'; // ✅ TU TABLA REAL
+    // ✅ Tabla real en tu BD
+    protected $table = 'devoluciones_arriendos';
 
     protected $fillable = [
         'arriendo_id',
+        'arriendo_item_id',
         'fecha_devolucion',
         'cantidad_devuelta',
         'dias_transcurridos',
@@ -34,5 +36,11 @@ class DevolucionArriendo extends Model
     public function arriendo()
     {
         return $this->belongsTo(\App\Models\Arriendo::class, 'arriendo_id');
+    }
+
+    // ✅ NUEVO: relación con el ITEM (herramienta) para ver el historial por producto
+    public function arriendoItem()
+    {
+        return $this->belongsTo(\App\Models\ArriendoItem::class, 'arriendo_item_id');
     }
 }
