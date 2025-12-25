@@ -88,6 +88,10 @@ public function incidencias()
     return $this->hasMany(\App\Models\Incidencia::class, 'arriendo_id');
 }
 
+public function items()
+{
+    return $this->hasMany(\App\Models\ArriendoItem::class, 'arriendo_id');
+}
 
 
 }

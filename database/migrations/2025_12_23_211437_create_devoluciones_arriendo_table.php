@@ -7,6 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        Schema::table('devoluciones_arriendos', function (Blueprint $table) {
+    $table->foreignId('arriendo_item_id')
+          ->after('arriendo_id')
+          ->constrained('arriendo_items')
+          ->cascadeOnDelete();
+
+    $table->decimal('saldo_devolucion', 12, 2)
+          ->default(0)
+          ->after('pago_recibido');
+});
         Schema::create('devoluciones_arriendos', function (Blueprint $table) {
             $table->id();
 

@@ -6,6 +6,7 @@ use App\Models\Arriendo;
 use App\Models\Cliente;
 use App\Models\Producto;
 use App\Models\Incidencia;
+use App\Models\DevolucionArriendo; // ✅ NUEVO
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -70,41 +71,29 @@ class ArriendoController extends Controller
 
     /* ============================================================
      * 3) GUARDAR NUEVO ARRIENDO (STORE)
-     *    - IMPORTANTE: aquí NO se calcula el total final
-     *    - El total se calcula al CERRAR (cuando devuelven)
      * ============================================================ */
     public function store(Request $request)
     {
         $data = $request->validate([
             'cliente_id'   => 'required|exists:clientes,id',
-            'producto_id'  => 'required|exists:productos,id',
-            'cantidad'     => 'required|integer|min:1',
             'fecha_inicio' => 'required|date',
             'obra_id'      => 'nullable|integer',
         ]);
 
-        Arriendo::create([
+        // ✅ Crear SOLO el PADRE (contrato). NO producto aquí.
+        $arriendo = Arriendo::create([
             'cliente_id' => $data['cliente_id'],
-            'producto_id' => $data['producto_id'],
-            'cantidad' => $data['cantidad'],
 
-            // Inicio del arriendo
             'fecha_inicio' => $data['fecha_inicio'],
-
-            // ✅ Inicio real del cobro (si lo manejas así)
             'fecha_entrega' => $data['fecha_inicio'],
-
-            // Aún no ha devuelto
             'fecha_fin' => null,
 
-            // obra
             'obra_id' => $data['obra_id'] ?? null,
 
-            // Estados
             'estado' => 'activo',
             'cerrado' => 0,
 
-            // Totales iniciales (todo en 0 hasta que se cierre)
+            // ✅ Totales del contrato (se recalculan sumando items)
             'precio_total' => 0,
             'dias_transcurridos' => 0,
             'domingos_desc' => 0,
@@ -116,10 +105,12 @@ class ArriendoController extends Controller
             'saldo' => 0,
             'dias_mora' => 0,
             'semaforo_pago' => 'VERDE',
+
+            'cantidad' => 0,
         ]);
 
-        return redirect()->route('arriendos.index')
-            ->with('success', 'Arriendo creado correctamente');
+        return redirect()->route('arriendos.ver', $arriendo)
+            ->with('success', 'Arriendo PADRE creado. Ahora agrega productos.');
     }
 
     /* ============================================================
@@ -131,6 +122,94 @@ class ArriendoController extends Controller
         $productos = Producto::orderBy('nombre')->get();
 
         return view('arriendos.edit', compact('arriendo', 'clientes', 'productos'));
+    }
+
+    // ============================================================
+    // PADRE PARA PODER VER
+    // ============================================================
+    public function ver(Arriendo $arriendo)
+    {
+        $arriendo->load([
+            'cliente',
+            'items.producto',
+        ]);
+
+        // ✅ Totales del PADRE calculados desde los items (siempre correctos)
+        $totContrato = [
+            'total_alquiler' => (float)$arriendo->items->sum('total_alquiler'),
+            'total_merma'    => (float)$arriendo->items->sum('total_merma'),
+            'total_pagado'   => (float)$arriendo->items->sum('total_pagado'),
+        ];
+
+        $totContrato['precio_total'] = $totContrato['total_alquiler'] + $totContrato['total_merma'];
+        $totContrato['saldo']        = max(0, $totContrato['precio_total'] - $totContrato['total_pagado']);
+
+        // ✅ Total histórico del cliente (sumando todos los PADRES)
+        $padresCliente = Arriendo::where('cliente_id', $arriendo->cliente_id)
+            ->with('items')
+            ->get();
+
+        $totalHistorico = [
+            'total_alquiler' => 0,
+            'total_merma'    => 0,
+            'total_pagado'   => 0,
+            'precio_total'   => 0,
+            'saldo'          => 0,
+        ];
+
+        foreach ($padresCliente as $p) {
+            $al = (float)$p->items->sum('total_alquiler');
+            $me = (float)$p->items->sum('total_merma');
+            $pa = (float)$p->items->sum('total_pagado');
+
+            $pt = $al + $me;
+            $sa = max(0, $pt - $pa);
+
+            $totalHistorico['total_alquiler'] += $al;
+            $totalHistorico['total_merma']    += $me;
+            $totalHistorico['total_pagado']   += $pa;
+            $totalHistorico['precio_total']   += $pt;
+            $totalHistorico['saldo']          += $sa;
+        }
+
+        return view('arriendos.ver', compact('arriendo', 'totContrato', 'totalHistorico'));
+    }
+
+    /* ============================================================
+     * ✅ NUEVO (NECESARIO):
+     *  VER REGISTROS INDIVIDUALES DE DEVOLUCIONES DEL PADRE
+     *  (esto es lo que abre el botón "Ver devoluciones")
+     * ============================================================ */
+    public function devoluciones(Arriendo $arriendo)
+    {
+        // Traemos items + producto para etiquetar cada registro,
+        // y devoluciones para listar los registros individuales.
+        $arriendo->load([
+            'cliente',
+            'items.producto',
+            'items.devoluciones',
+        ]);
+
+        // Armamos una colección plana con metadatos (item + producto)
+        $registros = $arriendo->items->flatMap(function ($it) {
+            return $it->devoluciones->map(function ($d) use ($it) {
+                $d->_item_id = $it->id;
+                $d->_producto = $it->producto->nombre ?? '—';
+                return $d;
+            });
+        })->sortByDesc('id')->values();
+
+        $resumen = [
+            'total_registros' => (int)$registros->count(),
+            'total_devuelto'  => (int)$registros->sum('cantidad_devuelta'),
+            'total_cobrado'   => (float)$registros->sum('total_cobrado'),
+            'total_abonado'   => (float)$registros->sum('pago_recibido'),
+            'total_saldo_dev' => (float)$registros->sum(function ($d) {
+                return (float)($d->saldo_devolucion ?? 0);
+            }),
+        ];
+
+        return view('arriendos.devoluciones', compact('arriendo', 'registros', 'resumen'));
     }
 
     /* ============================================================
@@ -176,9 +255,6 @@ class ArriendoController extends Controller
 
     /* ============================================================
      * 8) CERRAR / DEVOLVER ARRIENDO (CÁLCULO CORREGIDO)
-     *    REGLAS:
-     *    - NO se cobra el día de devolución
-     *    - Si devuelven el mismo día => se cobra 1
      * ============================================================ */
     public function cerrar(Request $request, Arriendo $arriendo)
     {
@@ -192,64 +268,46 @@ class ArriendoController extends Controller
 
         $arriendo->load('producto');
 
-        // ✅ FECHA ENTREGA: si no está, usamos fecha_inicio
         $fechaEntrega = $arriendo->fecha_entrega ?? $arriendo->fecha_inicio;
         $fechaEntrega = Carbon::parse($fechaEntrega)->toDateString();
 
-        // ✅ FECHA DEVOLUCIÓN REAL (la que digitó el usuario al cerrar)
         $fechaDevol = Carbon::parse($data['fecha_devolucion_real'])->toDateString();
 
-        // ✅ VALIDACIÓN EXTRA: devolución no puede ser antes de entrega
         if (Carbon::parse($fechaDevol)->lt(Carbon::parse($fechaEntrega))) {
             return back()
                 ->withErrors(['fecha_devolucion_real' => 'La fecha de devolución no puede ser anterior a la fecha de entrega/inicio.'])
                 ->withInput();
         }
 
-        // ============================================================
-        // ✅ DÍAS TRANSCURRIDOS (NO se cobra el día de devolución)
-        // - Se cobra desde fechaEntrega hasta (fechaDevol - 1)
-        // - Si entrega == devolución, se cobra 1
-        // ============================================================
         $start = Carbon::parse($fechaEntrega)->startOfDay();
-        $end   = Carbon::parse($fechaDevol)->startOfDay(); // fin NO incluido (no se cobra devolución)
+        $end   = Carbon::parse($fechaDevol)->startOfDay();
 
-        $diasTrans = $start->diffInDays($end); // 23/12 -> 23/01 = 31
+        $diasTrans = $start->diffInDays($end);
 
         if ($diasTrans === 0) {
-            $diasTrans = 1; // mismo día => cobra 1
+            $diasTrans = 1;
         }
 
-        // ✅ DOMINGOS AUTOMÁTICOS (sin incluir el día de devolución)
         $domingos = $this->contarDomingosExcluyendoFin($fechaEntrega, $fechaDevol);
 
-        // ✅ LLUVIA MANUAL (se descuenta)
         $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
 
-        // ✅ DÍAS COBRABLES
         $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
 
-        // ✅ TARIFA DIARIA POR PRODUCTO (según tu BD: costo)
         $tarifa = (float)($arriendo->producto->costo ?? 0);
 
-        // ✅ TOTAL ALQUILER
         $totalAlquiler = $diasCobrables * $tarifa * (int)$arriendo->cantidad;
 
-        // ✅ TOTAL MERMA
         $totalMerma = (float)($data['costo_merma'] ?? 0);
 
-        // ✅ PAGO EN EL CIERRE (opcional)
         $pago = (float)($data['pago'] ?? 0);
         $totalPagado = (float)($arriendo->total_pagado ?? 0) + $pago;
 
-        // ✅ TOTAL FINAL Y SALDO
         $totalFinal = $totalAlquiler + $totalMerma;
         $saldo = max(0, $totalFinal - $totalPagado);
 
-        // ✅ SEMÁFORO MOROSOS
         $sem = $this->calcularSemaforoMoroso($fechaDevol, $saldo);
 
-        // ✅ ACTUALIZAR ARRIENDO
         $arriendo->update([
             'fecha_fin' => $fechaDevol,
 
@@ -272,7 +330,6 @@ class ArriendoController extends Controller
             'semaforo_pago' => $sem['semaforo'],
         ]);
 
-        // ✅ INCIDENCIAS (opcional)
         $desc = $data['descripcion_incidencia'] ?? null;
 
         if ($diasLluvia > 0) {
@@ -303,11 +360,10 @@ class ArriendoController extends Controller
      * 9) FUNCIONES INTERNAS
      * ============================================================ */
 
-    // ✅ Cuenta domingos entre dos fechas EXCLUYENDO la fecha FIN (no se cobra devolución)
     private function contarDomingosExcluyendoFin(string $inicio, string $fin): int
     {
         $start = Carbon::parse($inicio)->startOfDay();
-        $end   = Carbon::parse($fin)->startOfDay(); // fin NO incluido
+        $end   = Carbon::parse($fin)->startOfDay();
 
         $count = 0;
         for ($d = $start->copy(); $d->lt($end); $d->addDay()) {
@@ -318,7 +374,6 @@ class ArriendoController extends Controller
         return $count;
     }
 
-    // ✅ Aplica tu regla: 🟡 0–9 | 🔴 10+ (solo si saldo>0 y ya devolvió)
     private function calcularSemaforoMoroso(?string $fechaDevolucionReal, float $saldo): array
     {
         if ($saldo <= 0) {
@@ -340,17 +395,17 @@ class ArriendoController extends Controller
 
         return ['semaforo' => 'ROJO', 'dias_mora' => $dias_mora];
     }
+
     public function detalles(Arriendo $arriendo)
-{
-    $arriendo->load([
-        'cliente',
-        'producto',
-        'incidencias',   // asegúrate de tener esta relación en Arriendo.php
-        'devoluciones'   // relación hacia devoluciones_arriendo
-    ]);
+    {
+        // ✅ ÚNICO CAMBIO: cargar ITEMS + DEVOLUCIONES (para ver todo por herramienta)
+        $arriendo->load([
+            'cliente',
+            'items.producto',
+            'items.devoluciones',
+            'incidencias',
+        ]);
 
-    return view('arriendos.detalles', compact('arriendo'));
-}
-
-
+        return view('arriendos.detalles', compact('arriendo'));
+    }
 }
