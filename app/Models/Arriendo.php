@@ -100,11 +100,7 @@ class Arriendo extends Model
         return $this->hasMany(\App\Models\ArriendoItem::class, 'arriendo_id');
     }
 
-        // Arriendo.php
-    public function obra()
-    {
-        return $this->belongsTo(Obra::class);
-    }
+       
 
 
 
