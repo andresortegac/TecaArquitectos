@@ -26,7 +26,8 @@
 <div style="background:#fff; padding:14px; border-radius:10px; margin-bottom:12px;">
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
     <div><strong>Cliente:</strong> {{ $arriendo->cliente->nombre ?? '—' }}</div>
-    <div><strong>Obra:</strong> {{ $arriendo->obra_id ?? '—' }}</div>
+    <div><strong>Obra: </strong>{{ $arriendo->obra? $arriendo->obra->direccion . ' - ' . $arriendo->obra->detalle
+    : '—'}}</div>
     <div><strong>Inicio contrato:</strong> {{ $arriendo->fecha_inicio?->format('d/m/Y H:i') ?? '—' }}</div>
     <div><strong>Estado:</strong> {{ ucfirst($arriendo->estado) }}</div>
   </div>

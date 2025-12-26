@@ -116,12 +116,14 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::get('/arriendos/{arriendo}/detalles', [ArriendoController::class, 'detalles'])
         ->name('arriendos.detalles');
 
-    //alerta-stock_actual-metricas----
+    // routes/web.php
+    Route::get('clientes/{cliente}/obras', function ($clienteId) {
+        return \App\Models\Obra::where('cliente_id', $clienteId)->get();
+    });
+
 });
 
-//DETALLES ARRIENDO (la dejas igual si quieres, pero OJO: duplicada)
-// Route::get('/arriendos/{arriendo}/detalles', [App\Http\Controllers\ArriendoController::class, 'detalles'])
-//     ->name('arriendos.detalles');
+
 
 
 //ARRIENDO-DEVOLUCION
