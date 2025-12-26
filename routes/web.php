@@ -40,6 +40,13 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
 
     Route::get('/solicitudes', [SolicitudController::class, 'solicitudes'])
         ->name('solicitudes.solicitudes');
+
+    Route::get('/solicitudes/{arriendo}', [SolicitudController::class, 'show'])
+    ->name('solicitudes.show');
+
+    Route::post('/solicitudes/{arriendo}/confirmar', [SolicitudController::class, 'confirmar'])
+        ->name('solicitudes.confirmar');
+
 });
 
 //---------------------------------------------------

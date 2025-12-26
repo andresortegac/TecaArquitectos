@@ -62,6 +62,13 @@ class Arriendo extends Model
         return $this->belongsTo(Producto::class);
     }
 
+    public function obra()
+    {
+        return $this->belongsTo(Obra::class, 'obra_id');
+    }
+
+
+
     /* =======================
        SCOPES ÚTILES PARA MÉTRICAS
     ======================= */
