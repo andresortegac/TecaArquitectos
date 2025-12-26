@@ -43,9 +43,11 @@
 
     <div style="margin-bottom:10px;">
         <label style="display:block; font-size:13px;">Obra (opcional)</label>
-        <input class="input" type="number" name="obra_id" style="width:100%;"
-               value="{{ old('obra_id') }}">
+        <select name="obra_id" id="obra_id" class="input" style="width:100%;">
+            <option value="">Seleccione cliente primero...</option>
+        </select>
     </div>
+
 
     <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
         <button type="submit" class="btn-sm warning">Siguiente</button>
@@ -55,5 +57,27 @@
 <div style="font-size:12px; color:#666; margin-top:10px;">
     Nota: En este paso solo creas el arriendo PADRE (contrato). Luego podrás agregar productos dentro del arriendo.
 </div>
+<script>
+document.querySelector('select[name="cliente_id"]').addEventListener('change', function () {
+    const clienteId = this.value;
+    const obraSelect = document.getElementById('obra_id');
+
+    obraSelect.innerHTML = '<option value="">Cargando...</option>';
+
+    if (!clienteId) {
+        obraSelect.innerHTML = '<option value="">Seleccione cliente primero...</option>';
+        return;
+    }
+
+    fetch(`/clientes/${clienteId}/obras`)
+        .then(res => res.json())
+        .then(data => {
+            obraSelect.innerHTML = '<option value="">Seleccione...</option>';
+            data.forEach(o => {
+                obraSelect.innerHTML += `<option value="${o.id}">${o.direccion}</option>`;
+            });
+        });
+});
+</script>
 
 @endsection

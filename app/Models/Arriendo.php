@@ -62,6 +62,13 @@ class Arriendo extends Model
         return $this->belongsTo(Producto::class);
     }
 
+    public function obra()
+    {
+        return $this->belongsTo(Obra::class, 'obra_id');
+    }
+
+
+
     /* =======================
        SCOPES ÚTILES PARA MÉTRICAS
     ======================= */
@@ -78,20 +85,23 @@ class Arriendo extends Model
         return $query->where('saldo', '>', 0);
     }
 
-   public function devoluciones()
-{
-    return $this->hasMany(\App\Models\DevolucionArriendo::class, 'arriendo_id');
-}
+    public function devoluciones()
+    {
+        return $this->hasMany(\App\Models\DevolucionArriendo::class, 'arriendo_id');
+    }
 
-public function incidencias()
-{
-    return $this->hasMany(\App\Models\Incidencia::class, 'arriendo_id');
-}
+    public function incidencias()
+    {
+        return $this->hasMany(\App\Models\Incidencia::class, 'arriendo_id');
+    }
 
-public function items()
-{
-    return $this->hasMany(\App\Models\ArriendoItem::class, 'arriendo_id');
-}
+    public function items()
+    {
+        return $this->hasMany(\App\Models\ArriendoItem::class, 'arriendo_id');
+    }
+
+       
+
 
 
 }

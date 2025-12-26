@@ -12,12 +12,20 @@ class Solicitud extends Model
     protected $table = 'solicitudes';
 
     protected $fillable = [
-        'nombre_cliente',
-        'telefono_cliente',
-        'fecha_solicitud',
+        'solicitud_id',
+        'cliente_id',
+        'obra_id',
+        'producto_id',
+        'cantidad_solicitada',
+        'cantidad_aprobada',
         'estado',
+        'fecha_aprobado',
     ];
 
+    public function arriendo()
+    {
+        return $this->belongsTo(Arriendo::class, 'solicitud_id');
+    }
     /**
      * Relación con productos (muchos a muchos)
      */
