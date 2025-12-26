@@ -6,6 +6,7 @@ use App\Models\Arriendo;
 use App\Models\ArriendoItem;
 use App\Models\Producto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ArriendoItemController extends Controller
 {
@@ -37,31 +38,62 @@ class ArriendoItemController extends Controller
         ]);
 
         $inicioItem = $data['fecha_inicio_item'] ?? $arriendo->fecha_inicio;
+        $cantidadSolicitada = (int)$data['cantidad'];
 
-        $producto = Producto::findOrFail($data['producto_id']);
-        $tarifa = (float)($producto->costo ?? 0);
+        try {
+            DB::transaction(function () use ($data, $arriendo, $inicioItem, $cantidadSolicitada) {
 
-        ArriendoItem::create([
-            'arriendo_id' => $arriendo->id,
-            'producto_id' => $data['producto_id'],
+                // 🔒 Bloqueo para evitar carreras (dos usuarios alquilando a la vez)
+                $producto = Producto::where('id', $data['producto_id'])
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            'tarifa_diaria' => $tarifa,
+                $stockDisponible = (int)($producto->cantidad ?? 0);
 
-            'cantidad_inicial' => $data['cantidad'],
-            'cantidad_actual' => $data['cantidad'],
+                // ✅ VALIDACIÓN DE STOCK (la que pediste)
+                if ($cantidadSolicitada > $stockDisponible) {
+                    // Lanzamos excepción para hacer rollback y mostrar error
+                    throw new \Exception("No hay suficiente stock de {$producto->nombre}. Disponible: {$stockDisponible}. Solicitado: {$cantidadSolicitada}.");
+                }
 
-            'fecha_inicio_item' => $inicioItem,
-            'fecha_fin_item' => null,
+                $tarifa = (float)($producto->costo ?? 0);
 
-            'cerrado' => 0,
-            'estado' => 'activo',
+                // ✅ Crear item del arriendo
+                ArriendoItem::create([
+                    'arriendo_id' => $arriendo->id,
+                    'producto_id' => $data['producto_id'],
 
-            'precio_total' => 0,
-            'total_alquiler' => 0,
-            'total_merma' => 0,
-            'total_pagado' => 0,
-            'saldo' => 0,
-        ]);
+                    'tarifa_diaria' => $tarifa,
+
+                    'cantidad_inicial' => $cantidadSolicitada,
+                    'cantidad_actual' => $cantidadSolicitada,
+
+                    'fecha_inicio_item' => $inicioItem,
+                    'fecha_fin_item' => null,
+
+                    'cerrado' => 0,
+                    'estado' => 'activo',
+
+                    'precio_total' => 0,
+                    'total_alquiler' => 0,
+                    'total_merma' => 0,
+                    'total_pagado' => 0,
+                    'saldo' => 0,
+                ]);
+
+                // ✅ Descontar stock (RECOMENDADO)
+                $producto->update([
+                    'cantidad' => $stockDisponible - $cantidadSolicitada
+                ]);
+            });
+
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'cantidad' => $e->getMessage()
+                ]);
+        }
 
         return redirect()->route('arriendos.ver', $arriendo)
             ->with('success', 'Producto agregado al arriendo padre.');
@@ -74,7 +106,7 @@ class ArriendoItemController extends Controller
      */
     public function destroy(ArriendoItem $item)
     {
-        $item->load(['arriendo', 'devoluciones']);
+        $item->load(['arriendo', 'devoluciones', 'producto']);
 
         // si el padre ya está cerrado, no dejar borrar
         if ((int)($item->arriendo->cerrado ?? 0) === 1 || $item->arriendo->estado !== 'activo') {
@@ -90,7 +122,23 @@ class ArriendoItemController extends Controller
 
         $arriendo = $item->arriendo;
 
-        $item->delete();
+        // ✅ (OPCIONAL pero recomendado) devolver stock al borrar el item
+        // Como no tiene devoluciones, devolvemos la cantidad inicial al stock.
+        try {
+            DB::transaction(function () use ($item) {
+                $producto = Producto::where('id', $item->producto_id)->lockForUpdate()->first();
+                if ($producto) {
+                    $producto->update([
+                        'cantidad' => (int)($producto->cantidad ?? 0) + (int)($item->cantidad_inicial ?? 0)
+                    ]);
+                }
+
+                $item->delete();
+            });
+        } catch (\Exception $e) {
+            return redirect()->route('arriendos.ver', $arriendo)
+                ->with('success', 'No se pudo eliminar el item. Intenta nuevamente.');
+        }
 
         // ✅ recalcular totales del padre
         $this->recalcularTotalesPadre($arriendo);

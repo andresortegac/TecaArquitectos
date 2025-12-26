@@ -38,14 +38,18 @@
 
   <div style="margin-bottom:10px;">
     <label style="display:block; font-size:13px;">Producto</label>
+
     <select class="input" name="producto_id" id="producto_id" required style="width:100%;">
       <option value="">Seleccione...</option>
+
       @foreach($productos as $p)
-        {{-- ✅ guardamos la tarifa en data-cost --}}
         <option value="{{ $p->id }}"
                 data-cost="{{ (float)($p->costo ?? 0) }}"
+                data-stock="{{ (int)($p->cantidad ?? 0) }}"
                 {{ old('producto_id') == $p->id ? 'selected' : '' }}>
-          {{ $p->nombre }} (Tarifa: ${{ number_format((float)($p->costo ?? 0), 2) }})
+          {{ $p->nombre }}
+          (Stock: {{ (int)($p->cantidad ?? 0) }})
+          (Tarifa: ${{ number_format((float)($p->costo ?? 0), 2) }})
         </option>
       @endforeach
     </select>
@@ -56,9 +60,10 @@
     <input class="input" type="number" name="cantidad" id="cantidad"
            min="1" required style="width:100%;"
            value="{{ old('cantidad', 1) }}">
+    {{-- ✅ mensaje de error stock --}}
+    <div id="stockError" style="display:none; margin-top:6px; color:#b00020; font-size:13px;"></div>
   </div>
 
-  {{-- ✅ AQUÍ VA LO QUE TÚ QUIERES (debajo de cantidad) --}}
   <div style="margin-bottom:10px; font-size:13px;">
     <div style="display:flex; justify-content:space-between; gap:10px;">
       <div>
@@ -85,7 +90,7 @@
   </div>
 
   <div style="display:flex; justify-content:flex-end;">
-    <button type="submit" class="btn-sm warning">Guardar producto</button>
+    <button type="submit" id="btnGuardar" class="btn-sm warning">Guardar producto</button>
   </div>
 </form>
 
@@ -95,25 +100,68 @@
   const qty = document.getElementById('cantidad');
   const tarifaText = document.getElementById('tarifaText');
   const totalDiaText = document.getElementById('totalDiaText');
+  const stockError = document.getElementById('stockError');
+  const btnGuardar = document.getElementById('btnGuardar');
+  const form = sel.closest('form');
 
   function money(n){
     n = Number(n || 0);
     return '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
   }
 
-  function calc(){
+  function getSelectedData(){
     const opt = sel.options[sel.selectedIndex];
-    const tarifa = opt ? Number(opt.getAttribute('data-cost') || 0) : 0;
+    const tarifa = opt ? Number(opt.dataset.cost || opt.getAttribute('data-cost') || 0) : 0;
+    const stock  = opt ? parseInt(opt.dataset.stock || opt.getAttribute('data-stock') || '0', 10) : 0;
+    return { tarifa, stock };
+  }
+
+  function validarStock(){
+    if (!sel.value) {
+      stockError.style.display = 'none';
+      stockError.textContent = '';
+      btnGuardar.disabled = false;
+      qty.removeAttribute('max');
+      return true;
+    }
+
+    const { stock } = getSelectedData();
+    const cantidad = parseInt(qty.value || '0', 10);
+
+    // ✅ ajusta max del input para ayudar al usuario
+    if (!Number.isNaN(stock) && stock >= 0) qty.max = stock;
+
+    if (cantidad > stock) {
+      stockError.style.display = 'block';
+      stockError.textContent = `No hay suficiente stock. Disponible: ${stock}. Estás intentando alquilar: ${cantidad}.`;
+      btnGuardar.disabled = true;
+      return false;
+    }
+
+    stockError.style.display = 'none';
+    stockError.textContent = '';
+    btnGuardar.disabled = false;
+    return true;
+  }
+
+  function calc(){
+    const { tarifa } = getSelectedData();
     const cantidad = Number(qty.value || 0);
 
     tarifaText.textContent = money(tarifa);
     totalDiaText.textContent = money(tarifa * cantidad);
+
+    validarStock();
   }
 
   sel.addEventListener('change', calc);
   qty.addEventListener('input', calc);
 
-  // ✅ cálculo inicial (por si viene old())
+  form.addEventListener('submit', function(e){
+    if (!validarStock()) e.preventDefault();
+  });
+
+  // ✅ inicial
   calc();
 })();
 </script>
