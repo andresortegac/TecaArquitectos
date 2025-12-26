@@ -35,7 +35,7 @@
                     </td>
 
                     <td>
-                        <a class="btn btn-warning" href="{{ route('arriendos.show', $s->id) }}">
+                        <a class="btn btn-warning" href="{{ route('solicitudes.show', $s->id) }}">
                             Revisar
                         </a>
                     </td>
