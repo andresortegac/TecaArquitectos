@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('obras', function (Blueprint $table) {
         $table->id();
         $table->string('direccion');
-        $table->text('detalle');
+        $table->text('detalle')->nullable();
 
         $table->foreignId('cliente_id')
             ->constrained('clientes')
