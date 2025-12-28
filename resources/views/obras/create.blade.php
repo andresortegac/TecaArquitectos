@@ -1,4 +1,9 @@
 @extends('layouts.app')
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/form-crear-obra.css') }}">
+@endpush
+
 @section('title','Nueva obra')
 @section('header','Nueva obra')
 
