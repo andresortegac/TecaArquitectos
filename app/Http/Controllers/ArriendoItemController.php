@@ -37,6 +37,7 @@ class ArriendoItemController extends Controller
             'fecha_inicio_item' => 'nullable|date',
         ]);
 
+        // ✅ si no envían fecha_inicio_item, usa la del padre
         $inicioItem = $data['fecha_inicio_item'] ?? $arriendo->fecha_inicio;
         $cantidadSolicitada = (int)$data['cantidad'];
 
@@ -50,9 +51,8 @@ class ArriendoItemController extends Controller
 
                 $stockDisponible = (int)($producto->cantidad ?? 0);
 
-                // ✅ VALIDACIÓN DE STOCK (la que pediste)
+                // ✅ VALIDACIÓN DE STOCK
                 if ($cantidadSolicitada > $stockDisponible) {
-                    // Lanzamos excepción para hacer rollback y mostrar error
                     throw new \Exception("No hay suficiente stock de {$producto->nombre}. Disponible: {$stockDisponible}. Solicitado: {$cantidadSolicitada}.");
                 }
 
@@ -81,7 +81,7 @@ class ArriendoItemController extends Controller
                     'saldo' => 0,
                 ]);
 
-                // ✅ Descontar stock (RECOMENDADO)
+                // ✅ Descontar stock
                 $producto->update([
                     'cantidad' => $stockDisponible - $cantidadSolicitada
                 ]);
@@ -94,6 +94,9 @@ class ArriendoItemController extends Controller
                     'cantidad' => $e->getMessage()
                 ]);
         }
+
+        // ✅ IMPORTANTE: recalcular totales del PADRE después de agregar el item
+        $this->recalcularTotalesPadre($arriendo->fresh());
 
         return redirect()->route('arriendos.ver', $arriendo)
             ->with('success', 'Producto agregado al arriendo padre.');
@@ -122,8 +125,7 @@ class ArriendoItemController extends Controller
 
         $arriendo = $item->arriendo;
 
-        // ✅ (OPCIONAL pero recomendado) devolver stock al borrar el item
-        // Como no tiene devoluciones, devolvemos la cantidad inicial al stock.
+        // ✅ devolver stock al borrar el item (como no tiene devoluciones)
         try {
             DB::transaction(function () use ($item) {
                 $producto = Producto::where('id', $item->producto_id)->lockForUpdate()->first();
@@ -141,7 +143,7 @@ class ArriendoItemController extends Controller
         }
 
         // ✅ recalcular totales del padre
-        $this->recalcularTotalesPadre($arriendo);
+        $this->recalcularTotalesPadre($arriendo->fresh());
 
         return redirect()->route('arriendos.ver', $arriendo)
             ->with('success', 'Item eliminado correctamente.');

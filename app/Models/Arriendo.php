@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Cliente;
 use App\Models\Producto;
-
+use App\Models\Obra; // ✅ IMPORTANTE (evita error si Obra no estaba importado)
 
 class Arriendo extends Model
 {
     use HasFactory;
-
 
     protected $fillable = [
         'cliente_id',
@@ -67,7 +66,20 @@ class Arriendo extends Model
         return $this->belongsTo(Obra::class, 'obra_id');
     }
 
+    public function devoluciones()
+    {
+        return $this->hasMany(\App\Models\DevolucionArriendo::class, 'arriendo_id');
+    }
 
+    public function incidencias()
+    {
+        return $this->hasMany(\App\Models\Incidencia::class, 'arriendo_id');
+    }
+
+    public function items()
+    {
+        return $this->hasMany(\App\Models\ArriendoItem::class, 'arriendo_id');
+    }
 
     /* =======================
        SCOPES ÚTILES PARA MÉTRICAS
@@ -84,24 +96,4 @@ class Arriendo extends Model
     {
         return $query->where('saldo', '>', 0);
     }
-
-    public function devoluciones()
-    {
-        return $this->hasMany(\App\Models\DevolucionArriendo::class, 'arriendo_id');
-    }
-
-    public function incidencias()
-    {
-        return $this->hasMany(\App\Models\Incidencia::class, 'arriendo_id');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(\App\Models\ArriendoItem::class, 'arriendo_id');
-    }
-
-       
-
-
-
 }

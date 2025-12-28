@@ -26,6 +26,7 @@
   $amarillo = $col->where('semaforo_pago','AMARILLO')->count();
   $verde = $total - $rojo - $amarillo;
 
+  // Se dejan intactos por si los sigues usando en otro lado
   $saldoTotal = $col->sum(fn($x)=>(float)($x->saldo ?? 0));
   $moraTotal = $col->sum(fn($x)=>(int)($x->dias_mora ?? 0));
 
@@ -33,6 +34,10 @@
   $pctActivos = $total ? round(($activos / $total) * 100) : 0;
   $pctDev = $total ? round(($devueltos / $total) * 100) : 0;
   $pctMora = $total ? round((($rojo + $amarillo) / $total) * 100) : 0;
+
+  // Decoración rings para KPIs nuevos
+  $pctRecaudoMes = ((float)($recaudadoMes ?? 0)) > 0 ? 67 : 0;
+  $pctRecaudoHoy = ((float)($recaudadoHoy ?? 0)) > 0 ? 85 : 15;
 @endphp
 
 <div class="alquiler-conte">
@@ -75,23 +80,70 @@
       <div class="ring" style="--p: {{ $pctDev }}%; --ring: rgba(100,116,139,.8);" data-t="{{ $pctDev }}%"></div>
     </div>
 
-    <div class="card kpi">
+    {{-- ✅ antes "En Mora" → ahora RECAUDO DEL MES --}}
+    <div class="card kpi" id="kpiRecaudoMes">
       <div class="meta">
-        <div class="label">En Mora</div>
-        <div class="value">{{ $rojo + $amarillo }}</div>
-        <div class="hint">{{ $moraTotal }} días mora</div>
+        <div class="label">Recaudo del mes</div>
+        <div class="value">${{ number_format((float)($recaudadoMes ?? 0), 0) }}</div>
+        <div class="hint">{{ now()->format('m/Y') }} (confirmado)</div>
+
+        {{-- ✅ NUEVO: link a detalle mensual (si la ruta existe, se muestra; si no existe, no rompe nada) --}}
+        @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual') || \Illuminate\Support\Facades\Route::has('metricas.reporte.mensual'))
+          <div style="margin-top:8px;">
+            @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.mensual'))
+              <a class="btn-sm" href="{{ route('metricas.reporte.mensual', ['year' => request('year', now()->year), 'month' => request('month', now()->month)]) }}">
+                Ver detalle del mes
+              </a>
+            @elseif(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual'))
+              <a class="btn-sm" href="{{ route('metricas.reporte.anual', ['year' => request('year', now()->year)]) }}">
+                Ver detalle anual
+              </a>
+            @endif
+          </div>
+        @endif
       </div>
-      <div class="ring" style="--p: {{ $pctMora }}%; --ring: var(--warning);" data-t="{{ $pctMora }}%"></div>
+      <div class="ring" style="--p: {{ $pctRecaudoMes }}%; --ring: var(--primary);" data-t="%"></div>
     </div>
 
-    <div class="card kpi">
+    {{-- ✅ antes "Saldo" → ahora RECAUDADO HOY (tiempo real) --}}
+    <div class="card kpi" id="kpiRecaudoHoy">
       <div class="meta">
-        <div class="label">Saldo</div>
-        <div class="value">${{ number_format($saldoTotal, 0) }}</div>
-        <div class="hint">Pendiente</div>
+        <div class="label">Recaudado hoy</div>
+        <div class="value" id="recaudoHoyValue">${{ number_format((float)($recaudadoHoy ?? 0), 0) }}</div>
+        <div class="hint">{{ now()->format('d/m/Y') }} (confirmado)</div>
+
+        {{-- ✅ NUEVO: link a detalle del día (si existe). No rompe si no existe. --}}
+        @if(\Illuminate\Support\Facades\Route::has('metricas.detalle.dia'))
+          <div style="margin-top:8px;">
+            <a class="btn-sm" href="{{ route('metricas.detalle.dia', ['date' => now()->toDateString()]) }}">
+              Ver detalle de hoy
+            </a>
+          </div>
+        @endif
       </div>
-      <div class="ring" style="--p: {{ $saldoTotal > 0 ? 85 : 15 }}%; --ring: var(--danger);" data-t="$"></div>
+      <div class="ring" style="--p: {{ $pctRecaudoHoy }}%; --ring: var(--success);" data-t="$"></div>
     </div>
+  </div>
+
+  {{-- ✅ NUEVO: mini barra de navegación de reportes (no afecta nada si no existen rutas) --}}
+  <div style="margin:10px 0 0; display:flex; gap:8px; flex-wrap:wrap;">
+    @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual'))
+      <a class="btn-sm" href="{{ route('metricas.reporte.anual', ['year' => request('year', now()->year)]) }}">
+        Reporte anual
+      </a>
+    @endif
+
+    @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.mensual'))
+      <a class="btn-sm" href="{{ route('metricas.reporte.mensual', ['year' => request('year', now()->year), 'month' => request('month', now()->month)]) }}">
+        Reporte mensual
+      </a>
+    @endif
+
+    @if(\Illuminate\Support\Facades\Route::has('metricas.detalle.dia'))
+      <a class="btn-sm" href="{{ route('metricas.detalle.dia', ['date' => now()->toDateString()]) }}">
+        Detalle día (hoy)
+      </a>
+    @endif
   </div>
 
   {{-- FILTROS --}}
@@ -384,6 +436,35 @@
     document.addEventListener('keydown', function(e){
       if(e.key === 'Escape') closeAll();
     });
+  })();
+  </script>
+
+  {{-- ✅ JS NUEVO: Recaudado hoy en tiempo real --}}
+  <script>
+  (function () {
+    const el = document.getElementById('recaudoHoyValue');
+    if (!el) return;
+
+    async function refresh() {
+      try {
+        // ✅ si la ruta no existe, no rompe: se queda con el valor del backend
+        const url = "{{ \Illuminate\Support\Facades\Route::has('api.recaudado_hoy') ? route('api.recaudado_hoy') : '' }}";
+        if (!url) return;
+
+        const res = await fetch(url, {
+          headers: { "X-Requested-With": "XMLHttpRequest" }
+        });
+        const data = await res.json();
+
+        const valor = Number(data.total || 0);
+        el.textContent = '$' + valor.toLocaleString('es-CO');
+      } catch (e) {
+        // no rompe nada si falla
+        console.error('No se pudo actualizar recaudado hoy', e);
+      }
+    }
+
+    setInterval(refresh, 10000);
   })();
   </script>
 

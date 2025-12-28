@@ -94,6 +94,22 @@
                 <button type="button" class="btn-sm" id="btn_pagar_completo">Pagar completo</button>
             </div>
         </div>
+
+        {{-- ✅ NUEVO: MÉTODO DE PAGO --}}
+        <div style="flex:1; min-width:220px;">
+            <label style="display:block; font-size:13px;">Método de pago</label>
+            <select class="input" name="payment_method" style="width:100%;">
+                @php $pm = old('payment_method','efectivo'); @endphp
+                <option value="efectivo" {{ $pm==='efectivo' ? 'selected' : '' }}>Efectivo</option>
+                <option value="nequi" {{ $pm==='nequi' ? 'selected' : '' }}>Nequi</option>
+                <option value="daviplata" {{ $pm==='daviplata' ? 'selected' : '' }}>Daviplata</option>
+                <option value="transferencia" {{ $pm==='transferencia' ? 'selected' : '' }}>Transferencia</option>
+            </select>
+            <small style="color:#666;">Si no eliges, queda Efectivo.</small>
+        </div>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
         <div style="flex:1; min-width:220px;">
             <label style="display:block; font-size:13px;">Descripción incidencia (opcional)</label>
             <input class="input" type="text" name="descripcion_incidencia"
@@ -155,8 +171,6 @@
   const tarifa = JSON.parse('{!! json_encode($tarifaVista) !!}');
   const fechaInicio = JSON.parse('{!! json_encode($fechaInicioUI) !!}');
 
-
-
   const $cant = document.querySelector('[name="cantidad_devuelta"]');
   const $fec  = document.querySelector('[name="fecha_devolucion"]');
   const $llu  = document.querySelector('[name="dias_lluvia"]');
@@ -216,7 +230,6 @@
     uiAbo.textContent  = money(abono);
     uiSal.textContent  = money(saldo);
 
-    // guardamos total actual para botón "pagar completo"
     uiTot.dataset.total = money(total);
   }
 

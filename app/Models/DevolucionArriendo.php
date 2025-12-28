@@ -9,6 +9,10 @@ class DevolucionArriendo extends Model
     // ✅ Tabla real en tu BD
     protected $table = 'devoluciones_arriendos';
 
+    // ✅ (Recomendado) Laravel detecta created_at/updated_at por defecto.
+    // Si tu tabla los tiene (tú dijiste que sí), déjalo así.
+    public $timestamps = true;
+
     protected $fillable = [
         'arriendo_id',
         'arriendo_item_id',
@@ -31,6 +35,19 @@ class DevolucionArriendo extends Model
 
     protected $casts = [
         'fecha_devolucion' => 'date',
+        'cantidad_devuelta' => 'integer',
+        'dias_transcurridos' => 'integer',
+        'domingos_desc' => 'integer',
+        'dias_lluvia_desc' => 'integer',
+        'dias_cobrables' => 'integer',
+
+        'tarifa_diaria' => 'float',
+        'total_alquiler' => 'float',
+        'total_merma' => 'float',
+        'total_cobrado' => 'float',
+        'pago_recibido' => 'float',
+        'saldo_resultante' => 'float',
+        'cantidad_restante' => 'integer',
     ];
 
     public function arriendo()
@@ -38,9 +55,17 @@ class DevolucionArriendo extends Model
         return $this->belongsTo(\App\Models\Arriendo::class, 'arriendo_id');
     }
 
-    // ✅ NUEVO: relación con el ITEM (herramienta) para ver el historial por producto
+    // ✅ Relación con ITEM (puede ser null en devoluciones del PADRE)
     public function arriendoItem()
     {
         return $this->belongsTo(\App\Models\ArriendoItem::class, 'arriendo_item_id');
+    }
+
+    // ✅ (Opcional útil) ordenar por defecto por el más reciente
+    protected static function booted()
+    {
+        static::addGlobalScope('latest', function ($query) {
+            $query->orderByDesc('id');
+        });
     }
 }

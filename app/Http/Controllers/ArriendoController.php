@@ -7,6 +7,7 @@ use App\Models\Cliente;
 use App\Models\Producto;
 use App\Models\Incidencia;
 use App\Models\DevolucionArriendo; // ✅ NUEVO
+use App\Models\Payment; // ✅ NUEVO (para recaudado hoy/mes)
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -51,11 +52,31 @@ class ArriendoController extends Controller
             $a->semaforo_pago = $sem['semaforo'];
         }
 
+        // ✅ NUEVO: KPIs de caja (recaudo real) desde tabla payments
+        $hoy = Carbon::today()->toDateString();
+
+        $recaudadoHoy = Payment::where('business_date', $hoy)
+            ->where('status', 'confirmed')
+            ->sum('total_amount');
+
+        $monthStart = Carbon::today()->startOfMonth()->toDateString();
+        $monthEnd   = Carbon::today()->endOfMonth()->toDateString();
+
+        $recaudadoMes = Payment::whereBetween('business_date', [$monthStart, $monthEnd])
+            ->where('status', 'confirmed')
+            ->sum('total_amount');
+
         // Para combos de filtros en la vista
         $clientes = Cliente::orderBy('nombre')->get();
         $productos = Producto::orderBy('nombre')->get();
 
-        return view('arriendos.index', compact('arriendos', 'clientes', 'productos'));
+        return view('arriendos.index', compact(
+            'arriendos',
+            'clientes',
+            'productos',
+            'recaudadoHoy',
+            'recaudadoMes'
+        ));
     }
 
     /* ============================================================

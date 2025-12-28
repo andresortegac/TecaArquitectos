@@ -8,9 +8,19 @@ use App\Models\DevolucionArriendo;
 use App\Models\Incidencia;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Services\PaymentService;
 
 class ItemDevolucionController extends Controller
 {
+    protected PaymentService $payments;
+
+    public function __construct(PaymentService $payments)
+    {
+        $this->payments = $payments;
+    }
+
     public function create(ArriendoItem $item)
     {
         $item->load(['arriendo.cliente', 'producto', 'devoluciones']);
@@ -35,9 +45,12 @@ class ItemDevolucionController extends Controller
             'descripcion_incidencia'  => 'nullable|string|max:255',
             'pago'                    => 'nullable|numeric|min:0',
             'nota'                    => 'nullable|string|max:1000',
+
+            // método de pago (tu lista)
+            'payment_method'          => 'nullable|in:efectivo,nequi,daviplata,transferencia',
         ]);
 
-        $item->load(['producto', 'arriendo.cliente', 'devoluciones']);
+        $item->load(['producto', 'arriendo.cliente', 'devoluciones', 'arriendo.items']);
 
         if ((int)($item->cerrado ?? 0) === 1 || ($item->estado ?? '') !== 'activo') {
             return redirect()->route('items.devolucion.create', $item)
@@ -52,11 +65,11 @@ class ItemDevolucionController extends Controller
                 ->withInput();
         }
 
-        // ✅ Fecha inicio del item (si no, usamos fecha_inicio del padre)
+        // Fecha inicio item (o fecha inicio padre)
         $fechaInicioItem = $item->fecha_inicio_item ?? $item->arriendo->fecha_inicio;
         $fechaInicioItem = Carbon::parse($fechaInicioItem)->toDateString();
 
-        // ✅ Fecha devolución
+        // Fecha devolución
         $fechaDevol = Carbon::parse($data['fecha_devolucion'])->toDateString();
 
         if (Carbon::parse($fechaDevol)->lt(Carbon::parse($fechaInicioItem))) {
@@ -65,122 +78,154 @@ class ItemDevolucionController extends Controller
                 ->withInput();
         }
 
-        // ✅ días transcurridos sin cobrar el día de devolución
-        $start = Carbon::parse($fechaInicioItem)->startOfDay();
-        $end   = Carbon::parse($fechaDevol)->startOfDay(); // fin no incluido
-
-        $diasTrans = $start->diffInDays($end);
-        if ($diasTrans === 0) $diasTrans = 1;
-
-        // ✅ domingos (sin incluir fin)
-        $domingos = $this->contarDomingosExcluyendoFin($fechaInicioItem, $fechaDevol);
-
-        $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
-        $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
-
-        // ✅ usa tarifa guardada en el item (si existe), si no existe, usa costo del producto
-        $tarifa = (float)($item->tarifa_diaria ?? ($item->producto->costo ?? 0));
-
-        // ✅ cobro solo por lo devuelto
-        $totalAlquilerParcial = $diasCobrables * $tarifa * $cantidadDevuelta;
-        $totalMermaParcial    = (float)($data['costo_merma'] ?? 0);
-        $totalCobradoParcial  = $totalAlquilerParcial + $totalMermaParcial;
-
         $pago = (float)($data['pago'] ?? 0);
-
-        // ✅ NUEVO: saldo SOLO de ESTA devolución (registro individual)
-        $saldoDevolucion = max(0, $totalCobradoParcial - $pago);
-
-        // ✅ acumulados del ITEM
-        $nuevoTotalAlquiler = (float)($item->total_alquiler ?? 0) + $totalAlquilerParcial;
-        $nuevoTotalMerma    = (float)($item->total_merma ?? 0) + $totalMermaParcial;
-        $nuevoTotalPagado   = (float)($item->total_pagado ?? 0) + $pago;
-
-        $nuevoPrecioTotal = $nuevoTotalAlquiler + $nuevoTotalMerma;
-        $nuevoSaldo       = max(0, $nuevoPrecioTotal - $nuevoTotalPagado);
-
-        $cantidadRestante = (int)$item->cantidad_actual - $cantidadDevuelta;
-
-        // incidencias (opcional)
+        $method = $data['payment_method'] ?? 'efectivo';
+        $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
         $desc = $data['descripcion_incidencia'] ?? null;
+        $nota = $data['nota'] ?? null;
+        $costoMerma = (float)($data['costo_merma'] ?? 0);
 
-        if ($diasLluvia > 0) {
-            Incidencia::create([
-                'arriendo_id' => $item->arriendo_id,
-                'tipo' => 'LLUVIA',
-                'dias' => $diasLluvia,
-                'costo' => 0,
-                'descripcion' => ($desc ? $desc . ' ' : '') . "(Devolución item #{$item->id})",
+        try {
+            DB::transaction(function () use (
+                $item,
+                $cantidadDevuelta,
+                $fechaInicioItem,
+                $fechaDevol,
+                $diasLluvia,
+                $costoMerma,
+                $desc,
+                $nota,
+                $pago,
+                $method
+            ) {
+                // ========= DÍAS =========
+                $start = Carbon::parse($fechaInicioItem)->startOfDay();
+                $end   = Carbon::parse($fechaDevol)->startOfDay(); // fin NO incluido
+                $diasTrans = $start->diffInDays($end);
+                if ($diasTrans === 0) $diasTrans = 1;
+
+                $domingos = $this->contarDomingosExcluyendoFin($fechaInicioItem, $fechaDevol);
+                $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
+
+                // ========= COBRO =========
+                $tarifa = (float)($item->tarifa_diaria ?? ($item->producto->costo ?? 0));
+                $totalAlquilerParcial = $diasCobrables * $tarifa * $cantidadDevuelta;
+                $totalMermaParcial = $costoMerma;
+                $totalCobradoParcial = $totalAlquilerParcial + $totalMermaParcial;
+
+                // ========= ACUMULADOS ITEM =========
+                $nuevoTotalAlquiler = (float)($item->total_alquiler ?? 0) + $totalAlquilerParcial;
+                $nuevoTotalMerma    = (float)($item->total_merma ?? 0) + $totalMermaParcial;
+                $nuevoTotalPagado   = (float)($item->total_pagado ?? 0) + $pago;
+
+                $nuevoPrecioTotal = $nuevoTotalAlquiler + $nuevoTotalMerma;
+                $nuevoSaldo       = max(0, $nuevoPrecioTotal - $nuevoTotalPagado);
+
+                $cantidadRestante = (int)$item->cantidad_actual - $cantidadDevuelta;
+
+                // ========= INCIDENCIAS (opcional) =========
+                if ($diasLluvia > 0) {
+                    Incidencia::create([
+                        'arriendo_id' => $item->arriendo_id,
+                        'tipo' => 'LLUVIA',
+                        'dias' => $diasLluvia,
+                        'costo' => 0,
+                        'descripcion' => ($desc ? $desc . ' ' : '') . "(Devolución item #{$item->id})",
+                    ]);
+                }
+
+                if ($totalMermaParcial > 0) {
+                    Incidencia::create([
+                        'arriendo_id' => $item->arriendo_id,
+                        'tipo' => 'DANO',
+                        'dias' => 0,
+                        'costo' => $totalMermaParcial,
+                        'descripcion' => ($desc ? $desc . ' ' : '') . "(Devolución item #{$item->id})",
+                    ]);
+                }
+
+                // ========= UPDATE ITEM =========
+                if ($cantidadRestante <= 0) {
+                    $item->update([
+                        'cantidad_actual' => 0,
+                        'fecha_fin_item'  => $fechaDevol,
+                        'cerrado' => 1,
+                        'estado'  => 'devuelto',
+
+                        'precio_total'   => $nuevoPrecioTotal,
+                        'total_alquiler' => $nuevoTotalAlquiler,
+                        'total_merma'    => $nuevoTotalMerma,
+                        'total_pagado'   => $nuevoTotalPagado,
+                        'saldo'          => $nuevoSaldo,
+                    ]);
+                } else {
+                    $item->update([
+                        'cantidad_actual' => $cantidadRestante,
+
+                        'precio_total'   => $nuevoPrecioTotal,
+                        'total_alquiler' => $nuevoTotalAlquiler,
+                        'total_merma'    => $nuevoTotalMerma,
+                        'total_pagado'   => $nuevoTotalPagado,
+                        'saldo'          => $nuevoSaldo,
+                    ]);
+                }
+
+                // ========= HISTORIAL (devoluciones_arriendos) =========
+                $devol = DevolucionArriendo::create([
+                    'arriendo_id'      => $item->arriendo_id,
+                    'arriendo_item_id' => $item->id,
+
+                    'fecha_devolucion'  => $fechaDevol,
+                    'cantidad_devuelta' => $cantidadDevuelta,
+
+                    'dias_transcurridos' => $diasTrans,
+                    'domingos_desc'      => $domingos,
+                    'dias_lluvia_desc'   => $diasLluvia,
+                    'dias_cobrables'     => $diasCobrables,
+
+                    'tarifa_diaria' => $tarifa,
+
+                    'total_alquiler' => $totalAlquilerParcial,
+                    'total_merma'    => $totalMermaParcial,
+                    'total_cobrado'  => $totalCobradoParcial,
+
+                    'pago_recibido' => $pago,
+
+                    'cantidad_restante' => max(0, $cantidadRestante),
+                    'saldo_resultante'  => $nuevoSaldo,
+
+                    'descripcion_incidencia' => $desc,
+                    'nota' => $nota,
+                ]);
+
+                // ========= RECALCULAR PADRE =========
+                $this->recalcularTotalesPadre($item->arriendo);
+
+                // ========= PAYMENT (solo si hay pago) =========
+                if ($pago > 0) {
+                    $this->payments->createConfirmedPayment([
+                        'user_id' => Auth::id(),
+                        'arriendo_id' => $item->arriendo_id,
+                        'client_id' => optional($item->arriendo)->cliente_id,
+                        'obra_id' => optional($item->arriendo)->obra_id,
+
+                        // ✅ mejor: morph real
+                        'source_type' => \App\Models\DevolucionArriendo::class,
+                        'source_id'   => $devol->id,
+
+                        'note' => 'Pago devolución ITEM | arriendo #' . $item->arriendo_id
+                            . ' | item #' . $item->id
+                            . ' | devol #' . $devol->id,
+                    ], [
+                        ['method' => $method, 'amount' => (int)round($pago)],
+                    ]);
+                }
+            });
+        } catch (\Throwable $e) {
+            return back()->withInput()->withErrors([
+                'pago' => 'Error al guardar la devolución: ' . $e->getMessage()
             ]);
         }
-
-        if ($totalMermaParcial > 0) {
-            Incidencia::create([
-                'arriendo_id' => $item->arriendo_id,
-                'tipo' => 'DANO',
-                'dias' => 0,
-                'costo' => $totalMermaParcial,
-                'descripcion' => ($desc ? $desc . ' ' : '') . "(Devolución item #{$item->id})",
-            ]);
-        }
-
-        // ✅ actualizar item
-        if ($cantidadRestante <= 0) {
-            $item->update([
-                'cantidad_actual' => 0,
-                'fecha_fin_item' => $fechaDevol,
-                'cerrado' => 1,
-                'estado' => 'devuelto',
-
-                'precio_total' => $nuevoPrecioTotal,
-                'total_alquiler' => $nuevoTotalAlquiler,
-                'total_merma' => $nuevoTotalMerma,
-                'total_pagado' => $nuevoTotalPagado,
-                'saldo' => $nuevoSaldo,
-            ]);
-        } else {
-            $item->update([
-                'cantidad_actual' => $cantidadRestante,
-
-                'precio_total' => $nuevoPrecioTotal,
-                'total_alquiler' => $nuevoTotalAlquiler,
-                'total_merma' => $nuevoTotalMerma,
-                'total_pagado' => $nuevoTotalPagado,
-                'saldo' => $nuevoSaldo,
-            ]);
-        }
-
-        // ✅ guardar historial (tabla devoluciones_arriendos)
-        DevolucionArriendo::create([
-            'arriendo_id' => $item->arriendo_id,
-            'arriendo_item_id' => $item->id, // requiere columna en tabla
-
-            'fecha_devolucion' => $fechaDevol,
-            'cantidad_devuelta' => $cantidadDevuelta,
-
-            'dias_transcurridos' => $diasTrans,
-            'domingos_desc' => $domingos,
-            'dias_lluvia_desc' => $diasLluvia,
-            'dias_cobrables' => $diasCobrables,
-
-            'tarifa_diaria' => $tarifa,
-            'total_alquiler' => $totalAlquilerParcial,
-            'total_merma' => $totalMermaParcial,
-            'total_cobrado' => $totalCobradoParcial,
-            'pago_recibido' => $pago,
-
-            // ✅ NUEVO: saldo de ESTA devolución
-            'saldo_devolucion' => $saldoDevolucion, // requiere columna en tabla
-
-            'cantidad_restante' => max(0, $cantidadRestante),
-            'saldo_resultante' => $nuevoSaldo,
-
-            'descripcion_incidencia' => $desc,
-            'nota' => $data['nota'] ?? null,
-        ]);
-
-        // ✅ actualizar totales del PADRE sumando todos sus items
-        $this->recalcularTotalesPadre($item->arriendo);
 
         return redirect()->route('items.devolucion.create', $item)
             ->with('success', 'Devolución registrada y guardada en historial (por producto).');
@@ -197,20 +242,18 @@ class ItemDevolucionController extends Controller
         $precioTotal = $totalAlquiler + $totalMerma;
         $saldo       = max(0, $precioTotal - $totalPagado);
 
-        // ✅ CAMBIO MÍNIMO NECESARIO:
-        // el padre queda "devuelto" solo si todos los items están realmente devueltos (cantidad_actual=0 o estado=devuelto)
         $todosDevueltos = $arriendo->items->count() > 0
             ? $arriendo->items->every(fn($it) => (int)($it->cantidad_actual ?? 0) === 0 || ($it->estado ?? '') === 'devuelto')
             : false;
 
         $arriendo->update([
             'total_alquiler' => $totalAlquiler,
-            'total_merma' => $totalMerma,
-            'total_pagado' => $totalPagado,
-            'precio_total' => $precioTotal,
-            'saldo' => $saldo,
-            'estado' => $todosDevueltos ? 'devuelto' : 'activo',
-            'cerrado' => $todosDevueltos ? 1 : 0,
+            'total_merma'    => $totalMerma,
+            'total_pagado'   => $totalPagado,
+            'precio_total'   => $precioTotal,
+            'saldo'          => $saldo,
+            'estado'         => $todosDevueltos ? 'devuelto' : 'activo',
+            'cerrado'        => $todosDevueltos ? 1 : 0,
         ]);
     }
 

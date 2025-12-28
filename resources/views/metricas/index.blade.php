@@ -8,6 +8,28 @@
 
     <h2 class="mb-4">📊 Métricas de Ventas y Alquiler</h2>
 
+    {{-- ✅ NUEVO: Navegación a reportes detallados (Año -> Mes -> Día) --}}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h6 class="mb-2">📅 Reporte detallado de recaudo (Payments confirmados)</h6>
+
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <label class="form-label mb-0">Año</label>
+                <input class="form-control" type="number" id="yearPick"
+                       value="{{ date('Y') }}" min="2000" max="{{ date('Y') }}"
+                       style="width:140px;">
+
+                <a class="btn btn-dark" id="btnIrAnual" href="{{ route('metricas.reporte.anual', date('Y')) }}">
+                    Ver reporte anual
+                </a>
+            </div>
+
+            <small class="text-muted d-block mt-2">
+                Desde ahí puedes entrar a cada mes y luego ver el detalle por día (hora, métodos de pago y arriendos del día).
+            </small>
+        </div>
+    </div>
+
     {{-- 1️⃣ Totales --}}
     <div class="row mb-4">
         <div class="col-md-3">
@@ -62,6 +84,22 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    // ✅ NUEVO: link dinámico al reporte anual
+    (function(){
+        const y = document.getElementById('yearPick');
+        const btn = document.getElementById('btnIrAnual');
+        if(!y || !btn) return;
+
+        function sync(){
+            const year = y.value || new Date().getFullYear();
+            btn.href = "{{ url('/metricas/reporte/anual') }}/" + year;
+        }
+
+        y.addEventListener('input', sync);
+        sync();
+    })();
+
+    // ✅ Tu gráfica (igual, sin tocar lógica)
     const ventas = @json(array_values($ventasMensuales->toArray()));
     const arriendos = @json(array_values($arriendosMensuales->toArray()));
     const labels = @json(array_keys($ventasMensuales->toArray()));

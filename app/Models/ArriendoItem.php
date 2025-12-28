@@ -20,6 +20,16 @@ class ArriendoItem extends Model
         'fecha_inicio_item' => 'datetime',
         'fecha_fin_item' => 'datetime',
         'tarifa_diaria' => 'float',
+
+        // ✅ opcional (no afecta nada, pero evita errores raros en cálculos)
+        'cantidad_inicial' => 'integer',
+        'cantidad_actual' => 'integer',
+        'cerrado' => 'boolean',
+        'precio_total' => 'float',
+        'total_alquiler' => 'float',
+        'total_merma' => 'float',
+        'total_pagado' => 'float',
+        'saldo' => 'float',
     ];
 
     public function arriendo()

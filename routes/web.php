@@ -15,14 +15,26 @@ use App\Http\Controllers\ObraController;
 use App\Http\Controllers\ArriendoDevolucionController;
 use Illuminate\Support\Facades\Route;
 
+// ✅ Payment model para endpoint de recaudo hoy
+use App\Models\Payment;
 
-// DASHBOARD---------admin y bodega--------------------->
+
+/*
+|--------------------------------------------------------------------------
+| DASHBOARD---------admin y bodega--------------------->
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 });
 
-// INVENTARIO / BODEGA
+
+/*
+|--------------------------------------------------------------------------
+| INVENTARIO / BODEGA
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::resource('productos', ProductoController::class);
 
@@ -30,7 +42,12 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
         ->name('productos.import');
 });
 
-// ruta para solicitud
+
+/*
+|--------------------------------------------------------------------------
+| SOLICITUDES
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::get('/solicitudes/create', [SolicitudController::class, 'create'])
         ->name('solicitudes.create');
@@ -42,15 +59,18 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
         ->name('solicitudes.solicitudes');
 
     Route::get('/solicitudes/{arriendo}', [SolicitudController::class, 'show'])
-    ->name('solicitudes.show');
+        ->name('solicitudes.show');
 
     Route::post('/solicitudes/{arriendo}/confirmar', [SolicitudController::class, 'confirmar'])
         ->name('solicitudes.confirmar');
-
 });
 
-//---------------------------------------------------
-// ruta Movimiento
+
+/*
+|--------------------------------------------------------------------------
+| MOVIMIENTOS
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::get('/movimientos', [MovimientoController::class, 'create'])
         ->name('movimientos.create');
@@ -59,30 +79,37 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
         ->name('movimientos.store');
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| ALERTAS STOCK
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
-    //ruta para alerta de stock
     Route::get('/alertas-stock', [ProductoController::class, 'alertasStock'])
         ->name('productos.alertas');
-
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| REPORTES (solo admin|bodega)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
-    //rura de reporte de movimiento
     Route::prefix('reportes')->group(function () {
         Route::get('/', [ReportesStockController::class, 'index'])->name('reportes.index');
         Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
         Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
     });
-});
 
-Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
     Route::get('/movimientos/export', [MovimientoController::class, 'export'])
         ->name('movimientos.export');
 
     Route::get('/reporte/mensual/export', [ReportesStockController::class, 'exportMensual'])
         ->name('reporte.mensual.export');
 
-    //ruta para configuracion
+    // CONFIGURACIÓN
     Route::get('/configuracion', [ConfigController::class, 'index'])
         ->name('configuracion.index');
 
@@ -96,21 +123,49 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
         ->name('config.inventario');
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| STOCK + MÉTRICAS (admin|bodega|asistente)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
-    // ruta para stock actual
+
+    // STOCK
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::get('/stock/{producto}', [StockController::class, 'show'])->name('stock.show');
     Route::get('/stock-exportar', [StockController::class, 'export'])->name('stock.export');
 
-    //ruta de metricas 
+    // MÉTRICAS (index)
     Route::get('/metricas', [MetricasController::class, 'index'])
         ->name('metricas.index');
-});
-//---------------------fin---------------------------------------->
 
-//---------------solo asistente------------------------------>
-// ARRIENDOS
+    /*
+    |--------------------------------------------------------------------------
+    | ✅ NUEVO: DETALLES DE RECAUDO
+    | - Año -> lista meses
+    | - Mes -> lista días
+    | - Día -> detalle por hora / pagos / arriendos
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/metricas/reporte/anual/{year}', [MetricasController::class, 'reporteAnual'])
+        ->name('metricas.reporte.anual');
+
+    Route::get('/metricas/reporte/mensual/{year}/{month}', [MetricasController::class, 'reporteMensual'])
+        ->name('metricas.reporte.mensual');
+
+    Route::get('/metricas/detalle/dia/{date}', [MetricasController::class, 'detalleDia'])
+        ->name('metricas.detalle.dia');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| ARRIENDOS (admin|asistente)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
+
     Route::resource('arriendos', ArriendoController::class);
 
     Route::post('/arriendos/{arriendo}/cerrar', [ArriendoController::class, 'cerrar'])
@@ -119,85 +174,90 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::get('/arriendos/{arriendo}/cerrar', [ArriendoController::class, 'showCerrar'])
         ->name('arriendos.cerrar.form');
 
-    // ✅✅✅ (ÚNICO CAMBIO) - ASEGURAR QUE DETALLES ESTÉ DENTRO DEL MIDDLEWARE
     Route::get('/arriendos/{arriendo}/detalles', [ArriendoController::class, 'detalles'])
         ->name('arriendos.detalles');
 
-    // routes/web.php
+    // PADRE
+    Route::get('/arriendos/{arriendo}/ver', [ArriendoController::class, 'ver'])
+        ->name('arriendos.ver');
+
+    // ✅ API KPI "Recaudado hoy"
+    Route::get('/api/recaudado-hoy', function () {
+        return response()->json([
+            'total' => Payment::where('business_date', now()->toDateString())
+                ->where('status', 'confirmed')
+                ->sum('total_amount'),
+        ]);
+    })->name('api.recaudado_hoy');
+
+    // DEVOLUCIÓN PADRE (queda dentro del middleware ✅)
+    Route::get('/arriendos/{arriendo}/devolucion', [ArriendoDevolucionController::class, 'create'])
+        ->name('arriendos.devolucion.create');
+
+    Route::post('/arriendos/{arriendo}/devolucion', [ArriendoDevolucionController::class, 'store'])
+        ->name('arriendos.devolucion.store');
+
+    // ITEMS (agregar producto dentro del padre)
+    Route::get('/arriendos/{arriendo}/items/create', [App\Http\Controllers\ArriendoItemController::class, 'create'])
+        ->name('arriendos.items.create');
+
+    Route::post('/arriendos/{arriendo}/items', [App\Http\Controllers\ArriendoItemController::class, 'store'])
+        ->name('arriendos.items.store');
+
+    // eliminar item
+    Route::delete('/arriendos/items/{item}', [App\Http\Controllers\ArriendoItemController::class, 'destroy'])
+        ->name('arriendos.items.destroy');
+
+    // VER DEVOLUCIONES DEL PADRE
+    Route::get('/arriendos/{arriendo}/devoluciones', [App\Http\Controllers\ArriendoController::class, 'devoluciones'])
+        ->name('arriendos.devoluciones');
+
+    // DEVOLVER POR ITEM
+    Route::get('/items/{item}/devolucion', [App\Http\Controllers\ItemDevolucionController::class, 'create'])
+        ->name('items.devolucion.create');
+
+    Route::post('/items/{item}/devolucion', [App\Http\Controllers\ItemDevolucionController::class, 'store'])
+        ->name('items.devolucion.store');
+
+    // routes/web.php - obras por cliente (AJAX)
     Route::get('clientes/{cliente}/obras', function ($clienteId) {
         return \App\Models\Obra::where('cliente_id', $clienteId)->get();
     });
-
 });
 
 
-
-
-//ARRIENDO-DEVOLUCION
-Route::get('/arriendos/{arriendo}/devolucion', [ArriendoDevolucionController::class, 'create'])
-    ->name('arriendos.devolucion.create');
-
-Route::post('/arriendos/{arriendo}/devolucion', [ArriendoDevolucionController::class, 'store'])
-    ->name('arriendos.devolucion.store');
-
-//ARRIENDO PADRE E HIJOS
-
-// PADRE
-Route::get('/arriendos/{arriendo}/ver', [App\Http\Controllers\ArriendoController::class, 'ver'])
-    ->name('arriendos.ver');
-
-// ITEMS (agregar producto dentro del padre)
-Route::get('/arriendos/{arriendo}/items/create', [App\Http\Controllers\ArriendoItemController::class, 'create'])
-    ->name('arriendos.items.create');
-
-Route::post('/arriendos/{arriendo}/items', [App\Http\Controllers\ArriendoItemController::class, 'store'])
-    ->name('arriendos.items.store');
-
-//eliminar 
-Route::delete('/arriendos/items/{item}', [\App\Http\Controllers\ArriendoItemController::class, 'destroy'])
-    ->name('arriendos.items.destroy');
-
-// VER DEVOLUCIONES (REGISTROS INDIVIDUALES) DEL PADRE ✅
-Route::get('/arriendos/{arriendo}/devoluciones', [App\Http\Controllers\ArriendoController::class, 'devoluciones'])
-    ->name('arriendos.devoluciones');
-
-// DEVOLVER desde el PADRE pero por ITEM
-Route::get('/items/{item}/devolucion', [App\Http\Controllers\ItemDevolucionController::class, 'create'])
-    ->name('items.devolucion.create');
-
-Route::post('/items/{item}/devolucion', [App\Http\Controllers\ItemDevolucionController::class, 'store'])
-    ->name('items.devolucion.store');
-
-
-// CLIENTES
+/*
+|--------------------------------------------------------------------------
+| CLIENTES (admin|asistente)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 
-    // CLIENTES
     Route::resource('clientes', ClienteController::class);
 
-    // OBRAS (dependen de un cliente)
     Route::get('clientes/{cliente}/obras/create', [ObraController::class, 'create'])
         ->name('obras.create');
 
     Route::post('clientes/{cliente}/obras', [ObraController::class, 'store'])
         ->name('obras.store');
 
-    // este trae la informacion de la obra    
     Route::get('/clientes/{cliente}/obras', [ClienteController::class, 'obras']);
 });
 
-// LOGIN
+
+/*
+|--------------------------------------------------------------------------
+| LOGIN
+|--------------------------------------------------------------------------
+*/
 Route::controller(LoginController::class)->group(function () {
 
-    // ✅ Login en la raiz
     Route::get('/', 'show')
         ->name('login');
 
-    // ✅ Procesar login
     Route::post('/login', 'login')
         ->name('login.post');
 
-    // ✅ Logout
     Route::post('/logout', 'logout')
         ->name('logout');
 });
