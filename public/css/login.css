@@ -28,7 +28,7 @@ body{
   position:relative;
   overflow:hidden;
   background:
-    url("/img/LOGIN/fondo-login.jpg")
+    url("/img/LOGIN/fondo-app.jpeg") 
     center/cover no-repeat fixed;
 }
 

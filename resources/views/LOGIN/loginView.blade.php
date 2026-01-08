@@ -16,7 +16,7 @@
   <!-- CSS PERSONALIZADO -->
   <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 
-  <title>TECA ARQUITECTOS</title>
+  <title>LOGIN</title>
 </head>
 
 <body>
@@ -24,7 +24,7 @@
   <div class="login-card">
 
     <div class="text-center mb-4 position-relative">
-      <div class="brand-badge">👷‍♂️ TECA ARQUITECTOS</div>
+      <div class="brand-badge">👷‍♂️ ALFA DIGITAL SOLUTIONS S.A.S</div>
       <div class="brand-title">Ingresar al Sistema</div>
       <div class="brand-sub">
         Acceso exclusivo para gestión de alquiler e inventario
