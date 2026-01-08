@@ -26,7 +26,7 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <a href="{{ route('dashboard') }}">
-                    <img src="{{ asset('img/img_producto/logo.png') }}" alt="TECA Arquitectos" class="sidebar-logo">
+                    <img src="{{ asset('img/LOGIN/logotipo3.png') }}" alt="TECA Arquitectos" class="sidebar-logo">
                 </a>
             </div>
 
@@ -59,6 +59,9 @@
                     <div class="nav-section">Clientes</div>
                     <a href="{{ route('clientes.index') }}" class="nav-item">Lista de Clientes</a>
                     <a href="{{ route('clientes.create') }}" class="nav-item">Agregar Cliente Nuevo</a>
+
+                    <div class="nav-section">Varios / Gastos</div>
+                    <a href="{{ route('gastos.index') }}" class="nav-item">Gastos Generales</a>
 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

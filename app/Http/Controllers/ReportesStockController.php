@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Movimiento;
 use Illuminate\Http\Request;
 use App\Exports\ReporteMensualExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Carbon\Carbon;
 
 class ReportesStockController extends Controller
 {
@@ -14,13 +14,34 @@ class ReportesStockController extends Controller
         return view('reportes.index');
     }
 
-    public function movimientos()
+    public function movimientos(Request $request)
     {
-        $movimientos = Movimiento::with('producto')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = Movimiento::with('producto')
+            ->orderBy('created_at', 'desc');
+
+        // ✅ FILTRO POR TIPO
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
+
+        $movimientos = $query->get();
 
         return view('reportes.movimientos', compact('movimientos'));
+    }
+
+    public function entradasSalidas(Request $request)
+    {
+        $query = Movimiento::with('producto')
+            ->orderBy('created_at', 'desc');
+
+        // ✅ FILTRO POR CLASIFICACIÓN
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
+
+        $movimientos = $query->get();
+
+        return view('reportes.entradas_salidas', compact('movimientos'));
     }
 
     public function mensual()
@@ -39,7 +60,7 @@ class ReportesStockController extends Controller
         return view('reportes.mensual', compact('reporte'));
     }
 
-        public function exportMensual()
+    public function exportMensual()
     {
         return Excel::download(new ReporteMensualExport, 'reporte_mensual.xlsx');
     }

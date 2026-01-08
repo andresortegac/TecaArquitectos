@@ -13,6 +13,8 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\MetricasController;
 use App\Http\Controllers\ObraController;
 use App\Http\Controllers\ArriendoDevolucionController;
+use App\Http\Controllers\GastoController;
+
 use Illuminate\Support\Facades\Route;
 
 
@@ -46,6 +48,9 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
 
     Route::post('/solicitudes/{arriendo}/confirmar', [SolicitudController::class, 'confirmar'])
         ->name('solicitudes.confirmar');
+    //ruta de factura-solicitud
+    Route::get('/arriendos/{arriendo}/pdf',[ArriendoController::class, 'pdf'])
+    ->name('arriendos.pdf');
 
 });
 
@@ -73,6 +78,7 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
         Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
         Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
     });
+    
 });
 
 Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
@@ -185,7 +191,11 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     // este trae la informacion de la obra    
     Route::get('/clientes/{cliente}/obras', [ClienteController::class, 'obras']);
 });
-
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('gastos', GastoController::class)->only([
+    'index', 'create', 'store'
+    ]);
+});
 // LOGIN
 Route::controller(LoginController::class)->group(function () {
 

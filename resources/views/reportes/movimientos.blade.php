@@ -14,8 +14,22 @@
                     </a>
                 </div>
                 <br>
-                <table class="table table-bordered table-hover">                
-                    <thead class="table-dark">
+                <div style="text-align:right;"> 
+                    <form method="GET" class="mb-3 d-flex gap-2">
+                        <select name="tipo" class="form-control" style="width:200px">
+                            <option value="">-- Todos --</option>
+                            <option value="ingreso" {{ request('tipo')=='ingreso'?'selected':'' }}>Entrada</option>
+                            <option value="salida" {{ request('tipo')=='salida'?'selected':'' }}>Salida</option>
+                            <option value="ajuste_positivo" {{ request('tipo')=='ajuste_positivo'?'selected':'' }}>Ajuste positivo</option>
+                            <option value="ajuste_negativo" {{ request('tipo')=='ajuste_negativo'?'selected':'' }}>Ajuste negativo</option>
+                        </select>
+
+                        <button class="btn btn-primary">Filtrar</button>
+                    </form>
+                </div>
+
+                <table class="table">
+                    <thead>
                         <tr>
                             <th>Fecha</th>
                             <th>Producto</th>
@@ -24,27 +38,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($movimientos as $mov)
-                                <tr class="{{ $mov->tipo == 'salida' ? 'table-danger' : 'table-success' }}">
-                                    <td>{{ $mov->created_at->format('d/m/Y') }}</td>
-                                    <td>{{ $mov->producto->nombre }}</td>
-                                    <td>
-                                        @if($mov->tipo == 'entrada')
-                                            <span class="badge bg-success">ENTRADA</span>
-                                        @else
-                                            <span class="badge bg-danger">SALIDA</span>
-                                        @endif
-                                    </td>
-                                    <td class="fw-bold">{{ $mov->cantidad }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center">
-                                        No hay movimientos registrados
-                                    </td>
-                                </tr>
-                        @endforelse
+                        @foreach($movimientos as $m)
+                            <tr>
+                                <td>{{ \Carbon\Carbon::parse($m->fecha)->format('d/m/Y') }}</td>
+
+                                <td>{{ $m->producto->nombre }}</td>
+
+                                <td>
+                                    <span class="
+                                        {{ 
+                                            in_array($m->tipo, ['Ingreso', 'Ajuste positivo']) 
+                                            ? 'text-success' 
+                                            : 'text-danger' 
+                                        }}">
+                                        {{ $m->tipo }}
+                                    </span>
+                                </td>
+
+                                <td>{{ $m->cantidad }}</td>
+                            </tr>
+                        @endforeach
                     </tbody>
-                </table>        
+                </table>
+        
             </div>
-        @endsection
+@endsection

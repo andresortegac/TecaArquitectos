@@ -56,3 +56,4 @@ class MovimientoController extends Controller
         return Excel::download(new MovimientosExport, 'movimientos.xlsx');
     }
 }
+ 

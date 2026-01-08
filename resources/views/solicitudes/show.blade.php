@@ -12,7 +12,14 @@
     <p><strong>Fecha solicitud:</strong> {{ $arriendo->created_at->format('Y-m-d') }}</p>
     <p><strong>Estado:</strong> {{ ucfirst($arriendo->estado) }}</p>
 </div>
+<br>
+    <div style="text-align:right;">
+        <a href="{{ route('arriendos.pdf', $arriendo) }}" class="btn btn-danger" target="_blank">
+    Exportar Factura
+</a>
 
+    </div>
+<br>
 <form method="POST" action="{{ route('solicitudes.confirmar', $arriendo) }}">
 @csrf
 

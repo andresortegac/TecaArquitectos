@@ -22,8 +22,8 @@ body {
   left: 0;
   width: 260px;
   height: 100vh;
-  background: #111827;
-  color: white;
+  background: #fbfbfb;
+  color: rgb(0, 0, 0);
   padding: 16px;
   overflow-y: auto;
 }
@@ -55,7 +55,7 @@ body {
 .nav-item {
   display: block;
   padding: 10px 12px;
-  color: #e5e7eb;
+  color: #000000;
   text-decoration: none;
   border-radius: 8px;
   transition: .15s;
@@ -79,7 +79,7 @@ body {
   z-index: 1;
 
   /* Imagen de fondo */
-  background-image: url("../img/LOGIN/fondo-login.jpg");
+  background-image: url("../img/LOGIN/fondo-app.jpeg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
