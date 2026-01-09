@@ -14,6 +14,7 @@ use App\Http\Controllers\MetricasController;
 use App\Http\Controllers\ObraController;
 use App\Http\Controllers\ArriendoDevolucionController;
 use App\Http\Controllers\GastoController;
+use App\Http\Controllers\controlproducto;
 
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,8 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
 
     Route::post('/productos/import', [ProductoController::class, 'import'])
         ->name('productos.import');
+
+    
 });
 
 // ruta para solicitud
@@ -77,6 +80,7 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
         Route::get('/', [ReportesStockController::class, 'index'])->name('reportes.index');
         Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
         Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
+        Route::get('/controlproducto', [controlproducto::class, 'controlproducto'])->name('reportes.controlproducto');
     });
     
 });
