@@ -13,14 +13,37 @@
 
         {{-- Información del cliente --}}
         <div class="cliente-card">
-            <h2 class="cliente-nombre">{{ $cliente->nombre }}</h2>
 
-            <div class="cliente-info">
-                <p><strong>Documento:</strong> {{ $cliente->documento }}</p>
-                <p><strong>Celular:</strong> {{ $cliente->telefono }}</p>
-                <p><strong>Correo:</strong> {{ $cliente->email }}</p>
+            <div class="cliente-card-header">
+                <div class="cliente-avatar">
+                    {{ strtoupper(substr($cliente->nombre, 0, 1)) }}
+                </div>
+
+                <div class="cliente-header-info">
+                    <h2 class="cliente-nombre">{{ $cliente->nombre }}</h2>
+                    <span class="cliente-subtitle">Cliente registrado</span>
+                </div>
             </div>
+
+            <div class="cliente-card-body">
+                <div class="cliente-item">
+                    <span class="label">Documento</span>
+                    <span class="value">{{ $cliente->documento ?? '—' }}</span>
+                </div>
+
+                <div class="cliente-item">
+                    <span class="label">Celular</span>
+                    <span class="value">{{ $cliente->telefono ?? '—' }}</span>
+                </div>
+
+                <div class="cliente-item">
+                    <span class="label">Correo</span>
+                    <span class="value">{{ $cliente->email ?? '—' }}</span>
+                </div>
+            </div>
+
         </div>
+
 
         {{-- Header obras --}}
         <div class="obras-header">
@@ -52,7 +75,7 @@
 
                             {{-- Eliminar (solo admin) --}}
                             @role('admin')
-                                <form action="{{ route('obras.destroy', [$cliente, $obra]) }}"
+                                <form class="form-eliminar" action="{{ route('obras.destroy', [$cliente, $obra]) }}"
                                     method="POST"
                                     class="form-eliminar">
                                     @csrf
