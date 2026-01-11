@@ -57,17 +57,30 @@
         @if($cliente->obras->count())
             <div class="obras-grid">
                 @foreach($cliente->obras as $obra)
+
                     <div class="obra-card">
 
+                        {{-- Header --}}
+                        <div class="obra-card-header">
+                            <div class="obra-icon">🏗️</div>
+
+                            <div class="obra-header-info">
+                                <h4 class="obra-title">{{ $obra->direccion }}</h4>
+                                <span class="obra-subtitle">Obra asociada al cliente</span>
+                            </div>
+                        </div>
+
+                        {{-- Body --}}
                         <div class="obra-card-body">
-                            <h4 class="obra-title">{{ $obra->direccion }}</h4>
-                            <p class="obra-text">{{ $obra->detalle }}</p>
+                            <p class="obra-text">
+                                {{ $obra->detalle ?? 'Sin descripción' }}
+                            </p>
                         </div>
 
                         {{-- Acciones --}}
                         <div class="obra-card-actions">
 
-                            {{-- Editar (admin y asistente) --}}
+                            {{-- Editar --}}
                             <a href="{{ route('obras.edit', [$cliente, $obra]) }}"
                             class="btn-obra btn-editar">
                                 Editar
@@ -75,9 +88,9 @@
 
                             {{-- Eliminar (solo admin) --}}
                             @role('admin')
-                                <form class="form-eliminar" action="{{ route('obras.destroy', [$cliente, $obra]) }}"
-                                    method="POST"
-                                    class="form-eliminar">
+                                <form class="form-eliminar"
+                                    action="{{ route('obras.destroy', [$cliente, $obra]) }}"
+                                    method="POST">
                                     @csrf
                                     @method('DELETE')
 
@@ -89,12 +102,15 @@
                             @endrole
 
                         </div>
+
                     </div>
+
                 @endforeach
             </div>
         @else
             <p class="sin-obras">No hay obras registradas</p>
         @endif
+
 
     </div>
 

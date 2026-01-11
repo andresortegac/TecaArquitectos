@@ -291,3 +291,195 @@
         grid-template-columns: 1fr;
     }
 }
+
+
+/* ========================= */
+/* GRID */
+/* ========================= */
+
+.obras-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+/* ========================= */
+/* CARD OBRA */
+/* ========================= */
+
+.obra-card {
+    background: linear-gradient(160deg, #ffffff, #f8fafc);
+    border-radius: 22px;
+    box-shadow:
+        0 18px 35px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    position: relative;
+}
+
+.obra-card:hover {
+    transform: translateY(-10px);
+    box-shadow:
+        0 28px 55px rgba(0, 0, 0, 0.14);
+}
+
+/* Decoración sutil */
+.obra-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at top left,
+        rgba(37, 99, 235, 0.08),
+        transparent 45%
+    );
+    pointer-events: none;
+}
+
+/* ========================= */
+/* HEADER */
+/* ========================= */
+
+.obra-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 22px 10px;
+}
+
+.obra-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #ffffff;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.35);
+}
+
+/* Header info */
+.obra-header-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.obra-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #020617;
+    margin: 0;
+}
+
+.obra-subtitle {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* ========================= */
+/* BODY */
+/* ========================= */
+
+.obra-card-body {
+    padding: 10px 22px 20px;
+    flex: 1;
+}
+
+.obra-text {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+/* ========================= */
+/* ACCIONES */
+/* ========================= */
+
+.obra-card-actions {
+    display: flex;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #f1f5f9;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn-obra {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* EDITAR */
+.btn-editar {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+}
+
+.btn-editar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(37,99,235,0.35);
+}
+
+/* ELIMINAR */
+.btn-eliminar {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: #ffffff;
+}
+
+.btn-eliminar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(220,38,38,0.35);
+}
+
+/* Form eliminar */
+.form-eliminar {
+    flex: 1;
+    display: flex;
+}
+
+/* ========================= */
+/* SIN OBRAS */
+/* ========================= */
+
+.sin-obras {
+    color: #64748b;
+    font-style: italic;
+}
+
+/* ========================= */
+/* RESPONSIVE */
+/* ========================= */
+
+@media (max-width: 1200px) {
+    .obras-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .obras-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .obras-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .obra-card-actions {
+        flex-direction: column;
+    }
+}
