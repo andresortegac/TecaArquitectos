@@ -22,7 +22,10 @@
 
     <div class="form-actions">
         <button class="btn">Guardar</button>
-        <a class="btn-secondary" href="{{ route('clientes.index') }}">Volver</a>
+        <a class="btn-secondary" href="{{ route('clientes.show', $cliente) }}">
+            Volver
+        </a>
+
     </div>
 </form>
 

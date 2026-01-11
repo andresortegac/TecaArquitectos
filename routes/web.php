@@ -200,6 +200,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     'index', 'create', 'store'
     ]);
 });
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+
+    Route::delete('clientes/{cliente}/obras/{obra}', [ObraController::class, 'destroy'])
+        ->name('obras.destroy');
+});
+
+
+Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
+
+    Route::get('clientes/{cliente}/obras/{obra}/edit', [ObraController::class, 'edit'])
+        ->name('obras.edit');
+
+    Route::put('clientes/{cliente}/obras/{obra}', [ObraController::class, 'update'])
+        ->name('obras.update');
+});
+
+
 // LOGIN
 Route::controller(LoginController::class)->group(function () {
 

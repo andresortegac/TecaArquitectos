@@ -26,4 +26,33 @@ class ObraController extends Controller
             ->route('clientes.show', $cliente)
             ->with('success', 'Obra creada correctamente');
     }
+
+    public function edit(Cliente $cliente, Obra $obra)
+    {
+        return view('obras.edit', compact('cliente', 'obra'));
+    }
+
+    public function update(Request $request, Cliente $cliente, Obra $obra)
+    {
+        $data = $request->validate([
+            'direccion' => 'required|string|max:255',
+            'detalle' => 'nullable|string',
+        ]);
+
+        $obra->update($data);
+
+        return redirect()
+            ->route('clientes.show', $cliente)
+            ->with('success', 'Obra actualizada');
+    }
+
+    public function destroy(Cliente $cliente, Obra $obra)
+    {
+        $obra->delete();
+
+        return redirect()
+            ->route('clientes.show', $cliente)
+            ->with('success', 'Obra eliminada');
+    }
+
 }
