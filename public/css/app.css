@@ -22,8 +22,8 @@ body {
   left: 0;
   width: 260px;
   height: 100vh;
-  background: #111827;
-  color: white;
+  background: #fbfbfb;
+  color: rgb(0, 0, 0);
   padding: 16px;
   overflow-y: auto;
 }
@@ -55,7 +55,7 @@ body {
 .nav-item {
   display: block;
   padding: 10px 12px;
-  color: #e5e7eb;
+  color: #000000;
   text-decoration: none;
   border-radius: 8px;
   transition: .15s;
@@ -79,7 +79,7 @@ body {
   z-index: 1;
 
   /* Imagen de fondo */
-  background-image: url("../img/LOGIN/fondo-login.jpg");
+  background-image: url("../img/LOGIN/fondo-app.jpeg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -108,10 +108,10 @@ body {
 
 /* PAGE */
 .principal-page {
-  background: rgb(255 255 255 / 52%);
-  padding: 18px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    background: rgb(255 255 255 / 78%);
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
 }
 
 /* FORM */
@@ -258,3 +258,36 @@ body {
     color: #000;
 }
 
+
+.estado-normal {
+        background-color: #d1e7dd !important;
+    }
+
+    .estado-bajo {
+        background-color: #f8d7da !important;
+    }
+
+    .estado-alquiler {
+        background-color: #fff3cd !important;
+    }
+
+    .badge-normal {
+        background-color: #198754;
+        color: white;
+        padding: 11px;
+        border-radius: 8px;
+    }
+
+    .badge-bajo {
+        background-color: #dc3545;
+        color: white;
+        padding: 11px;
+        border-radius: 8px;
+    }
+
+    .badge-alquiler {
+        background-color: #ffc107;
+        color: #000;           
+        padding: 11px;
+        border-radius: 8px;
+    }

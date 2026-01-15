@@ -6,10 +6,11 @@ use App\Models\Arriendo;
 use App\Models\Cliente;
 use App\Models\Producto;
 use App\Models\Incidencia;
-use App\Models\DevolucionArriendo; // ✅ NUEVO
+use App\Models\DevolucionArriendo;
 use App\Models\Payment; // ✅ NUEVO (para recaudado hoy/mes)
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ArriendoController extends Controller
 {
@@ -424,5 +425,18 @@ class ArriendoController extends Controller
         ]);
 
         return view('arriendos.detalles', compact('arriendo'));
+    }
+    public function pdf(Arriendo $arriendo)
+    {
+        $arriendo->load([
+            'cliente',
+            'obra',
+            'items.producto'
+        ]);
+
+        $pdf = Pdf::loadView('arriendos.pdf', compact('arriendo'))
+                ->setPaper('A4', 'portrait');
+
+        return $pdf->stream('acta-entrega-'.$arriendo->id.'.pdf');
     }
 }

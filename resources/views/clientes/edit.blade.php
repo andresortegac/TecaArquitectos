@@ -11,7 +11,7 @@
     <label>Nombre</label>
     <input name="nombre" value="{{ old('nombre',$cliente->nombre) }}" required>
 
-    <label>Teléfono</label>
+    <label>Celular</label>
     <input name="telefono" value="{{ old('telefono',$cliente->telefono) }}">
 
     <label>Email</label>

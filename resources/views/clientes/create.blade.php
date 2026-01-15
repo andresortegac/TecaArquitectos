@@ -9,7 +9,7 @@
     <label>Nombre</label>
     <input name="nombre" required>
 
-    <label>Teléfono</label>
+    <label>Celular</label>
     <input name="telefono">
 
     <label>Email</label>
@@ -17,6 +17,8 @@
 
     <label>Documento</label>
     <input name="documento">
+
+    <br>
 
     <button class="btn">Guardar</button>
 </form>

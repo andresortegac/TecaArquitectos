@@ -1,0 +1,122 @@
+/* =========================
+   CONTENEDOR
+========================= */
+.contr-container {
+    padding: 10px;
+}
+
+/* =========================
+   CARD
+========================= */
+.contr-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    margin-bottom: 1.5rem;
+}
+
+.contr-card-body {
+    padding: 1.5rem;
+}
+
+/* =========================
+   GRID
+========================= */
+.contr-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.contr-col {
+    flex: 1;
+    padding: 10px;
+}
+
+/* =========================
+   TEXTOS
+========================= */
+.contr-text-center { text-align: center; }
+.contr-fw-bold { font-weight: 700; }
+
+.contr-text-success { color: #198754; }
+.contr-text-danger { color: #dc3545; }
+.contr-text-primary { color: #0d6efd; }
+.contr-text-muted { color: #6c757d; }
+
+/* =========================
+   DIVISORES
+========================= */
+.contr-border-end {
+    border-right: 1px solid #dee2e6;
+}
+
+.contr-divider {
+    margin: 2rem 0;
+}
+
+/* =========================
+   TITULOS
+========================= */
+.contr-title {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* =========================
+   FILTRO
+========================= */
+.contr-filter {
+    margin-bottom: .75rem;
+}
+
+.contr-input {
+    width: 100%;
+    padding: .45rem .75rem;
+    border: 1px solid #ced4da;
+    border-radius: .375rem;
+}
+
+/* =========================
+   TABLAS
+========================= */
+.contr-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.contr-table th,
+.contr-table td {
+    border: 1px solid #dee2e6;
+    padding: .5rem;
+    vertical-align: middle;
+}
+
+.contr-table-dark {
+    background-color: #212529;
+    color: #fff;
+}
+
+.contr-table-light {
+    background-color: #f8f9fa;
+}
+
+.contr-table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+/* =========================
+   IMAGEN
+========================= */
+.contr-img {
+    width: 60px;
+    border-radius: 4px;
+}
+
+/* =========================
+   OTROS
+========================= */
+.contr-empty {
+    color: #6c757d;
+    font-style: italic;
+}

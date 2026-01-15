@@ -13,6 +13,9 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\MetricasController;
 use App\Http\Controllers\ObraController;
 use App\Http\Controllers\ArriendoDevolucionController;
+use App\Http\Controllers\GastoController;
+use App\Http\Controllers\controlproducto;
+
 use Illuminate\Support\Facades\Route;
 
 // ✅ Payment model para endpoint de recaudo hoy
@@ -40,13 +43,15 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
 
     Route::post('/productos/import', [ProductoController::class, 'import'])
         ->name('productos.import');
+
+    
 });
 
 
 /*
 |--------------------------------------------------------------------------
 | SOLICITUDES
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------------- 
 */
 Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::get('/solicitudes/create', [SolicitudController::class, 'create'])
@@ -63,14 +68,14 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
 
     Route::post('/solicitudes/{arriendo}/confirmar', [SolicitudController::class, 'confirmar'])
         ->name('solicitudes.confirmar');
+        //ruta de factura-solicitud
+    Route::get('/arriendos/{arriendo}/pdf',[ArriendoController::class, 'pdf'])
+    ->name('arriendos.pdf');
+
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| MOVIMIENTOS
-|--------------------------------------------------------------------------
-*/
+//---------------------------------------------------
+// ruta Movimiento
 Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::get('/movimientos', [MovimientoController::class, 'create'])
         ->name('movimientos.create');
@@ -101,15 +106,18 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
         Route::get('/', [ReportesStockController::class, 'index'])->name('reportes.index');
         Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
         Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
+        Route::get('/controlproducto', [controlproducto::class, 'controlproducto'])->name('reportes.controlproducto');
+   
     });
-
+});
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
     Route::get('/movimientos/export', [MovimientoController::class, 'export'])
         ->name('movimientos.export');
 
     Route::get('/reporte/mensual/export', [ReportesStockController::class, 'exportMensual'])
         ->name('reporte.mensual.export');
 
-    // CONFIGURACIÓN
+    //ruta para configuracion
     Route::get('/configuracion', [ConfigController::class, 'index'])
         ->name('configuracion.index');
 
@@ -122,7 +130,6 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
     Route::post('/configuracion/inventario', [ConfigController::class, 'inventario'])
         ->name('config.inventario');
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -177,6 +184,13 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::get('/arriendos/{arriendo}/detalles', [ArriendoController::class, 'detalles'])
         ->name('arriendos.detalles');
 
+    // routes/web.php
+    Route::get('clientes/{cliente}/obras', function ($clienteId) {
+         return \App\Models\Obra::where('cliente_id', $clienteId)->get();
+
+    });
+
+
     // PADRE
     Route::get('/arriendos/{arriendo}/ver', [ArriendoController::class, 'ver'])
         ->name('arriendos.ver');
@@ -196,6 +210,13 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 
     Route::post('/arriendos/{arriendo}/devolucion', [ArriendoDevolucionController::class, 'store'])
         ->name('arriendos.devolucion.store');
+
+        //ARRIENDO PADRE E HIJOS
+
+// PADRE
+Route::get('/arriendos/{arriendo}/ver', [App\Http\Controllers\ArriendoController::class, 'ver'])
+    ->name('arriendos.ver');
+
 
     // ITEMS (agregar producto dentro del padre)
     Route::get('/arriendos/{arriendo}/items/create', [App\Http\Controllers\ArriendoItemController::class, 'create'])
@@ -243,6 +264,28 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 
     Route::get('/clientes/{cliente}/obras', [ClienteController::class, 'obras']);
 });
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('gastos', GastoController::class)->only([
+    'index', 'create', 'store'
+    ]);
+});
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+
+    Route::delete('clientes/{cliente}/obras/{obra}', [ObraController::class, 'destroy'])
+        ->name('obras.destroy');
+});
+
+
+Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
+
+    Route::get('clientes/{cliente}/obras/{obra}/edit', [ObraController::class, 'edit'])
+        ->name('obras.edit');
+
+    Route::put('clientes/{cliente}/obras/{obra}', [ObraController::class, 'update'])
+        ->name('obras.update');
+});
+
 
 
 /*

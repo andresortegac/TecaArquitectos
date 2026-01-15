@@ -23,6 +23,8 @@
         <tr>
             <th>Nombre</th>
             <th>Documento</th>
+            <th>Celular</th>
+            <th>Correo</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -31,6 +33,8 @@
             <tr>
                 <td>{{ $cliente->nombre }}</td>
                 <td>{{ $cliente->documento }}</td>
+                <td>{{ $cliente->telefono }}</td>
+                <td>{{ $cliente->email }}</td>
                 <td>
                     <div class="acciones-left">
                         <a href="{{ route('clientes.show', $cliente) }}" class="btn-action btn-ver">

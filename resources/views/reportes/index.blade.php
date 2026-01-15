@@ -37,6 +37,18 @@
                             </a>
                         </div>
                     </div>
+                    {{-- Card 3 --}}
+                    <div class="report-card">
+                        <div class="report-card-body">
+                            <h5>CONTROL DE PRODUCTOS</h5>
+                            <p>Seguimiento de Producto</p>
+
+                            <a href="{{ route('reportes.controlproducto') }}"
+                            class="repor-btn repor-btn-success">
+                                Ver Reporte
+                            </a>
+                        </div>
+                    </div>
 
                 </div>
 
