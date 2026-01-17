@@ -61,6 +61,20 @@
     </div>
   </div>
 
+  @php
+    // Indexamos $meses por número de mes para cruzarlo con 1..12
+    $mesesIndex = [];
+    foreach(($meses ?? []) as $row){
+      $mn = (int)($row['month'] ?? 0);
+      if($mn >= 1 && $mn <= 12){
+        $mesesIndex[$mn] = $row;
+      }
+    }
+
+    // Lista fija 1..12
+    $months = range(1, 12);
+  @endphp
+
   <div class="card">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
       <h3 class="card-title" style="margin:0;">Meses del año {{ $year }}</h3>
@@ -78,27 +92,41 @@
           </tr>
         </thead>
         <tbody>
-          @forelse(($meses ?? []) as $m)
+          @foreach($months as $monthNum)
+            @php
+              // Nombre del mes en español
+              $monthName = \Carbon\Carbon::createFromDate((int)$year, (int)$monthNum, 1)
+                            ->locale('es')
+                            ->translatedFormat('F');
+              $monthName = ucfirst($monthName);
+
+              // Datos reales si existen, si no, 0
+              $data = $mesesIndex[$monthNum] ?? [];
+              $total = (float)($data['total'] ?? 0);
+              $count = (int)($data['count'] ?? 0);
+            @endphp
+
             <tr>
               <td>
-                <strong>{{ $m['label'] ?? ('Mes ' . ($m['month'] ?? '')) }}</strong>
+                <strong>{{ $monthName }}</strong>
                 <div class="small" style="opacity:.75;">{{ $year }}</div>
               </td>
+
               <td class="td-right">
-                ${{ number_format((float)($m['total'] ?? 0), 0) }}
+                ${{ number_format($total, 0) }}
               </td>
+
               <td class="td-right">
-                {{ (int)($m['count'] ?? 0) }}
+                {{ $count }}
               </td>
+
               <td>
-                <a class="btn-sm" href="{{ route('metricas.reporte.mensual', [$year, (int)($m['month'] ?? 1)]) }}">
+                <a class="btn-sm" href="{{ route('metricas.reporte.mensual', [$year, $monthNum]) }}">
                   Ver mes
                 </a>
               </td>
             </tr>
-          @empty
-            <tr><td colspan="4">No hay pagos confirmados para este año.</td></tr>
-          @endforelse
+          @endforeach
         </tbody>
       </table>
     </div>

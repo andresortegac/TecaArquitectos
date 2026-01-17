@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Cliente;
 use App\Models\Producto;
-use App\Models\Obra; // ✅ IMPORTANTE (evita error si Obra no estaba importado)
+use App\Models\Obra;
 
 class Arriendo extends Model
 {
@@ -34,6 +34,10 @@ class Arriendo extends Model
         'saldo',
         'dias_mora',
         'semaforo_pago',
+
+        // ✅ NUEVO: IVA
+        'iva_aplica',
+        'iva_rate',
     ];
 
     protected $casts = [
@@ -45,6 +49,10 @@ class Arriendo extends Model
         'total_alquiler' => 'decimal:2',
         'total_pagado' => 'decimal:2',
         'saldo' => 'decimal:2',
+
+        // ✅ IVA
+        'iva_aplica' => 'boolean',
+        'iva_rate' => 'float',
     ];
 
     /* =======================
@@ -81,17 +89,21 @@ class Arriendo extends Model
         return $this->hasMany(\App\Models\ArriendoItem::class, 'arriendo_id');
     }
 
+    // ✅ Transportes (múltiples) SOLO del PADRE
+    public function transportes()
+    {
+        return $this->hasMany(\App\Models\ArriendoTransporte::class, 'arriendo_id');
+    }
+
     /* =======================
        SCOPES ÚTILES PARA MÉTRICAS
     ======================= */
 
-    // Solo dinero realmente cobrado
     public function scopePagados($query)
     {
         return $query->where('total_pagado', '>', 0);
     }
 
-    // Solo con saldo pendiente
     public function scopeConSaldo($query)
     {
         return $query->where('saldo', '>', 0);

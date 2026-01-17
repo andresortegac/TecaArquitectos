@@ -195,6 +195,13 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::get('/arriendos/{arriendo}/ver', [ArriendoController::class, 'ver'])
         ->name('arriendos.ver');
 
+    // ✅ NUEVO: TRANSPORTES (múltiples por arriendo)
+    Route::post('/arriendos/{arriendo}/transportes', [App\Http\Controllers\ArriendoTransporteController::class, 'store'])
+        ->name('arriendos.transportes.store');
+
+    Route::delete('/arriendos/transportes/{transporte}', [App\Http\Controllers\ArriendoTransporteController::class, 'destroy'])
+        ->name('arriendos.transportes.destroy');
+
     // ✅ API KPI "Recaudado hoy"
     Route::get('/api/recaudado-hoy', function () {
         return response()->json([
@@ -213,9 +220,9 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
 
         //ARRIENDO PADRE E HIJOS
 
-// PADRE
-Route::get('/arriendos/{arriendo}/ver', [App\Http\Controllers\ArriendoController::class, 'ver'])
-    ->name('arriendos.ver');
+// PADRE (⚠️ ya existe arriba; lo dejo SIN BORRAR, pero lo comento para evitar duplicado)
+// Route::get('/arriendos/{arriendo}/ver', [App\Http\Controllers\ArriendoController::class, 'ver'])
+//     ->name('arriendos.ver');
 
 
     // ITEMS (agregar producto dentro del padre)

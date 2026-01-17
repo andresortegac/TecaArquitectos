@@ -12,12 +12,18 @@
   <div class="card" style="margin-bottom:12px;">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
       <div>
-        <h3 class="card-title" style="margin:0;">Detalle del día {{ $dateLabel }}</h3>
+        <h3 class="card-title" style="margin:0;">
+          Detalle del día {{ $dateLabel ?? ($date ?? $fecha ?? '') }}
+        </h3>
         <div class="subtitle" style="margin-top:6px;">Recaudo por hora + arriendos del día</div>
       </div>
 
       <div style="display:flex;gap:8px;align-items:center;">
-        <a class="btn-sm" href="{{ route('metricas.reporte.mensual', [$year, $month]) }}">← Volver al mes</a>
+        @if(isset($year, $month))
+          <a class="btn-sm" href="{{ route('metricas.reporte.mensual', [$year, $month]) }}">← Volver al mes</a>
+        @else
+          <a class="btn-sm" href="{{ url()->previous() }}">← Volver</a>
+        @endif
       </div>
     </div>
 
@@ -143,7 +149,7 @@
         <tbody>
           @forelse(($arriendos ?? []) as $a)
             <tr>
-              <td><strong>#{{ $a['id'] }}</strong></td>
+              <td><strong>#{{ $a['id'] ?? '' }}</strong></td>
               <td>{{ $a['cliente'] ?? '—' }}</td>
               <td>{{ $a['inicio'] ?? '—' }}</td>
               <td>
@@ -157,7 +163,11 @@
               <td class="td-right">${{ number_format((float)($a['pagado'] ?? 0), 0) }}</td>
               <td class="td-right">${{ number_format((float)($a['saldo'] ?? 0), 0) }}</td>
               <td>
-                <a class="btn-sm" href="{{ route('arriendos.ver', $a['id']) }}">Ver</a>
+                @if(isset($a['id']))
+                  <a class="btn-sm" href="{{ route('arriendos.ver', $a['id']) }}">Ver</a>
+                @else
+                  —
+                @endif
               </td>
             </tr>
           @empty

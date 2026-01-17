@@ -53,7 +53,7 @@ class ArriendoController extends Controller
             $a->semaforo_pago = $sem['semaforo'];
         }
 
-        // ✅ NUEVO: KPIs de caja (recaudo real) desde tabla payments
+        // ✅ KPIs de caja (recaudo real) desde tabla payments
         $hoy = Carbon::today()->toDateString();
 
         $recaudadoHoy = Payment::where('business_date', $hoy)
@@ -128,7 +128,12 @@ class ArriendoController extends Controller
             'dias_mora' => 0,
             'semaforo_pago' => 'VERDE',
 
+            // compatibilidad con tu esquema
             'cantidad' => 0,
+
+            // IVA por defecto apagado (se decide al cerrar)
+            'iva_aplica' => 0,
+            'iva_rate' => 0.19,
         ]);
 
         return redirect()->route('arriendos.ver', $arriendo)
@@ -154,7 +159,10 @@ class ArriendoController extends Controller
         $arriendo->load([
             'cliente',
             'items.producto',
+            'transportes', // ✅ NUEVO
         ]);
+
+        $totalTransportes = (float)($arriendo->transportes?->sum('valor') ?? 0);
 
         // ✅ Totales del PADRE calculados desde los items (siempre correctos)
         $totContrato = [
@@ -163,12 +171,18 @@ class ArriendoController extends Controller
             'total_pagado'   => (float)$arriendo->items->sum('total_pagado'),
         ];
 
-        $totContrato['precio_total'] = $totContrato['total_alquiler'] + $totContrato['total_merma'];
+        $subtotal = $totContrato['total_alquiler'] + $totContrato['total_merma'] + $totalTransportes;
+
+        $ivaAplica = (int)($arriendo->iva_aplica ?? 0) === 1;
+        $ivaRate   = (float)($arriendo->iva_rate ?? 0.19);
+        $ivaValor  = $ivaAplica ? ($subtotal * $ivaRate) : 0;
+
+        $totContrato['precio_total'] = $subtotal + $ivaValor;
         $totContrato['saldo']        = max(0, $totContrato['precio_total'] - $totContrato['total_pagado']);
 
         // ✅ Total histórico del cliente (sumando todos los PADRES)
         $padresCliente = Arriendo::where('cliente_id', $arriendo->cliente_id)
-            ->with('items')
+            ->with(['items', 'transportes'])
             ->get();
 
         $totalHistorico = [
@@ -183,8 +197,15 @@ class ArriendoController extends Controller
             $al = (float)$p->items->sum('total_alquiler');
             $me = (float)$p->items->sum('total_merma');
             $pa = (float)$p->items->sum('total_pagado');
+            $tr = (float)($p->transportes?->sum('valor') ?? 0);
 
-            $pt = $al + $me;
+            $sub = $al + $me + $tr;
+
+            $ivaAp = (int)($p->iva_aplica ?? 0) === 1;
+            $ivaRt = (float)($p->iva_rate ?? 0.19);
+            $ivaVl = $ivaAp ? ($sub * $ivaRt) : 0;
+
+            $pt = $sub + $ivaVl;
             $sa = max(0, $pt - $pa);
 
             $totalHistorico['total_alquiler'] += $al;
@@ -272,7 +293,8 @@ class ArriendoController extends Controller
     }
 
     /* ============================================================
-     * 8) CERRAR / DEVOLVER ARRIENDO (CÁLCULO CORREGIDO)
+     * 8) CERRAR / DEVOLVER ARRIENDO
+     * ✅ AHORA soporta PADRE+ITEMS + transportes + IVA al cerrar
      * ============================================================ */
     public function cerrar(Request $request, Arriendo $arriendo)
     {
@@ -282,9 +304,13 @@ class ArriendoController extends Controller
             'costo_merma' => 'nullable|numeric|min:0',
             'descripcion_incidencia' => 'nullable|string|max:255',
             'pago' => 'nullable|numeric|min:0',
+
+            // ✅ NUEVO: IVA solo al cierre
+            'iva_aplica' => 'nullable|in:0,1',
         ]);
 
-        $arriendo->load('producto');
+        // ✅ si tienes items, usamos lógica nueva
+        $arriendo->load(['items', 'items.producto', 'transportes', 'producto']);
 
         $fechaEntrega = $arriendo->fecha_entrega ?? $arriendo->fecha_inicio;
         $fechaEntrega = Carbon::parse($fechaEntrega)->toDateString();
@@ -297,37 +323,120 @@ class ArriendoController extends Controller
                 ->withInput();
         }
 
+        // ✅ Guardar si IVA aplica (decisión final)
+        if ($request->has('iva_aplica')) {
+            $arriendo->iva_aplica = (int)($data['iva_aplica'] ?? 0);
+            $arriendo->save();
+        }
+
+        // ✅ Pagos (si pagas algo al cerrar)
+        $pago = (float)($data['pago'] ?? 0);
+
+        // ============================================================
+        // ✅ NUEVA LÓGICA si hay ITEMS (PADRE + ITEMS)
+        // ============================================================
+        if ($arriendo->items && $arriendo->items->count() > 0) {
+
+            $totalAlquiler = (float)$arriendo->items->sum('total_alquiler');
+            $totalMerma    = (float)$arriendo->items->sum('total_merma');
+            $totalPagado   = (float)$arriendo->items->sum('total_pagado') + $pago;
+
+            $totalTransportes = (float)($arriendo->transportes?->sum('valor') ?? 0);
+
+            $subtotal = $totalAlquiler + $totalMerma + $totalTransportes;
+
+            $ivaAplica = (int)($arriendo->iva_aplica ?? 0) === 1;
+            $ivaRate   = (float)($arriendo->iva_rate ?? 0.19);
+            $ivaValor  = $ivaAplica ? ($subtotal * $ivaRate) : 0;
+
+            $totalFinal = $subtotal + $ivaValor;
+            $saldo = max(0, $totalFinal - $totalPagado);
+
+            $sem = $this->calcularSemaforoMoroso($fechaDevol, $saldo);
+
+            $arriendo->update([
+                'fecha_fin' => $fechaDevol,
+                'fecha_devolucion_real' => $fechaDevol,
+
+                'cerrado' => 1,
+                'estado' => 'devuelto',
+
+                // aquí no recalculamos días por item porque ya lo manejas por devoluciones/items,
+                // pero guardamos lo que ya tienes en PADRE para no romper.
+                'dias_lluvia_desc' => (int)($data['dias_lluvia'] ?? 0),
+                'total_alquiler' => $totalAlquiler,
+                'total_merma' => $totalMerma,
+                'total_pagado' => $totalPagado,
+                'saldo' => $saldo,
+                'precio_total' => $totalFinal,
+
+                'dias_mora' => $sem['dias_mora'],
+                'semaforo_pago' => $sem['semaforo'],
+            ]);
+
+            // incidencias opcionales (igual que tu código)
+            $desc = $data['descripcion_incidencia'] ?? null;
+            $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
+            $totalMermaExtra = (float)($data['costo_merma'] ?? 0);
+
+            if ($diasLluvia > 0) {
+                Incidencia::create([
+                    'arriendo_id' => $arriendo->id,
+                    'tipo' => 'LLUVIA',
+                    'dias' => $diasLluvia,
+                    'costo' => 0,
+                    'descripcion' => $desc ?? 'Incidencia por lluvia al cierre',
+                ]);
+            }
+
+            if ($totalMermaExtra > 0) {
+                Incidencia::create([
+                    'arriendo_id' => $arriendo->id,
+                    'tipo' => 'DANO',
+                    'dias' => 0,
+                    'costo' => $totalMermaExtra,
+                    'descripcion' => $desc ?? 'Incidencia por daño/merma al cierre',
+                ]);
+            }
+
+            return redirect()->route('arriendos.index')
+                ->with('success', 'Arriendo cerrado (items + transportes + IVA aplicado si corresponde).');
+        }
+
+        // ============================================================
+        // ✅ FALLBACK: LÓGICA ANTIGUA si NO hay ITEMS
+        // ============================================================
         $start = Carbon::parse($fechaEntrega)->startOfDay();
         $end   = Carbon::parse($fechaDevol)->startOfDay();
 
         $diasTrans = $start->diffInDays($end);
-
-        if ($diasTrans === 0) {
-            $diasTrans = 1;
-        }
+        if ($diasTrans === 0) $diasTrans = 1;
 
         $domingos = $this->contarDomingosExcluyendoFin($fechaEntrega, $fechaDevol);
-
         $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
-
         $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
 
         $tarifa = (float)($arriendo->producto->costo ?? 0);
-
-        $totalAlquiler = $diasCobrables * $tarifa * (int)$arriendo->cantidad;
+        $totalAlquiler = $diasCobrables * $tarifa * (int)($arriendo->cantidad ?? 0);
 
         $totalMerma = (float)($data['costo_merma'] ?? 0);
-
-        $pago = (float)($data['pago'] ?? 0);
         $totalPagado = (float)($arriendo->total_pagado ?? 0) + $pago;
 
-        $totalFinal = $totalAlquiler + $totalMerma;
-        $saldo = max(0, $totalFinal - $totalPagado);
+        $totalTransportes = (float)($arriendo->transportes?->sum('valor') ?? 0);
+        $subtotal = $totalAlquiler + $totalMerma + $totalTransportes;
 
+        $ivaAplica = (int)($arriendo->iva_aplica ?? 0) === 1;
+        $ivaRate   = (float)($arriendo->iva_rate ?? 0.19);
+        $ivaValor  = $ivaAplica ? ($subtotal * $ivaRate) : 0;
+
+        $totalFinal = $subtotal + $ivaValor;
+
+        $saldo = max(0, $totalFinal - $totalPagado);
         $sem = $this->calcularSemaforoMoroso($fechaDevol, $saldo);
 
         $arriendo->update([
             'fecha_fin' => $fechaDevol,
+            'fecha_devolucion_real' => $fechaDevol,
 
             'cerrado' => 1,
             'estado' => 'devuelto',
@@ -341,7 +450,6 @@ class ArriendoController extends Controller
             'total_merma' => $totalMerma,
             'total_pagado' => $totalPagado,
             'saldo' => $saldo,
-
             'precio_total' => $totalFinal,
 
             'dias_mora' => $sem['dias_mora'],
@@ -416,22 +524,24 @@ class ArriendoController extends Controller
 
     public function detalles(Arriendo $arriendo)
     {
-        // ✅ ÚNICO CAMBIO NECESARIO: cargar ITEMS + DEVOLUCIONES (para ver todo por herramienta)
         $arriendo->load([
             'cliente',
             'items.producto',
             'items.devoluciones',
             'incidencias',
+            'transportes', // ✅ NUEVO
         ]);
 
         return view('arriendos.detalles', compact('arriendo'));
     }
+
     public function pdf(Arriendo $arriendo)
     {
         $arriendo->load([
             'cliente',
             'obra',
-            'items.producto'
+            'items.producto',
+            'transportes', // ✅ NUEVO
         ]);
 
         $pdf = Pdf::loadView('arriendos.pdf', compact('arriendo'))

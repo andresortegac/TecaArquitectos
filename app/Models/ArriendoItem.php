@@ -21,7 +21,6 @@ class ArriendoItem extends Model
         'fecha_fin_item' => 'datetime',
         'tarifa_diaria' => 'float',
 
-        // ✅ opcional (no afecta nada, pero evita errores raros en cálculos)
         'cantidad_inicial' => 'integer',
         'cantidad_actual' => 'integer',
         'cerrado' => 'boolean',

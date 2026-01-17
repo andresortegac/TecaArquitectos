@@ -12,7 +12,7 @@ class ArriendoItemController extends Controller
 {
     public function create(Arriendo $arriendo)
     {
-        $arriendo->load(['cliente', 'items.producto']);
+        $arriendo->load(['cliente', 'items.producto', 'transportes']);
 
         if ((int)($arriendo->cerrado ?? 0) === 1 || $arriendo->estado !== 'activo') {
             return redirect()->route('arriendos.index')
@@ -95,7 +95,7 @@ class ArriendoItemController extends Controller
                 ]);
         }
 
-        // ✅ IMPORTANTE: recalcular totales del PADRE después de agregar el item
+        // ✅ Recalcular totales del PADRE después de agregar el item
         $this->recalcularTotalesPadre($arriendo->fresh());
 
         return redirect()->route('arriendos.ver', $arriendo)
@@ -149,15 +149,27 @@ class ArriendoItemController extends Controller
             ->with('success', 'Item eliminado correctamente.');
     }
 
+    /**
+     * ✅ REGLA NUEVA:
+     * Total del PADRE = (items alquiler + items merma) + (transportes) + (IVA si aplica)
+     */
     private function recalcularTotalesPadre(Arriendo $arriendo): void
     {
-        $arriendo->load('items');
+        $arriendo->load(['items', 'transportes']);
 
         $totalAlquiler = (float)$arriendo->items->sum('total_alquiler');
         $totalMerma    = (float)$arriendo->items->sum('total_merma');
         $totalPagado   = (float)$arriendo->items->sum('total_pagado');
 
-        $precioTotal = $totalAlquiler + $totalMerma;
+        $totalTransportes = (float)($arriendo->transportes?->sum('valor') ?? 0);
+
+        $subtotal = $totalAlquiler + $totalMerma + $totalTransportes;
+
+        $ivaAplica = (int)($arriendo->iva_aplica ?? 0) === 1;
+        $ivaRate   = (float)($arriendo->iva_rate ?? 0.19);
+        $ivaValor  = $ivaAplica ? ($subtotal * $ivaRate) : 0;
+
+        $precioTotal = $subtotal + $ivaValor;
         $saldo       = max(0, $precioTotal - $totalPagado);
 
         $todosCerrados = $arriendo->items->count() > 0
