@@ -34,7 +34,7 @@
                 @role('admin')
 
                     <a href="{{ route('dashboard') }}" class="nav-item">
-                        Panel principal
+                        <b>Panel principal</b> 
                     </a>
 
                     {{-- MENÚ DESPLEGABLE GESTIÓN DE BODEGA --}}
