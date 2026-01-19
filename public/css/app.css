@@ -12,7 +12,7 @@ body {
 
 /* APP */
 .app {
-  display: flex;
+  display: relative;
 }
 
 /* SIDEBAR */
@@ -53,12 +53,14 @@ body {
 }
 
 .nav-item {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 44px;          /* 🔒 altura fija */
   padding: 10px 12px;
+  line-height: 1.2;
+  border-radius: 8px;
   color: #000000;
   text-decoration: none;
-  border-radius: 8px;
-  transition: .15s;
 }
 
 .nav-item:hover {
@@ -66,14 +68,13 @@ body {
   color: #fff;
 }
 
-
 /* ================= CONTENT ================= */
 .principal-content {    
   margin-left: 260px;
+  width: calc(100vw - 260px);
   height: 100vh;
   overflow-y: auto;
   padding: 20px;
-  flex: 1;
 
   position: relative;
   z-index: 1;
@@ -91,11 +92,12 @@ body {
   position: fixed;
   top: 0;
   left: 260px;
-  width: calc(100% - 260px);
+  width: calc(100vw - 260px);
   height: 100vh;
   background: rgba(0, 0, 0, 0.25);
   z-index: -1;
 }
+
 
 /* TOPBAR */
 .principal-topbar {
@@ -260,34 +262,100 @@ body {
 
 
 .estado-normal {
-        background-color: #d1e7dd !important;
-    }
+  background-color: #d1e7dd !important;
+}
 
-    .estado-bajo {
-        background-color: #f8d7da !important;
-    }
+.estado-bajo {
+  background-color: #f8d7da !important;
+}
 
-    .estado-alquiler {
-        background-color: #fff3cd !important;
-    }
+.estado-alquiler {
+  background-color: #fff3cd !important;
+}
 
-    .badge-normal {
-        background-color: #198754;
-        color: white;
-        padding: 11px;
-        border-radius: 8px;
-    }
+.badge-normal {
+    background-color: #198754;
+    color: white;
+    padding: 11px;
+    border-radius: 8px;
+}
 
-    .badge-bajo {
-        background-color: #dc3545;
-        color: white;
-        padding: 11px;
-        border-radius: 8px;
-    }
+.badge-bajo {
+    background-color: #dc3545;
+    color: white;
+    padding: 11px;
+    border-radius: 8px;
+}
 
-    .badge-alquiler {
-        background-color: #ffc107;
-        color: #000;           
-        padding: 11px;
-        border-radius: 8px;
-    }
+.badge-alquiler {
+    background-color: #ffc107;
+    color: #000;           
+    padding: 11px;
+    border-radius: 8px;
+}
+
+/* MENU */
+.nav-dropdown {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 12px;
+    line-height: 1.2;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+    justify-content: space-between;
+}
+
+.nav-title {
+    font-weight: 600;
+}
+
+.dropdown-menu {
+    display: none;
+    border-left: 2px solid #e5e7eb;
+    margin-left: 12px;
+}
+
+.nav-dropdown.open .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu .nav-item {
+    padding-left: 44px;
+    font-size: 14px;
+    opacity: 0.95;
+}
+
+.arrow {
+    transition: transform 0.2s ease;
+}
+
+.nav-dropdown.open .arrow {
+    transform: rotate(180deg);
+}
+
+
+.nav-dropdown.open .dropdown-menu {
+    display: block;
+}
+
+/* Opción activa */
+.nav-item.active {
+    background-color: #e0edff; /* azul clarito */
+    color: #1d4ed8;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Mantener color en hover */
+.nav-item.active:hover {
+    background-color: #d6e8ff;
+}
+
