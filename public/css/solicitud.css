@@ -1,33 +1,4 @@
-.nav-dropdown {
-    display: flex;
-    flex-direction: column;
-}
 
-.dropdown-toggle {
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.dropdown-menu {
-    display: none;
-    flex-direction: column;
-    margin-left: 15px;
-}
-
-.dropdown-menu .nav-item {
-    font-size: 14px;
-    opacity: 0.9;
-}
-
-.arrow {
-    transition: transform 0.2s ease;
-}
-
-.nav-dropdown.open .arrow {
-    transform: rotate(180deg);
-}
 
 /* ===== FORMULARIO SOLICITUD ===== */
 .form {
