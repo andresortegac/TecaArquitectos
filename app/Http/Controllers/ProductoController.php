@@ -11,7 +11,7 @@ use App\Models\Configuracion;
 
 class ProductoController extends Controller
 {
-        public function index()
+      public function index()
     {
         $productos = Producto::all();
 
@@ -21,8 +21,8 @@ class ProductoController extends Controller
             ->pluck('categorias');
 
         return view('productos.index', compact('productos', 'categorias'));
-    }
-
+    }     
+       
 
         public function create()
     {

@@ -15,6 +15,9 @@ use App\Http\Controllers\ObraController;
 use App\Http\Controllers\ArriendoDevolucionController;
 use App\Http\Controllers\GastoController;
 use App\Http\Controllers\controlproducto;
+use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\ProductoadminController;
+
 
 use Illuminate\Support\Facades\Route;
 
@@ -38,13 +41,32 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
 | INVENTARIO / BODEGA
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+
     Route::resource('productos', ProductoController::class);
+
+    Route::post('/productos', [ProductoadminController::class, 'inventario'])
+        ->name('productos.inventario');
+
 
     Route::post('/productos/import', [ProductoController::class, 'import'])
         ->name('productos.import');
 
     
+});
+
+Route::middleware(['auth', 'role:bodega'])->group(function () {
+
+    Route::get('/restrincion', [ProductoadminController::class, 'inventario'])
+        ->name('restrincion.inventario');
+    
+});
+
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+
+    Route::get('/solicitudes-detalladas', 
+        [SolicitudController::class, 'indexDetallado']
+    )->name('solicitudes.detalladas');
 });
 
 
@@ -101,15 +123,18 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
 | REPORTES (solo admin|bodega)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::prefix('reportes')->group(function () {
         Route::get('/', [ReportesStockController::class, 'index'])->name('reportes.index');
         Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
-        Route::get('/mensual', [ReportesStockController::class, 'mensual'])->name('reportes.mensual');
         Route::get('/controlproducto', [controlproducto::class, 'controlproducto'])->name('reportes.controlproducto');
-   
+        Route::get('reportes/generalrep', [ReportesStockController::class, 'reportes'])->name('reportes.generalrep');
+        // ✅ RF-28
+        Route::get('/clientes-pendientes',[ReporteController::class, 'clientesPendientes'])
+        ->name('reportes.clientes-pendientes');
     });
 });
+
 Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
     Route::get('/movimientos/export', [MovimientoController::class, 'export'])
         ->name('movimientos.export');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Producto;
 use App\Models\Solicitud;
 use App\Models\Movimiento;
+use App\Models\Cliente;
 
 class DashboardController extends Controller
 {
@@ -18,4 +19,7 @@ class DashboardController extends Controller
     ]);
 
     }
+       
+
+
 }

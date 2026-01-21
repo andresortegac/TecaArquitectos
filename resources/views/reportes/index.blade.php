@@ -15,7 +15,7 @@
                     {{-- Card 1 --}}
                     <div class="report-card">
                         <div class="report-card-body">
-                            <h5>📦 Entradas y Salidas</h5>
+                            <h5>📦 ENTRADA Y SALIDAD DE MOVIMIENTOS</h5>
                             <p>Historial detallado de movimientos</p>
 
                             <a href="{{ route('reportes.movimientos') }}"
@@ -24,20 +24,8 @@
                             </a>
                         </div>
                     </div>
-
+                    
                     {{-- Card 2 --}}
-                    <div class="report-card">
-                        <div class="report-card-body">
-                            <h5>📅 Reporte Mensual</h5>
-                            <p>Resumen general por mes</p>
-
-                            <a href="{{ route('reportes.mensual') }}"
-                            class="repor-btn repor-btn-success">
-                                Ver Reporte
-                            </a>
-                        </div>
-                    </div>
-                    {{-- Card 3 --}}
                     <div class="report-card">
                         <div class="report-card-body">
                             <h5>CONTROL DE PRODUCTOS</h5>
@@ -49,8 +37,33 @@
                             </a>
                         </div>
                     </div>
+                    {{-- Card 3 --}}
+                    <div class="report-card">
+                        <div class="report-card-body">
+                            <h5>CONTROL DE CLIENTES</h5>
+                            <p>Seguimiento de Producto</p>
 
-                </div>
+                            <a href="{{ route('reportes.clientes-pendientes') }}"
+                            class="repor-btn repor-btn-success">
+                                Ver Reporte
+                            </a>
+                        </div>
+                    </div>
+                    {{-- Card 4 --}}
+                    <div class="report-card">
+                        <div class="report-card-body">
+                            <h5>Resumen General del Sistema</h5>
+                            <p>Seguimiento de Producto</p>
+                            <a href="{{ route('reportes.generalrep') }}"
+                                class="repor-btn repor-btn-success">
+                                Ver Reporte
+                            </a>
+
+                        </div>
+                    </div>
+
+                </div>          
+
 
             </div>
         @endsection

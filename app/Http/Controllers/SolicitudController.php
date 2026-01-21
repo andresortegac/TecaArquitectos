@@ -108,4 +108,19 @@ class SolicitudController extends Controller
             ->with('success', 'Solicitud aprobada correctamente');
     }
 
+        public function indexDetallado()
+    {
+        $solicitudes = \App\Models\Solicitud::with([
+                'cliente',
+                'obra',
+                'productos.producto'
+            ])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('cliente_id');
+
+        return view('solicitudes.detallado', compact('solicitudes'));
+    }
+
+
 }
