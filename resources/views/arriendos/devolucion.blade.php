@@ -30,6 +30,9 @@
         'total_abonado' => 0,
         'total_cobrado' => 0,
     ];
+
+    // ✅ Último saldo devolución guardado (para pintar en la tarjeta)
+    $ultimoSaldoDevolucion = optional($item->devoluciones?->sortByDesc('id')->first())->saldo_devolucion;
 @endphp
 
 <div class="return-page-pro">
@@ -46,6 +49,11 @@
             --primary2: #2563eb;
             --shadow: 0 16px 40px rgba(2,6,23,.12);
             --shadow2: 0 8px 18px rgba(2,6,23,.10);
+
+            /* ✅ Colores vivos calendario */
+            --cal-danger: #ef4444;
+            --cal-info:   #3b82f6;
+            --cal-success:#22c55e;
 
             padding: 14px;
             color: var(--text);
@@ -124,10 +132,6 @@
             padding: 14px 16px 16px 16px;
         }
 
-        /* ✅ NEW LAYOUT:
-           Row 1: full info
-           Row 2: form (left) + calendar (right)
-        */
         .return-page-pro .rp-row2{
             margin-top: 14px;
             display:grid;
@@ -364,30 +368,37 @@
         }
         .return-page-pro .cal-cell.is-out{ opacity:.35; background: transparent; }
         .return-page-pro .cal-cell.is-sunday{ border-style: dashed; opacity: .65; }
+
         .return-page-pro .cal-cell.is-charge{
-            background: rgba(185,28,28,.10);
-            border-color: rgba(185,28,28,.26);
+            background: rgba(239,68,68,.18);
+            border-color: rgba(239,68,68,.70);
             color: #7f1d1d;
+            box-shadow: 0 6px 16px rgba(239,68,68,.18);
         }
         .return-page-pro .cal-cell.is-charge::after{
             content: "✕";
             position:absolute;
-            top: 7px;
-            right: 9px;
-            font-size: 14px;
+            top: 6px;
+            right: 8px;
+            font-size: 15px;
             font-weight: 1200;
-            color: rgba(185,28,28,.95);
+            color: rgba(239,68,68,1);
         }
         .return-page-pro .cal-cell.is-start{
-            outline: 3px solid rgba(37,99,235,.18);
-            border-color: rgba(37,99,235,.30);
+            outline: 3px solid rgba(59,130,246,.35);
+            border-color: rgba(59,130,246,.85);
+            background: rgba(59,130,246,.14);
+            color: #0f172a;
+            box-shadow: 0 6px 16px rgba(59,130,246,.16);
         }
         .return-page-pro .cal-cell.is-return{
-            outline: 3px solid rgba(22,163,74,.16);
-            border-color: rgba(22,163,74,.28);
-            background: rgba(22,163,74,.08);
-            color: #166534;
+            outline: 3px solid rgba(34,197,94,.30);
+            border-color: rgba(34,197,94,.85);
+            background: rgba(34,197,94,.16);
+            color: #14532d;
+            box-shadow: 0 6px 16px rgba(34,197,94,.16);
         }
+
         .return-page-pro .cal-legend{
             display:flex;
             gap:10px;
@@ -410,13 +421,13 @@
         }
         .return-page-pro .dot{
             width:10px; height:10px; border-radius:999px; display:inline-block;
-            background: rgba(100,116,139,.35);
+            background: rgba(100,116,139,.55);
         }
-        .return-page-pro .dot.red{ background: rgba(185,28,28,.55); }
-        .return-page-pro .dot.green{ background: rgba(22,163,74,.55); }
-        .return-page-pro .dot.blue{ background: rgba(37,99,235,.55); }
+        .return-page-pro .dot.red{ background: var(--cal-danger); }
+        .return-page-pro .dot.green{ background: var(--cal-success); }
+        .return-page-pro .dot.blue{ background: var(--cal-info); }
 
-        /* HISTORY (same pro as before, compact) */
+        /* HISTORY */
         .return-page-pro .rp-section{ margin-top: 14px; }
         .return-page-pro .rp-kpis{
             display:grid;
@@ -547,6 +558,15 @@
                         <div class="k">Saldo del item</div>
                         <div class="v">${{ number_format((float)($item->saldo ?? 0), 2) }}</div>
                     </div>
+
+                    {{-- ✅ AQUÍ va tu tarjeta de SALDO DEVOLUCIÓN (para que deje de salir "—") --}}
+                    <div class="rp-kv">
+                        <div class="k">Saldo devolución</div>
+                        <div class="v money">
+                            $<span id="ui_saldo_card">{{ number_format((float)($ultimoSaldoDevolucion ?? 0), 2) }}</span>
+                        </div>
+                    </div>
+
                     <div class="rp-kv">
                         <div class="k">Regla de cobro</div>
                         <div class="v" style="font-size:12.5px; font-weight:900; color:var(--muted);">
@@ -592,7 +612,8 @@
                         </div>
 
                         <div class="field">
-                            <label class="rp-label">Costo daño/merma</label>
+                            {{-- ✅ CAMBIO DE NOMBRE VISIBLE --}}
+                            <label class="rp-label">Pérdida o daño de herramienta</label>
                             <input class="rp-input" type="number" min="0" step="0.01" name="costo_merma"
                                    value="{{ old('costo_merma', 0) }}">
                         </div>
@@ -628,11 +649,7 @@
                                    value="{{ old('descripcion_incidencia') }}"
                                    placeholder="Ej: lluvia fuerte / mango roto">
                         </div>
-
-                        <div class="field">
-                            <label class="rp-label">Nota (opcional)</label>
-                            <input class="rp-input" type="text" name="nota" value="{{ old('nota') }}">
-                        </div>
+                        {{-- ✅ ELIMINADO: Nota (opcional) --}}
                     </div>
 
                     <div class="rp-note">
@@ -723,7 +740,7 @@
                 </div>
             </div>
 
-            {{-- HISTORIAL (igual que antes, pro) --}}
+            {{-- HISTORIAL --}}
             <div class="rp-section">
                 <div class="rp-card" style="margin-top:14px;">
                     <div class="rp-card-title">
@@ -792,23 +809,17 @@
                                                 @if(isset($d->saldo_devolucion))
                                                     ${{ number_format((float)$d->saldo_devolucion, 2) }}
                                                 @else
-                                                    —
+                                                    0.00
                                                 @endif
                                             </td>
                                             <td class="center">{{ (int)$d->cantidad_restante }}</td>
                                             <td class="num">${{ number_format((float)$d->saldo_resultante, 2) }}</td>
                                         </tr>
 
-                                        @if(!empty($d->descripcion_incidencia) || !empty($d->nota))
+                                        @if(!empty($d->descripcion_incidencia))
                                             <tr class="row-note">
                                                 <td colspan="14">
-                                                    @if(!empty($d->descripcion_incidencia))
-                                                        <strong>Incidencia:</strong> {{ $d->descripcion_incidencia }}
-                                                    @endif
-                                                    @if(!empty($d->nota))
-                                                        @if(!empty($d->descripcion_incidencia)) &nbsp;|&nbsp; @endif
-                                                        <strong>Nota:</strong> {{ $d->nota }}
-                                                    @endif
+                                                    <strong>Incidencia:</strong> {{ $d->descripcion_incidencia }}
                                                 </td>
                                             </tr>
                                         @endif
@@ -840,6 +851,9 @@
               const uiTot  = $root.querySelector('#ui_total');
               const uiAbo  = $root.querySelector('#ui_abono');
               const uiSal  = $root.querySelector('#ui_saldo');
+
+              // ✅ Tarjeta superior (Saldo devolución)
+              const uiSaldoCard = $root.querySelector('#ui_saldo_card');
 
               const calTitle = $root.querySelector('#rp_cal_title');
               const calGrid  = $root.querySelector('#rp_cal_grid');
@@ -966,6 +980,9 @@
                 uiTot.textContent  = money(total);
                 uiAbo.textContent  = money(abono);
                 uiSal.textContent  = money(saldo);
+
+                // ✅ actualizar la tarjeta superior también
+                if (uiSaldoCard) uiSaldoCard.textContent = money(saldo);
 
                 uiTot.dataset.total = money(total);
                 renderCalendar();

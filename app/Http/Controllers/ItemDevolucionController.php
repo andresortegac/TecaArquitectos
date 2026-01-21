@@ -44,7 +44,6 @@ class ItemDevolucionController extends Controller
             'costo_merma'             => 'nullable|numeric|min:0',
             'descripcion_incidencia'  => 'nullable|string|max:255',
             'pago'                    => 'nullable|numeric|min:0',
-            'nota'                    => 'nullable|string|max:1000',
 
             // método de pago (tu lista)
             'payment_method'          => 'nullable|in:efectivo,nequi,daviplata,transferencia',
@@ -78,11 +77,10 @@ class ItemDevolucionController extends Controller
                 ->withInput();
         }
 
-        $pago = (float)($data['pago'] ?? 0);
-        $method = $data['payment_method'] ?? 'efectivo';
+        $pago       = (float)($data['pago'] ?? 0);
+        $method     = $data['payment_method'] ?? 'efectivo';
         $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
-        $desc = $data['descripcion_incidencia'] ?? null;
-        $nota = $data['nota'] ?? null;
+        $desc       = $data['descripcion_incidencia'] ?? null;
         $costoMerma = (float)($data['costo_merma'] ?? 0);
 
         try {
@@ -94,7 +92,6 @@ class ItemDevolucionController extends Controller
                 $diasLluvia,
                 $costoMerma,
                 $desc,
-                $nota,
                 $pago,
                 $method
             ) {
@@ -102,16 +99,24 @@ class ItemDevolucionController extends Controller
                 $start = Carbon::parse($fechaInicioItem)->startOfDay();
                 $end   = Carbon::parse($fechaDevol)->startOfDay(); // fin NO incluido
                 $diasTrans = $start->diffInDays($end);
+
+                // Si inicio y devolución mismo día -> cobra 1 (tu regla)
                 if ($diasTrans === 0) $diasTrans = 1;
 
+                // Domingos (excluye fin)
                 $domingos = $this->contarDomingosExcluyendoFin($fechaInicioItem, $fechaDevol);
+
+                // Cobrables
                 $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
 
-                // ========= COBRO =========
+                // ========= COBRO (PARCIAL DE ESTA DEVOLUCIÓN) =========
                 $tarifa = (float)($item->tarifa_diaria ?? ($item->producto->costo ?? 0));
                 $totalAlquilerParcial = $diasCobrables * $tarifa * $cantidadDevuelta;
-                $totalMermaParcial = $costoMerma;
-                $totalCobradoParcial = $totalAlquilerParcial + $totalMermaParcial;
+                $totalMermaParcial    = $costoMerma;
+                $totalCobradoParcial  = $totalAlquilerParcial + $totalMermaParcial;
+
+                // ✅ AQUÍ ESTÁ LO QUE TE FALTABA (SALDO DEVOLUCIÓN REAL)
+                $saldoDevolucionParcial = max(0, $totalCobradoParcial - $pago);
 
                 // ========= ACUMULADOS ITEM =========
                 $nuevoTotalAlquiler = (float)($item->total_alquiler ?? 0) + $totalAlquilerParcial;
@@ -189,13 +194,15 @@ class ItemDevolucionController extends Controller
                     'total_merma'    => $totalMermaParcial,
                     'total_cobrado'  => $totalCobradoParcial,
 
-                    'pago_recibido' => $pago,
+                    'pago_recibido'     => $pago,
+
+                    // ✅ NUEVO: saldo devolución REAL guardado en BD
+                    'saldo_devolucion'  => $saldoDevolucionParcial,
 
                     'cantidad_restante' => max(0, $cantidadRestante),
                     'saldo_resultante'  => $nuevoSaldo,
 
                     'descripcion_incidencia' => $desc,
-                    'nota' => $nota,
                 ]);
 
                 // ========= RECALCULAR PADRE =========
@@ -209,7 +216,6 @@ class ItemDevolucionController extends Controller
                         'client_id' => optional($item->arriendo)->cliente_id,
                         'obra_id' => optional($item->arriendo)->obra_id,
 
-                        // ✅ mejor: morph real
                         'source_type' => \App\Models\DevolucionArriendo::class,
                         'source_id'   => $devol->id,
 
