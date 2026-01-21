@@ -165,48 +165,70 @@
                 {{-- ================= ASISTENTE ================= --}}
                 @role('asistente')
 
-                    <a href="{{ route('dashboard') }}" class="nav-item">
-                        Vista General del Sistema
+                <div class="nav-dropdown {{ request()->routeIs('arriendos.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0)" class="nav-item dropdown-toggle">
+                        Control de Alquileres
+                        <span class="arrow">▾</span>
                     </a>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('arriendos.index') }}" class="nav-item">Listado</a>
+                        <a href="{{ route('arriendos.create') }}" class="nav-item">Registro</a>
+                    </div>
+                </div>
 
-                    <div class="nav-section"><b>Control de Alquileres</b></div>
-                    <a href="{{ route('arriendos.index') }}" class="nav-item">Listado de Alquileres</a>
-                    <a href="{{ route('arriendos.create') }}" class="nav-item">Registro de Alquiler</a>
+                <div class="nav-dropdown {{ request()->routeIs('clientes.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0)" class="nav-item dropdown-toggle">
+                        Clientes y Obras
+                        <span class="arrow">▾</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('clientes.index') }}" class="nav-item">Listado</a>
+                        <a href="{{ route('clientes.create') }}" class="nav-item">Registro</a>
+                    </div>
+                </div>
 
-                    <div class="nav-section"><b>Gestión de Clientes</b></div>
-                    <a href="{{ route('clientes.index') }}" class="nav-item">Listado de Clientes</a>
-                    <a href="{{ route('clientes.create') }}" class="nav-item">Registro de Cliente</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="nav-item nav-logout">CERRAR SESIÓN</button>
+                </form>
 
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="nav-item nav-logout">
-                            CERRAR SESIÓN
-                        </button>
-                    </form>
-
-                @endrole
+            @endrole
 
                 {{-- ================= BODEGA ================= --}}
                 @role('bodega')
 
-                    <a href="{{ route('dashboard') }}" class="nav-item">
-                        Vista General del Sistema
+                <a href="{{ route('dashboard') }}" class="nav-item">
+                    <b>Panel principal</b>
+                </a>
+
+                <div class="nav-dropdown {{ request()->routeIs('productos.*','solicitudes.*') ? 'open' : '' }}">
+                    <a href="javascript:void(0)" class="nav-item dropdown-toggle">
+                        Sistema de Gestión de Bodega
+                        <span class="arrow">▾</span>
                     </a>
 
-                    <div class="nav-section"><b>Sistema de Gestión de Bodega</b></div>
-                    <a href="{{ route('productos.create') }}" class="nav-item">Registro de Producto</a>
-                    <a href="{{ route('solicitudes.solicitudes') }}" class="nav-item">Solicitudes de Inventario</a>
-                    <a href="{{ route('movimientos.create') }}" class="nav-item">Movimientos de Inventario</a>
-                    <a href="{{ route('productos.index') }}" class="nav-item">Existencias</a>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('solicitudes.solicitudes') }}" class="nav-item">
+                            Solicitudes de Inventario
+                        </a>
 
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="nav-item nav-logout">
-                            CERRAR SESIÓN
-                        </button>
-                    </form>
+                        <a href="{{ route('productos.index') }}" class="nav-item">
+                            Existencias
+                        </a>
+                        
+                        <a href="{{ route('solicitudes.detalladas') }}" class="nav-item">
+                            Control de Historial
+                        </a>
 
-                @endrole
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="nav-item nav-logout">CERRAR SESIÓN</button>
+                </form>
+
+            @endrole
 
             </nav>
         </aside>
@@ -226,26 +248,21 @@
 
     {{-- JS menú --}}
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const current = toggle.closest('.nav-dropdown');
+            if (!current) return;
 
-            document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
-                toggle.addEventListener('click', () => {
-
-                    const current = toggle.closest('.nav-dropdown');
-                    if (!current) return;
-
-                    document.querySelectorAll('.nav-dropdown').forEach(dropdown => {
-                        if (dropdown !== current) {
-                            dropdown.classList.remove('open');
-                        }
-                    });
-
-                    current.classList.toggle('open');
-                });
+            document.querySelectorAll('.nav-dropdown').forEach(d => {
+                if (d !== current) d.classList.remove('open');
             });
 
+            current.classList.toggle('open');
         });
-    </script>
+    });
+});
+</script>
 
 
     @yield('scripts')
