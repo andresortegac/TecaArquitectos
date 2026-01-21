@@ -41,7 +41,7 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
 | INVENTARIO / BODEGA
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
 
     Route::resource('productos', ProductoController::class);
 
