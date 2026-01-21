@@ -1,0 +1,149 @@
+/* ===============================
+   WRAPPER
+================================ */
+.ds-wrapper {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* ===============================
+   TITULO
+================================ */
+.ds-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #212529;
+}
+
+/* ===============================
+   CLIENTE
+================================ */
+.ds-cliente-card {
+    background: #ffffff;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.06);
+    overflow: hidden;
+}
+
+.ds-cliente-header {
+    background: linear-gradient(135deg, #0d6efd, #084298);
+    color: #fff;
+    padding: 14px 20px;
+    font-size: 1rem;
+}
+
+.ds-cliente-body {
+    padding: 20px;
+}
+
+/* ===============================
+   SOLICITUD
+================================ */
+.ds-solicitud-card {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    transition: all .25s ease;
+}
+
+.ds-solicitud-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0,0,0,.08);
+}
+
+.ds-solicitud-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.ds-info-left p {
+    margin: 0;
+    font-size: .9rem;
+}
+
+/* ===============================
+   ESTADOS
+================================ */
+.ds-estado {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: .8rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.ds-estado-pendiente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.ds-estado-aprobado {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.ds-estado-rechazado {
+    background: #f8d7da;
+    color: #842029;
+}
+ 
+/* ===============================
+   TABLA
+================================ */
+.ds-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+}
+
+.ds-table thead {
+    background: #f8f9fa;
+}
+
+.ds-table th,
+.ds-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.ds-table tbody tr:hover {
+    background: #f1f3f5;
+}
+
+/* ===============================
+   ACCIONES
+================================ */
+.ds-acciones {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.ds-btn {
+    background: #0d6efd;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: .85rem;
+    text-decoration: none;
+    transition: background .2s;
+}
+
+.ds-btn:hover {
+    background: #084298;
+}
+
+/* ===============================
+   EMPTY
+================================ */
+.ds-empty {
+    text-align: center;
+    padding: 30px;
+    color: #6c757d;
+    font-size: 1rem;
+}

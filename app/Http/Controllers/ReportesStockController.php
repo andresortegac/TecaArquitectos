@@ -6,6 +6,9 @@ use App\Models\Movimiento;
 use Illuminate\Http\Request;
 use App\Exports\ReporteMensualExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Cliente;
+use App\Models\Solicitud;
+use App\Models\Producto;
 
 class ReportesStockController extends Controller
 {
@@ -44,24 +47,24 @@ class ReportesStockController extends Controller
         return view('reportes.entradas_salidas', compact('movimientos'));
     }
 
-    public function mensual()
+     public function reportes()
     {
-        $reporte = Movimiento::selectRaw('
-                YEAR(created_at) as anio,
-                MONTH(created_at) as mes,
-                tipo,
-                SUM(cantidad) as total
-            ')
-            ->groupBy('anio', 'mes', 'tipo')
-            ->orderBy('anio', 'desc')
-            ->orderBy('mes', 'desc')
-            ->get();
-
-        return view('reportes.mensual', compact('reporte'));
+        return view('reportes.generalrep', [
+            'totalProductos'   => Producto::count(),
+            'totalSolicitudes' => Solicitud::count(),
+            'totalMovimientos' => Movimiento::count(),
+            'stockBajo'        => Producto::where('cantidad', '<=', 5)->count(),
+            'sinStock'         => Producto::where('cantidad', 0)->count(),
+            'pendientes' => Solicitud::where('estado','pendiente')->count(),
+            'aprobadas' => Solicitud::where('estado','aprobado')->count(),
+            'clientesDeuda' => Cliente::whereHas('arriendos', fn($q) =>
+                $q->where('saldo','>',0)
+            )->count(),
+            'ultimasSolicitudes' => Solicitud::latest()->take(5)->get(),
+        ]);
     }
 
-    public function exportMensual()
-    {
-        return Excel::download(new ReporteMensualExport, 'reporte_mensual.xlsx');
-    }
+    
+
+    
 }

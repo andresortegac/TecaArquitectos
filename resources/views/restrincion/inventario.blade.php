@@ -10,21 +10,7 @@
 
 @section('content')
 
-{{-- FORMULARIO IMPORTAR EXCEL --}}
-<div class="container import-wrapper">
-    <form action="{{ route('productos.import') }}"
-          method="POST"
-          enctype="multipart/form-data"
-          class="mb-6 import-form">
-        @csrf
 
-        <input type="file" name="archivo" required>
-
-        <button class="btn">
-            Importar Excel
-        </button>
-    </form>
-</div>
 
 <div class="container mx-auto px-4">
 
@@ -101,22 +87,7 @@
                 </span>
             </div>
 
-            {{-- Acciones --}}
-            <div class="producto-acciones">
-                <a href="{{ route('productos.edit', $producto) }}">
-                    Editar
-                </a>
-
-                <form action="{{ route('productos.destroy', $producto) }}"
-                      method="POST"
-                      onsubmit="return confirm('¿Eliminar este producto?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit">
-                        Eliminar
-                    </button>
-                </form>
-            </div>
+           
 
         </div>
         @endforeach

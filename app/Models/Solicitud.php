@@ -11,6 +11,7 @@ class Solicitud extends Model
 
     protected $table = 'solicitudes';
 
+   
     protected $fillable = [
         'solicitud_id',
         'cliente_id',
@@ -22,13 +23,29 @@ class Solicitud extends Model
         'fecha_aprobado',
     ];
 
-    public function arriendo()
+     public function arriendo()
     {
         return $this->belongsTo(Arriendo::class, 'solicitud_id');
     }
-    /**
-     * Relación con productos (muchos a muchos)
-     */
+
+    /* =========================
+       RELACIONES
+    ========================== */
+
+    // 👉 Cliente dueño de la solicitud
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class);
+    }
+
+    // 👉 Obra asociada
+    public function obra()
+{
+    return $this->belongsTo(Obra::class, 'obra_id');
+}
+
+
+    // 👉 Productos solicitados (tabla pivote)
     public function productos()
     {
         return $this->belongsToMany(
@@ -36,9 +53,16 @@ class Solicitud extends Model
             'solicitud_productos',
             'solicitud_id',
             'producto_id'
-        )->withPivot([
+        )
+        ->withPivot([
             'cantidad_solicitada',
             'cantidad_aprobada'
-        ])->withTimestamps();
+        ])
+        ->withTimestamps();
     }
+        public function producto()
+    {
+        return $this->belongsTo(Producto::class, 'producto_id');
+    }
+
 }

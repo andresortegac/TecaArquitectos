@@ -1,0 +1,54 @@
+.dash-wrapper {
+    padding: 20px;
+}
+
+.dash-title {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+}
+
+.dash-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.dash-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,.08);
+    transition: transform .2s ease;
+}
+
+.dash-card:hover {
+    transform: translateY(-4px);
+}
+
+.dash-icon {
+    font-size: 2rem;
+}
+
+.dash-card h4 {
+    margin: 0;
+    font-size: 1.6rem;
+}
+
+.dash-card small {
+    color: #6c757d;
+}
+
+.dash-card.warning {
+    border-left: 6px solid #ffc107;
+}
+
+.dash-card.danger {
+    border-left: 6px solid #dc3545;
+}
+
+.dash-card.info {
+    border-left: 6px solid #0d6efd;
+}
