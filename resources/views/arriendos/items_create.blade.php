@@ -65,6 +65,18 @@
     <div id="stockError" style="display:none; margin-top:6px; color:#b00020; font-size:13px;"></div>
   </div>
 
+  {{-- ✅ NUEVO: Cobrar domingos --}}
+  <div style="margin-bottom:10px;">
+    <label style="display:block; font-size:13px;">¿Cobrar domingos?</label>
+    <select class="input" name="cobra_domingo" id="cobra_domingo" required style="width:100%;">
+      <option value="1" {{ old('cobra_domingo', '0') == '1' ? 'selected' : '' }}>Sí, cobrar domingos</option>
+      <option value="0" {{ old('cobra_domingo', '0') == '0' ? 'selected' : '' }}>No, NO cobrar domingos</option>
+    </select>
+    <div style="font-size:12px; color:#666; margin-top:4px;">
+      Si eliges <strong>No</strong>, los domingos no se contarán como días cobrables para este producto.
+    </div>
+  </div>
+
   <div style="margin-bottom:10px; font-size:13px;">
     <div style="display:flex; justify-content:space-between; gap:10px;">
       <div>

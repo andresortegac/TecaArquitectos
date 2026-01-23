@@ -6,6 +6,7 @@ use App\Models\Arriendo;
 use App\Models\ArriendoItem;
 use App\Models\DevolucionArriendo;
 use App\Models\Incidencia;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -44,8 +45,6 @@ class ItemDevolucionController extends Controller
             'costo_merma'             => 'nullable|numeric|min:0',
             'descripcion_incidencia'  => 'nullable|string|max:255',
             'pago'                    => 'nullable|numeric|min:0',
-
-            // método de pago (tu lista)
             'payment_method'          => 'nullable|in:efectivo,nequi,daviplata,transferencia',
         ]);
 
@@ -83,6 +82,9 @@ class ItemDevolucionController extends Controller
         $desc       = $data['descripcion_incidencia'] ?? null;
         $costoMerma = (float)($data['costo_merma'] ?? 0);
 
+        // ✅ NUEVO: regla domingos por item (si cobra_domingo = 1 NO descontamos domingos)
+        $cobraDomingo = (int)($item->cobra_domingo ?? 0) === 1;
+
         try {
             DB::transaction(function () use (
                 $item,
@@ -93,8 +95,23 @@ class ItemDevolucionController extends Controller
                 $costoMerma,
                 $desc,
                 $pago,
-                $method
+                $method,
+                $cobraDomingo
             ) {
+
+                // ============================================================
+                // ✅ 1) AUMENTAR STOCK DEL PRODUCTO (LO QUE DEVUELVEN)
+                // ============================================================
+                $producto = Producto::where('id', $item->producto_id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($producto) {
+                    $producto->update([
+                        'cantidad' => (int)($producto->cantidad ?? 0) + $cantidadDevuelta
+                    ]);
+                }
+
                 // ========= DÍAS =========
                 $start = Carbon::parse($fechaInicioItem)->startOfDay();
                 $end   = Carbon::parse($fechaDevol)->startOfDay(); // fin NO incluido
@@ -106,8 +123,14 @@ class ItemDevolucionController extends Controller
                 // Domingos (excluye fin)
                 $domingos = $this->contarDomingosExcluyendoFin($fechaInicioItem, $fechaDevol);
 
-                // Cobrables
-                $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
+                // ✅ cobrables: si NO cobra domingo -> restar domingos
+                if ($cobraDomingo) {
+                    $diasCobrables = max(0, $diasTrans - $diasLluvia);
+                    $domingosDesc = 0; // para el historial (no descontó domingos)
+                } else {
+                    $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
+                    $domingosDesc = $domingos;
+                }
 
                 // ========= COBRO (PARCIAL DE ESTA DEVOLUCIÓN) =========
                 $tarifa = (float)($item->tarifa_diaria ?? ($item->producto->costo ?? 0));
@@ -115,7 +138,7 @@ class ItemDevolucionController extends Controller
                 $totalMermaParcial    = $costoMerma;
                 $totalCobradoParcial  = $totalAlquilerParcial + $totalMermaParcial;
 
-                // ✅ AQUÍ ESTÁ LO QUE TE FALTABA (SALDO DEVOLUCIÓN REAL)
+                // ✅ saldo devolución REAL
                 $saldoDevolucionParcial = max(0, $totalCobradoParcial - $pago);
 
                 // ========= ACUMULADOS ITEM =========
@@ -184,7 +207,7 @@ class ItemDevolucionController extends Controller
                     'cantidad_devuelta' => $cantidadDevuelta,
 
                     'dias_transcurridos' => $diasTrans,
-                    'domingos_desc'      => $domingos,
+                    'domingos_desc'      => $domingosDesc,
                     'dias_lluvia_desc'   => $diasLluvia,
                     'dias_cobrables'     => $diasCobrables,
 
@@ -195,8 +218,6 @@ class ItemDevolucionController extends Controller
                     'total_cobrado'  => $totalCobradoParcial,
 
                     'pago_recibido'     => $pago,
-
-                    // ✅ NUEVO: saldo devolución REAL guardado en BD
                     'saldo_devolucion'  => $saldoDevolucionParcial,
 
                     'cantidad_restante' => max(0, $cantidadRestante),
@@ -234,7 +255,7 @@ class ItemDevolucionController extends Controller
         }
 
         return redirect()->route('items.devolucion.create', $item)
-            ->with('success', 'Devolución registrada y guardada en historial (por producto).');
+            ->with('success', 'Devolución registrada. ✅ Stock actualizado correctamente.');
     }
 
     private function recalcularTotalesPadre(Arriendo $arriendo): void

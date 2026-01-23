@@ -603,10 +603,11 @@
 
                   <td class="right actions">
                     <div class="actions-box">
+                      {{-- ✅ SOLUCIÓN: aunque esté cerrado, igual deja ENTRAR A VER lo ocurrido (historial). --}}
                       @if((int)($it->cerrado ?? 0) === 0 && $it->estado === 'activo')
                         <a class="btn warning" href="{{ route('items.devolucion.create', $it) }}">Devolución</a>
                       @else
-                        <span class="badge off">Cerrado</span>
+                        <a class="btn" href="{{ route('items.devolucion.create', $it) }}">Ver historial</a>
                       @endif
 
                       <a class="btn" href="{{ route('arriendos.detalles', $arriendo) }}">Detalles</a>
