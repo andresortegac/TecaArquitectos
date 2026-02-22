@@ -19,7 +19,12 @@ class ArriendoController extends Controller
      * ============================================================ */
     public function index(Request $request)
     {
-        $query = Arriendo::with(['cliente', 'producto'])->latest();
+        $query = Arriendo::with(['cliente', 'producto', 'items', 'transportes'])
+            ->withSum('devoluciones as dev_total_alquiler', 'total_alquiler')
+            ->withSum('devoluciones as dev_total_merma', 'total_merma')
+            ->withSum('devoluciones as dev_total_pagado', 'pago_recibido')
+            ->withSum('devoluciones as dev_total_transporte', 'costo_transporte')
+            ->latest();
 
         // ✅ FILTROS (opcionales)
         if ($request->filled('obra_id')) {
@@ -331,17 +336,36 @@ class ArriendoController extends Controller
 
         // ✅ Pagos (si pagas algo al cerrar)
         $pago = (float)($data['pago'] ?? 0);
+        $totalMermaExtra = (float)($data['costo_merma'] ?? 0);
+        $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
+        $desc = $data['descripcion_incidencia'] ?? null;
 
         // ============================================================
         // ✅ NUEVA LÓGICA si hay ITEMS (PADRE + ITEMS)
         // ============================================================
         if ($arriendo->items && $arriendo->items->count() > 0) {
 
-            $totalAlquiler = (float)$arriendo->items->sum('total_alquiler');
-            $totalMerma    = (float)$arriendo->items->sum('total_merma');
-            $totalPagado   = (float)$arriendo->items->sum('total_pagado') + $pago;
+            // Valores reales consolidados desde historial de devoluciones (fuente de verdad de cierre/factura)
+            $devCount            = (int)$arriendo->devoluciones()->count();
+            $devTotalAlquiler    = (float)$arriendo->devoluciones()->sum('total_alquiler');
+            $devTotalMerma       = (float)$arriendo->devoluciones()->sum('total_merma');
+            $devTotalPagado      = (float)$arriendo->devoluciones()->sum('pago_recibido');
+            $devTotalTransporte  = (float)$arriendo->devoluciones()->sum('costo_transporte');
 
-            $totalTransportes = (float)($arriendo->transportes?->sum('valor') ?? 0);
+            $itemsTotalAlquiler  = (float)$arriendo->items->sum('total_alquiler');
+            $itemsTotalMerma     = (float)$arriendo->items->sum('total_merma');
+            $itemsTotalPagado    = (float)$arriendo->items->sum('total_pagado');
+
+            $totalAlquiler = $devCount > 0 ? $devTotalAlquiler : $itemsTotalAlquiler;
+            $totalMermaBase = $devCount > 0 ? $devTotalMerma : $itemsTotalMerma;
+            $totalPagadoBase = $devCount > 0 ? $devTotalPagado : $itemsTotalPagado;
+
+            $totalMerma = $totalMermaBase + $totalMermaExtra;
+            $totalPagado = $totalPagadoBase + $pago;
+
+            // Transporte real: transportes del padre + transporte cobrado en devoluciones
+            $totalTransportesPadre = (float)($arriendo->transportes?->sum('valor') ?? 0);
+            $totalTransportes = $totalTransportesPadre + $devTotalTransporte;
 
             $subtotal = $totalAlquiler + $totalMerma + $totalTransportes;
 
@@ -363,7 +387,7 @@ class ArriendoController extends Controller
 
                 // aquí no recalculamos días por item porque ya lo manejas por devoluciones/items,
                 // pero guardamos lo que ya tienes en PADRE para no romper.
-                'dias_lluvia_desc' => (int)($data['dias_lluvia'] ?? 0),
+                'dias_lluvia_desc' => $diasLluvia,
                 'total_alquiler' => $totalAlquiler,
                 'total_merma' => $totalMerma,
                 'total_pagado' => $totalPagado,
@@ -375,10 +399,6 @@ class ArriendoController extends Controller
             ]);
 
             // incidencias opcionales (igual que tu código)
-            $desc = $data['descripcion_incidencia'] ?? null;
-            $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
-            $totalMermaExtra = (float)($data['costo_merma'] ?? 0);
-
             if ($diasLluvia > 0) {
                 Incidencia::create([
                     'arriendo_id' => $arriendo->id,

@@ -298,6 +298,47 @@
       gap:10px;
       margin-top: 14px;
     }
+    .pro-ui .close-summary{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(59,130,246,.24);
+      background: rgba(59,130,246,.06);
+    }
+    .pro-ui .close-summary-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    @media(max-width: 820px){
+      .pro-ui .close-summary-grid{
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .pro-ui .sum-box{
+      background:#fff;
+      border: 1px solid rgba(226,232,240,.95);
+      border-radius: 12px;
+      padding: 9px 10px;
+    }
+    .pro-ui .sum-k{
+      display:block;
+      font-size: 11px;
+      color: rgba(100,116,139,.95);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .2px;
+    }
+    .pro-ui .sum-v{
+      display:block;
+      margin-top: 4px;
+      font-size: 15px;
+      font-weight: 900;
+      color: rgba(15,23,42,.95);
+      font-variant-numeric: tabular-nums;
+    }
+    .pro-ui .sum-v-danger{ color:#b91c1c; }
+    .pro-ui .sum-v-ok{ color:#166534; }
 
     /* ==============================
        ✅ SEMAFORIZACION POR FILA
@@ -590,6 +631,27 @@
                     } else {
                       $rowClass = '';
                     }
+
+                    $devAlquiler = (float)($a->dev_total_alquiler ?? 0);
+                    $devMerma = (float)($a->dev_total_merma ?? 0);
+                    $devPagado = (float)($a->dev_total_pagado ?? 0);
+                    $devTransporte = (float)($a->dev_total_transporte ?? 0);
+
+                    $itemsAlquiler = (float)(isset($a->items) ? $a->items->sum('total_alquiler') : 0);
+                    $itemsMerma = (float)(isset($a->items) ? $a->items->sum('total_merma') : 0);
+                    $itemsPagado = (float)(isset($a->items) ? $a->items->sum('total_pagado') : 0);
+
+                    $baseAlquiler = $devAlquiler > 0 ? $devAlquiler : ($itemsAlquiler > 0 ? $itemsAlquiler : (float)($a->total_alquiler ?? 0));
+                    $baseMerma = $devMerma > 0 ? $devMerma : ($itemsMerma > 0 ? $itemsMerma : (float)($a->total_merma ?? 0));
+                    $basePagado = $devPagado > 0 ? $devPagado : ($itemsPagado > 0 ? $itemsPagado : (float)($a->total_pagado ?? 0));
+
+                    $baseTransportePadre = (float)(isset($a->transportes) ? $a->transportes->sum('valor') : 0);
+                    $baseTransporte = $baseTransportePadre + $devTransporte;
+                    $baseIvaRate    = (float)($a->iva_rate ?? 0.19);
+                    $baseSubtotal   = $baseAlquiler + $baseMerma + $baseTransporte;
+                    $baseIvaValor   = (int)($a->iva_aplica ?? 0) === 1 ? ($baseSubtotal * $baseIvaRate) : 0;
+                    $baseTotalFinal = $baseSubtotal + $baseIvaValor;
+                    $baseSaldoFinal = max(0, $baseTotalFinal - $basePagado);
                   @endphp
 
                   <tr class="{{ $rowClass }}">
@@ -692,7 +754,15 @@
                           </button>
                         </div>
 
-                        <form method="POST" action="{{ route('arriendos.cerrar', $a) }}">
+                        <form method="POST"
+                              action="{{ route('arriendos.cerrar', $a) }}"
+                              class="js-cerrar-form"
+                              data-arriendo-id="{{ $a->id }}"
+                              data-base-alquiler="{{ $baseAlquiler }}"
+                              data-base-merma="{{ $baseMerma }}"
+                              data-base-pagado="{{ $basePagado }}"
+                              data-base-transporte="{{ $baseTransporte }}"
+                              data-iva-rate="{{ $baseIvaRate }}">
                           @csrf
 
                           <div class="modal-grid">
@@ -713,6 +783,9 @@
                                      step="0.01"
                                      name="pago"
                                      value="0">
+                              <div style="margin-top:8px;">
+                                <button type="button" class="btn-sm js-pagar-todo">Pagar saldo completo</button>
+                              </div>
                             </div>
                           </div>
 
@@ -741,14 +814,53 @@
                             <div class="modal-field">
                               <label class="small modal-label">Factura con IVA</label>
                               <select class="input" name="iva_aplica">
-                                <option value="0" selected>Sin IVA</option>
-                                <option value="1">Con IVA (19%)</option>
+                                <option value="0" {{ (int)($a->iva_aplica ?? 0) === 0 ? 'selected' : '' }}>Sin IVA</option>
+                                <option value="1" {{ (int)($a->iva_aplica ?? 0) === 1 ? 'selected' : '' }}>Con IVA (19%)</option>
                               </select>
                               <div class="small modal-help" style="margin-top:6px;">
                                 El IVA se calcula sobre (alquiler + merma + transportes).
                               </div>
                             </div>
                             <div class="modal-field"></div>
+                          </div>
+
+                          <div class="close-summary">
+                            <div class="close-summary-grid">
+                              <div class="sum-box">
+                                <span class="sum-k">Alquiler generado</span>
+                                <span class="sum-v js-sum-alquiler">${{ number_format($baseAlquiler, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Merma total</span>
+                                <span class="sum-v js-sum-merma">${{ number_format($baseMerma, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Transportes</span>
+                                <span class="sum-v js-sum-transporte">${{ number_format($baseTransporte, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">IVA</span>
+                                <span class="sum-v js-sum-iva">${{ number_format($baseIvaValor, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Total generado</span>
+                                <span class="sum-v js-sum-total">${{ number_format($baseTotalFinal, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Total pagado</span>
+                                <span class="sum-v js-sum-pagado">${{ number_format($basePagado, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Saldo final</span>
+                                <span class="sum-v js-sum-saldo {{ $baseSaldoFinal > 0 ? 'sum-v-danger' : 'sum-v-ok' }}">${{ number_format($baseSaldoFinal, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Estado de cierre</span>
+                                <span class="sum-v js-sum-estado {{ $baseSaldoFinal > 0 ? 'sum-v-danger' : 'sum-v-ok' }}">
+                                  {{ $baseSaldoFinal > 0 ? 'Queda saldo pendiente' : 'Cierra sin deuda' }}
+                                </span>
+                              </div>
+                            </div>
                           </div>
 
                           <div class="modal-field">
@@ -840,6 +952,102 @@
 
             document.addEventListener('keydown', function (e) {
               if (e.key === 'Escape') closeAll();
+            });
+
+            function parseNum(v) {
+              const n = Number(v);
+              return Number.isFinite(n) ? n : 0;
+            }
+
+            function money(v) {
+              return '$' + parseNum(v).toLocaleString('es-CO', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              });
+            }
+
+            function recalcCerrarForm(form) {
+              const baseAlquiler = parseNum(form.dataset.baseAlquiler);
+              const baseMerma = parseNum(form.dataset.baseMerma);
+              const basePagado = parseNum(form.dataset.basePagado);
+              const baseTransporte = parseNum(form.dataset.baseTransporte);
+              const ivaRate = parseNum(form.dataset.ivaRate || 0.19);
+
+              const pagoInput = form.querySelector('[name="pago"]');
+              const mermaInput = form.querySelector('[name="costo_merma"]');
+              const ivaInput = form.querySelector('[name="iva_aplica"]');
+
+              const extraMerma = Math.max(0, parseNum(mermaInput?.value));
+              const pagoCierre = Math.max(0, parseNum(pagoInput?.value));
+              const ivaAplica = String(ivaInput?.value || '0') === '1';
+
+              const totalMerma = baseMerma + extraMerma;
+              const subtotal = baseAlquiler + totalMerma + baseTransporte;
+              const ivaValor = ivaAplica ? (subtotal * ivaRate) : 0;
+              const totalGenerado = subtotal + ivaValor;
+              const totalPagado = basePagado + pagoCierre;
+              const saldo = Math.max(0, totalGenerado - totalPagado);
+
+              const $alq = form.querySelector('.js-sum-alquiler');
+              const $mer = form.querySelector('.js-sum-merma');
+              const $trn = form.querySelector('.js-sum-transporte');
+              const $iva = form.querySelector('.js-sum-iva');
+              const $tot = form.querySelector('.js-sum-total');
+              const $pag = form.querySelector('.js-sum-pagado');
+              const $sal = form.querySelector('.js-sum-saldo');
+              const $est = form.querySelector('.js-sum-estado');
+
+              if ($alq) $alq.textContent = money(baseAlquiler);
+              if ($mer) $mer.textContent = money(totalMerma);
+              if ($trn) $trn.textContent = money(baseTransporte);
+              if ($iva) $iva.textContent = money(ivaValor);
+              if ($tot) $tot.textContent = money(totalGenerado);
+              if ($pag) $pag.textContent = money(totalPagado);
+              if ($sal) {
+                $sal.textContent = money(saldo);
+                $sal.classList.toggle('sum-v-danger', saldo > 0);
+                $sal.classList.toggle('sum-v-ok', saldo <= 0);
+              }
+              if ($est) {
+                $est.textContent = saldo > 0 ? 'Queda saldo pendiente' : 'Cierra sin deuda';
+                $est.classList.toggle('sum-v-danger', saldo > 0);
+                $est.classList.toggle('sum-v-ok', saldo <= 0);
+              }
+            }
+
+            document.querySelectorAll('.js-cerrar-form').forEach(form => {
+              const pagoInput = form.querySelector('[name="pago"]');
+              const mermaInput = form.querySelector('[name="costo_merma"]');
+              const ivaInput = form.querySelector('[name="iva_aplica"]');
+              const btnPagarTodo = form.querySelector('.js-pagar-todo');
+
+              [pagoInput, mermaInput, ivaInput].forEach(el => {
+                if (!el) return;
+                el.addEventListener('input', () => recalcCerrarForm(form));
+                el.addEventListener('change', () => recalcCerrarForm(form));
+              });
+
+              if (btnPagarTodo) {
+                btnPagarTodo.addEventListener('click', function () {
+                  const baseAlquiler = parseNum(form.dataset.baseAlquiler);
+                  const baseMerma = parseNum(form.dataset.baseMerma);
+                  const basePagado = parseNum(form.dataset.basePagado);
+                  const baseTransporte = parseNum(form.dataset.baseTransporte);
+                  const ivaRate = parseNum(form.dataset.ivaRate || 0.19);
+
+                  const extraMerma = Math.max(0, parseNum(mermaInput?.value));
+                  const ivaAplica = String(ivaInput?.value || '0') === '1';
+                  const subtotal = baseAlquiler + (baseMerma + extraMerma) + baseTransporte;
+                  const ivaValor = ivaAplica ? (subtotal * ivaRate) : 0;
+                  const totalGenerado = subtotal + ivaValor;
+                  const saldoActual = Math.max(0, totalGenerado - basePagado);
+
+                  if (pagoInput) pagoInput.value = saldoActual.toFixed(2);
+                  recalcCerrarForm(form);
+                });
+              }
+
+              recalcCerrarForm(form);
             });
           })();
         </script>

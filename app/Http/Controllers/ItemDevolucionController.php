@@ -46,6 +46,11 @@ class ItemDevolucionController extends Controller
             'descripcion_incidencia'  => 'nullable|string|max:255',
             'pago'                    => 'nullable|numeric|min:0',
             'payment_method'          => 'nullable|in:efectivo,nequi,daviplata,transferencia',
+
+            // ✅ Transporte
+            'transporte_herramientas' => 'nullable|in:no,recoger,entregar,recoger_y_entregar',
+            'detalle_transporte'      => 'nullable|string|max:255',
+            'costo_transporte'        => 'nullable|numeric|min:0', // ✅ NUEVO
         ]);
 
         $item->load(['producto', 'arriendo.cliente', 'devoluciones', 'arriendo.items']);
@@ -63,11 +68,9 @@ class ItemDevolucionController extends Controller
                 ->withInput();
         }
 
-        // Fecha inicio item (o fecha inicio padre)
         $fechaInicioItem = $item->fecha_inicio_item ?? $item->arriendo->fecha_inicio;
         $fechaInicioItem = Carbon::parse($fechaInicioItem)->toDateString();
 
-        // Fecha devolución
         $fechaDevol = Carbon::parse($data['fecha_devolucion'])->toDateString();
 
         if (Carbon::parse($fechaDevol)->lt(Carbon::parse($fechaInicioItem))) {
@@ -82,7 +85,12 @@ class ItemDevolucionController extends Controller
         $desc       = $data['descripcion_incidencia'] ?? null;
         $costoMerma = (float)($data['costo_merma'] ?? 0);
 
-        // ✅ NUEVO: regla domingos por item (si cobra_domingo = 1 NO descontamos domingos)
+        // ✅ transporte
+        $transporte = $data['transporte_herramientas'] ?? 'no';
+        $detalleTransporte = $data['detalle_transporte'] ?? null;
+        $costoTransporte = (float)($data['costo_transporte'] ?? 0);
+
+        // ✅ regla domingos por item
         $cobraDomingo = (int)($item->cobra_domingo ?? 0) === 1;
 
         try {
@@ -96,12 +104,12 @@ class ItemDevolucionController extends Controller
                 $desc,
                 $pago,
                 $method,
-                $cobraDomingo
+                $cobraDomingo,
+                $transporte,
+                $detalleTransporte,
+                $costoTransporte
             ) {
 
-                // ============================================================
-                // ✅ 1) AUMENTAR STOCK DEL PRODUCTO (LO QUE DEVUELVEN)
-                // ============================================================
                 $producto = Producto::where('id', $item->producto_id)
                     ->lockForUpdate()
                     ->first();
@@ -114,36 +122,38 @@ class ItemDevolucionController extends Controller
 
                 // ========= DÍAS =========
                 $start = Carbon::parse($fechaInicioItem)->startOfDay();
-                $end   = Carbon::parse($fechaDevol)->startOfDay(); // fin NO incluido
+                $end   = Carbon::parse($fechaDevol)->startOfDay();
                 $diasTrans = $start->diffInDays($end);
-
-                // Si inicio y devolución mismo día -> cobra 1 (tu regla)
                 if ($diasTrans === 0) $diasTrans = 1;
 
-                // Domingos (excluye fin)
                 $domingos = $this->contarDomingosExcluyendoFin($fechaInicioItem, $fechaDevol);
 
-                // ✅ cobrables: si NO cobra domingo -> restar domingos
                 if ($cobraDomingo) {
                     $diasCobrables = max(0, $diasTrans - $diasLluvia);
-                    $domingosDesc = 0; // para el historial (no descontó domingos)
+                    $domingosDesc = 0;
                 } else {
                     $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
                     $domingosDesc = $domingos;
                 }
 
-                // ========= COBRO (PARCIAL DE ESTA DEVOLUCIÓN) =========
+                // ========= COBRO =========
                 $tarifa = (float)($item->tarifa_diaria ?? ($item->producto->costo ?? 0));
                 $totalAlquilerParcial = $diasCobrables * $tarifa * $cantidadDevuelta;
+
                 $totalMermaParcial    = $costoMerma;
-                $totalCobradoParcial  = $totalAlquilerParcial + $totalMermaParcial;
+
+                // ✅ NUEVO: transporte suma al total
+                $totalCobradoParcial  = $totalAlquilerParcial + $totalMermaParcial + $costoTransporte;
 
                 // ✅ saldo devolución REAL
                 $saldoDevolucionParcial = max(0, $totalCobradoParcial - $pago);
 
                 // ========= ACUMULADOS ITEM =========
                 $nuevoTotalAlquiler = (float)($item->total_alquiler ?? 0) + $totalAlquilerParcial;
-                $nuevoTotalMerma    = (float)($item->total_merma ?? 0) + $totalMermaParcial;
+
+                // ✅ Recomendación rápida: por ahora sumamos transporte a total_merma para no tocar estructura del item
+                $nuevoTotalMerma    = (float)($item->total_merma ?? 0) + $totalMermaParcial + $costoTransporte;
+
                 $nuevoTotalPagado   = (float)($item->total_pagado ?? 0) + $pago;
 
                 $nuevoPrecioTotal = $nuevoTotalAlquiler + $nuevoTotalMerma;
@@ -151,7 +161,7 @@ class ItemDevolucionController extends Controller
 
                 $cantidadRestante = (int)$item->cantidad_actual - $cantidadDevuelta;
 
-                // ========= INCIDENCIAS (opcional) =========
+                // ========= INCIDENCIAS =========
                 if ($diasLluvia > 0) {
                     Incidencia::create([
                         'arriendo_id' => $item->arriendo_id,
@@ -169,6 +179,17 @@ class ItemDevolucionController extends Controller
                         'dias' => 0,
                         'costo' => $totalMermaParcial,
                         'descripcion' => ($desc ? $desc . ' ' : '') . "(Devolución item #{$item->id})",
+                    ]);
+                }
+
+                // ✅ Opcional: registrar transporte como incidencia también (si quieres)
+                if ($costoTransporte > 0) {
+                    Incidencia::create([
+                        'arriendo_id' => $item->arriendo_id,
+                        'tipo' => 'TRANSPORTE',
+                        'dias' => 0,
+                        'costo' => $costoTransporte,
+                        'descripcion' => trim(($detalleTransporte ?: 'Transporte') . " (Devolución item #{$item->id})"),
                     ]);
                 }
 
@@ -198,7 +219,7 @@ class ItemDevolucionController extends Controller
                     ]);
                 }
 
-                // ========= HISTORIAL (devoluciones_arriendos) =========
+                // ========= HISTORIAL =========
                 $devol = DevolucionArriendo::create([
                     'arriendo_id'      => $item->arriendo_id,
                     'arriendo_item_id' => $item->id,
@@ -215,6 +236,7 @@ class ItemDevolucionController extends Controller
 
                     'total_alquiler' => $totalAlquilerParcial,
                     'total_merma'    => $totalMermaParcial,
+                    'costo_transporte' => $costoTransporte,
                     'total_cobrado'  => $totalCobradoParcial,
 
                     'pago_recibido'     => $pago,
@@ -224,12 +246,14 @@ class ItemDevolucionController extends Controller
                     'saldo_resultante'  => $nuevoSaldo,
 
                     'descripcion_incidencia' => $desc,
+
+                    'transporte_herramientas' => $transporte,
+                    'detalle_transporte'      => $detalleTransporte,
+                    'nota' => $detalleTransporte,
                 ]);
 
-                // ========= RECALCULAR PADRE =========
                 $this->recalcularTotalesPadre($item->arriendo);
 
-                // ========= PAYMENT (solo si hay pago) =========
                 if ($pago > 0) {
                     $this->payments->createConfirmedPayment([
                         'user_id' => Auth::id(),

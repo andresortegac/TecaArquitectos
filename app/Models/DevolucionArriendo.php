@@ -6,11 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DevolucionArriendo extends Model
 {
-    // ✅ Tabla real en tu BD
     protected $table = 'devoluciones_arriendos';
-
-    // ✅ (Recomendado) Laravel detecta created_at/updated_at por defecto.
-    // Si tu tabla los tiene (tú dijiste que sí), déjalo así.
     public $timestamps = true;
 
     protected $fillable = [
@@ -31,6 +27,12 @@ class DevolucionArriendo extends Model
         'saldo_resultante',
         'descripcion_incidencia',
         'nota',
+        'saldo_devolucion',
+
+        // ✅ transporte
+        'transporte_herramientas',
+        'detalle_transporte',
+        'costo_transporte',
     ];
 
     protected $casts = [
@@ -44,9 +46,11 @@ class DevolucionArriendo extends Model
         'tarifa_diaria' => 'float',
         'total_alquiler' => 'float',
         'total_merma' => 'float',
+        'costo_transporte' => 'float',
         'total_cobrado' => 'float',
         'pago_recibido' => 'float',
         'saldo_resultante' => 'float',
+        'saldo_devolucion' => 'float',
         'cantidad_restante' => 'integer',
     ];
 
@@ -55,13 +59,11 @@ class DevolucionArriendo extends Model
         return $this->belongsTo(\App\Models\Arriendo::class, 'arriendo_id');
     }
 
-    // ✅ Relación con ITEM (puede ser null en devoluciones del PADRE)
     public function arriendoItem()
     {
         return $this->belongsTo(\App\Models\ArriendoItem::class, 'arriendo_item_id');
     }
 
-    // ✅ (Opcional útil) ordenar por defecto por el más reciente
     protected static function booted()
     {
         static::addGlobalScope('latest', function ($query) {

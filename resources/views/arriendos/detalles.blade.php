@@ -55,6 +55,21 @@
   .total-strong { font-weight:900; }
   .saldo-strong { font-weight:900; }
 
+  /* ✅ Caja de total final (super clara) */
+  .final-total {
+    border:2px solid #111827;
+    border-radius:14px;
+    padding:14px;
+    background:#fafafa;
+  }
+  .final-total .ttl { font-weight:900; font-size:14px; margin-bottom:8px; }
+  .final-total .big {
+    font-weight:900;
+    font-size:22px;
+    text-align:right;
+    letter-spacing:.2px;
+  }
+
   /* ====== Item layout ====== */
   .item-card { margin-bottom:12px; }
   .item-head {
@@ -114,6 +129,10 @@
   .mov-right { text-align:right; }
   .mov-muted { color:#6b7280; }
 
+  /* ====== Transport badges ====== */
+  .badge.ent { background:#eef2ff; }
+  .badge.rec { background:#ecfdf5; }
+
   /* ====== Print ====== */
   @media print {
     .no-print { display:none !important; }
@@ -122,6 +141,7 @@
     .box { border:0; }
     .table th { background:#f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .mov-table th { background:#f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .final-total { border:2px solid #111827 !important; background:#f2f2f2 !important; }
   }
 </style>
 
@@ -132,8 +152,7 @@
 
 @php
   /**
-   * ✅ Totales generales calculados desde items + devoluciones (si vienen cargadas)
-   * No cambia tu lógica: respeta relationLoaded('devoluciones').
+   * ✅ Totales desde items + devoluciones (tu lógica original)
    */
   $items = $arriendo->items ?? collect();
 
@@ -180,9 +199,36 @@
     'total_alquiler' => $g_total_alquiler,
     'total_merma' => $g_total_merma,
     'total_pagado' => $g_total_abonado,
-    'precio_total' => $g_total_cobrado,
-    'saldo' => $g_saldo,
+    'precio_total' => $g_total_cobrado, // ✅ cobrado del arriendo (sin transportes)
+    'saldo' => $g_saldo,                // ✅ saldo del arriendo (sin transportes)
   ];
+
+  /**
+   * ✅ TRANSPORTES
+   */
+  $transportes = $arriendo->transportes ?? collect();
+  $total_transportes = (float) $transportes->sum('valor');
+
+  /**
+   * ✅ TOTAL DE TODO (SUPER CLARO)
+   * - Total cobrado arriendo: $totales['precio_total']
+   * - Total transportes: $total_transportes
+   * - TOTAL GENERAL: suma de ambos
+   */
+  $total_general_todo = (float)$totales['precio_total'] + $total_transportes;
+
+  // Total abonado se mantiene igual (si no hay pagos de transporte registrados)
+  $total_abonado_general = (float)$totales['total_pagado'];
+
+  // Saldo general: saldo del arriendo + transportes (se asume transporte pendiente si no tiene pagos)
+  $saldo_general_todo = (float)$totales['saldo'] + $total_transportes;
+
+  // Helper para que quede bien claro el tipo
+  $labelTipo = function($tipo){
+    $t = strtoupper(trim((string)$tipo));
+    if ($t === 'RECOGIDA') return 'Recogida de herramienta';
+    return 'Entrega de herramienta';
+  };
 @endphp
 
 <div class="factura-wrap">
@@ -222,7 +268,10 @@
         <div class="label">Herramientas (items)</div><div class="value">{{ $g_items_count }}</div>
         <div class="label">Unidades en obra</div><div class="value total-strong">{{ $g_unidades_restantes }}</div>
         <div class="label">Movimientos</div><div class="value">{{ $movs }}</div>
-        <div class="label">Saldo general</div><div class="value saldo-strong">${{ number_format((float)$totales['saldo'], 2) }}</div>
+
+        {{-- ✅ SALDO GENERAL INCLUYENDO TRANSPORTES --}}
+        <div class="label">Saldo general (incluye transportes)</div>
+        <div class="value saldo-strong">${{ number_format($saldo_general_todo, 2) }}</div>
       </div>
       <div class="muted" style="margin-top:8px;">
         *Los totales se calculan desde devoluciones si están cargadas.
@@ -235,11 +284,29 @@
     <div class="box">
       <div class="summary-title">Resumen general (dinero)</div>
       <div class="kpi-grid">
-        <div class="label">Total alquiler</div><div class="value">${{ number_format((float)$totales['total_alquiler'], 2) }}</div>
-        <div class="label">Total merma</div><div class="value">${{ number_format((float)$totales['total_merma'], 2) }}</div>
-        <div class="label">Total cobrado</div><div class="value total-strong">${{ number_format((float)$totales['precio_total'], 2) }}</div>
-        <div class="label">Total abonado</div><div class="value">${{ number_format((float)$totales['total_pagado'], 2) }}</div>
-        <div class="label">Saldo pendiente</div><div class="value saldo-strong">${{ number_format((float)$totales['saldo'], 2) }}</div>
+
+        <div class="label">Total alquiler</div>
+        <div class="value">${{ number_format((float)$totales['total_alquiler'], 2) }}</div>
+
+        <div class="label">Total merma</div>
+        <div class="value">${{ number_format((float)$totales['total_merma'], 2) }}</div>
+
+        {{-- ✅ SEPARACIÓN CLARA --}}
+        <div class="label">Total cobrado arriendo (sin transporte)</div>
+        <div class="value">${{ number_format((float)$totales['precio_total'], 2) }}</div>
+
+        <div class="label">Total transportes realizados</div>
+        <div class="value">${{ number_format($total_transportes, 2) }}</div>
+
+        {{-- ✅ TOTAL DE TODO (SÚPER CLARO) --}}
+        <div class="label total-strong">TOTAL GENERAL (Arriendo + Transportes)</div>
+        <div class="value total-strong">${{ number_format($total_general_todo, 2) }}</div>
+
+        <div class="label">Total abonado</div>
+        <div class="value">${{ number_format($total_abonado_general, 2) }}</div>
+
+        <div class="label saldo-strong">Saldo pendiente (incluye transportes)</div>
+        <div class="value saldo-strong">${{ number_format($saldo_general_todo, 2) }}</div>
       </div>
     </div>
 
@@ -256,6 +323,78 @@
       </div>
     </div>
   </div>
+
+  {{-- ✅ TOTALIZACIÓN FINAL (MUY VISIBLE) --}}
+  <h3 class="section-title">Totalización final</h3>
+  <div class="box final-total">
+    <div class="ttl">TOTAL GENERAL A PAGAR (incluye arriendo + transportes)</div>
+
+    <div class="kpi-grid" style="margin-top:10px;">
+      <div class="label">Arriendo (total cobrado)</div>
+      <div class="value">${{ number_format((float)$totales['precio_total'], 2) }}</div>
+
+      <div class="label">Transportes realizados</div>
+      <div class="value">${{ number_format($total_transportes, 2) }}</div>
+
+      <div class="label">Total abonado</div>
+      <div class="value">${{ number_format($total_abonado_general, 2) }}</div>
+
+      <div class="label saldo-strong">Saldo pendiente (incluye transportes)</div>
+      <div class="value saldo-strong">${{ number_format($saldo_general_todo, 2) }}</div>
+    </div>
+
+    <div class="big" style="margin-top:10px;">
+      ${{ number_format($total_general_todo, 2) }}
+    </div>
+
+    <div class="muted" style="margin-top:8px;">
+      *Este valor es el total de TODO: arriendo + transportes. El saldo pendiente asume que transportes no tienen abonos separados.
+    </div>
+  </div>
+
+  {{-- ====== TRANSPORTES EN FACTURA (BIEN CLARO) ====== --}}
+  <h3 class="section-title">Transportes (Entrega / Recogida de herramienta)</h3>
+
+  @if(empty($transportes) || $transportes->isEmpty())
+    <div class="box">No hay transportes registrados para este arriendo.</div>
+  @else
+    <div class="box">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Nota</th>
+            <th class="right">Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach($transportes->sortByDesc('id') as $t)
+            @php
+              $tipoRaw = strtoupper(trim((string)($t->tipo ?? 'ENTREGA')));
+              $tipoTexto = $labelTipo($tipoRaw);
+              $tipoClass = ($tipoRaw === 'RECOGIDA') ? 'rec' : 'ent';
+            @endphp
+            <tr>
+              <td>{{ !empty($t->fecha) ? \Carbon\Carbon::parse($t->fecha)->format('d/m/Y') : '—' }}</td>
+              <td><span class="badge {{ $tipoClass }}">{{ $tipoTexto }}</span></td>
+              <td>{{ $t->nota ?? '—' }}</td>
+              <td class="right"><strong>${{ number_format((float)($t->valor ?? 0), 2) }}</strong></td>
+            </tr>
+          @endforeach
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="right"><strong>Total transportes</strong></td>
+            <td class="right"><strong>${{ number_format($total_transportes, 2) }}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="muted" style="margin-top:8px;">
+        *Los transportes se suman al total general.
+      </div>
+    </div>
+  @endif
 
   {{-- ====== DETALLE POR HERRAMIENTA ====== --}}
   <h3 class="section-title">Detalle por herramienta</h3>

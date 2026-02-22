@@ -93,6 +93,10 @@
 .badge.warn{ background:#fffbeb; border-color:#fde68a; color:#92400e; }
 .badge.off{ background:#f1f5f9; color:#475569; }
 
+/* Badges extra para tipo */
+.badge.info{ background:#eef2ff; border-color:#c7d2fe; color:#3730a3; }
+.badge.pick{ background:#f0fdf4; border-color:#bbf7d0; color:#166534; }
+
 /* Cards */
 .card{
   background: var(--card);
@@ -113,30 +117,30 @@
 
 /* ✅ COMPACTO SOLO EN TRANSPORTES */
 .card.transport-card{
-  padding: 12px;              /* antes 16px (baja más si quieres: 10px) */
+  padding: 12px;
 }
 .card.transport-card .hint{
   margin-top:2px;
 }
 .card.transport-card .form{
-  margin-top:8px;             /* antes 10px */
-  padding:10px;               /* antes 12px */
+  margin-top:8px;
+  padding:10px;
 }
 .card.transport-card .help{
-  margin-top:4px;             /* antes 6px */
+  margin-top:4px;
 }
 .card.transport-card .divider{
-  margin:8px 0;               /* antes 10px */
+  margin:8px 0;
 }
 .card.transport-card .form-grid{
-  gap:8px;                    /* antes 10px */
+  gap:8px;
 }
 .card.transport-card .label{
-  margin-bottom:4px;          /* antes 6px */
+  margin-bottom:4px;
 }
 .card.transport-card .input{
-  height:34px;                /* antes 40px (baja más si quieres: 32px) */
-  border-radius:10px;         /* antes 12px */
+  height:34px;
+  border-radius:10px;
   padding:0 10px;
   font-size:13px;
 }
@@ -144,16 +148,16 @@
   height:34px;
 }
 .card.transport-card .btn{
-  padding:8px 10px;           /* antes 10px 12px */
+  padding:8px 10px;
   border-radius:10px;
   font-size:13px;
 }
 .card.transport-card .table th,
 .card.transport-card .table td{
-  padding:10px;               /* antes 12px */
+  padding:10px;
 }
 .card.transport-card .table thead th{
-  font-size:11px;             /* antes 12px */
+  font-size:11px;
 }
 
 /* Buttons */
@@ -310,6 +314,29 @@
 }
 </style>
 
+@php
+  // Transportes
+  $transportes = $arriendo->transportes ?? collect();
+  $totalTransportes = (float) $transportes->sum('valor');
+
+  // Totales base (contrato)
+  $totalContratoBase = (float)($totContrato['precio_total'] ?? 0);
+  $pagadoContratoBase = (float)($totContrato['total_pagado'] ?? 0);
+  $saldoContratoBase  = (float)($totContrato['saldo'] ?? 0);
+
+  // ✅ Totales con transportes (para que el cobro quede reflejado)
+  $totalGeneral = $totalContratoBase + $totalTransportes;
+  // Si el transporte no tiene pagos asociados, se asume pendiente:
+  $saldoGeneral = $saldoContratoBase + $totalTransportes;
+
+  // Helpers de tipo (mostrar bien claro)
+  $labelTipo = function($tipo){
+    $t = strtoupper(trim((string)$tipo));
+    if ($t === 'RECOGIDA') return 'Recogida de herramienta';
+    return 'Entrega de herramienta'; // default ENTREGA
+  };
+@endphp
+
 <div class="pro-ui">
   <div class="pro-container">
 
@@ -372,34 +399,50 @@
 
         <div>
           <h3>Resumen financiero</h3>
-          <div class="hint">Totales del contrato e histórico del cliente.</div>
+          <div class="hint">Totales del contrato e histórico del cliente (incluye transportes para que queden cobrados).</div>
           <div class="divider"></div>
 
           <div class="kpis">
+            {{-- Base contrato --}}
             <div class="kpi">
               <div class="label">Total contrato</div>
-              <div class="value">${{ number_format((float)$totContrato['precio_total'], 2) }}</div>
+              <div class="value">${{ number_format($totalContratoBase, 2) }}</div>
             </div>
             <div class="kpi">
               <div class="label">Pagado contrato</div>
-              <div class="value">${{ number_format((float)$totContrato['total_pagado'], 2) }}</div>
+              <div class="value">${{ number_format($pagadoContratoBase, 2) }}</div>
             </div>
             <div class="kpi">
               <div class="label">Saldo contrato</div>
-              <div class="value">${{ number_format((float)$totContrato['saldo'], 2) }}</div>
+              <div class="value">${{ number_format($saldoContratoBase, 2) }}</div>
             </div>
 
+            {{-- ✅ Transportes + totales generales --}}
+            <div class="kpi">
+              <div class="label">Total transportes</div>
+              <div class="value">${{ number_format($totalTransportes, 2) }}</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Total general (Contrato + Transportes)</div>
+              <div class="value">${{ number_format($totalGeneral, 2) }}</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Saldo general (incluye transportes)</div>
+              <div class="value">${{ number_format($saldoGeneral, 2) }}</div>
+            </div>
+
+            {{-- Histórico --}}
             <div class="kpi">
               <div class="label">Total histórico cliente</div>
-              <div class="value">${{ number_format((float)$totalHistorico['precio_total'], 2) }}</div>
+              <div class="value">${{ number_format((float)($totalHistorico['precio_total'] ?? 0), 2) }}</div>
             </div>
             <div class="kpi">
               <div class="label">Pagado histórico</div>
-              <div class="value">${{ number_format((float)$totalHistorico['total_pagado'], 2) }}</div>
+              <div class="value">${{ number_format((float)($totalHistorico['total_pagado'] ?? 0), 2) }}</div>
             </div>
             <div class="kpi">
               <div class="label">Saldo histórico</div>
-              <div class="value">${{ number_format((float)$totalHistorico['saldo'], 2) }}</div>
+              <div class="value">${{ number_format((float)($totalHistorico['saldo'] ?? 0), 2) }}</div>
             </div>
           </div>
         </div>
@@ -407,17 +450,13 @@
     </div>
 
     {{-- TRANSPORTES --}}
-    @php
-      $transportes = $arriendo->transportes ?? collect();
-      $totalTransportes = (float) $transportes->sum('valor');
-    @endphp
-
-    {{-- ✅ Solo agregué class="transport-card" para compactar este bloque --}}
     <div class="card transport-card">
       <div class="row">
         <div>
           <h3 style="margin:0;">Transportes / Entregas</h3>
-          <div class="hint">Registra entregas o recogidas. Ambas suman al total.</div>
+          <div class="hint">
+            Registra <b>Entrega de herramienta</b> o <b>Recogida de herramienta</b>. Ambas suman al total.
+          </div>
         </div>
         <div>
           <span class="badge warn">Total transportes: <b>${{ number_format($totalTransportes, 2) }}</b></span>
@@ -429,12 +468,16 @@
           @csrf
 
           <div style="margin-bottom:8px;">
-            <label class="label">Tipo</label>
+            <label class="label">Tipo (muy importante)</label>
             <select class="input" name="tipo" required>
-              <option value="ENTREGA" {{ old('tipo', 'ENTREGA') === 'ENTREGA' ? 'selected' : '' }}>ENTREGA</option>
-              <option value="RECOGIDA" {{ old('tipo') === 'RECOGIDA' ? 'selected' : '' }}>RECOGIDA</option>
+              <option value="NO" {{ old('tipo', 'NO') === 'NO' ? 'selected' : '' }}>
+                NO - Sin transporte
+              </option>
+              <option value="ENTREGA" {{ old('tipo', 'ENTREGA') === 'ENTREGA' ? 'selected' : '' }}>
+                ENTREGA - Entrega de herramienta
+              </option>
             </select>
-            <div class="help">Selecciona si es entrega o recogida.</div>
+            <div class="help">Solo permitido: No o Entrega de herramienta.</div>
           </div>
 
           <div class="form-grid">
@@ -477,6 +520,7 @@
               <thead>
                 <tr>
                   <th>Fecha</th>
+                  <th>Tipo</th>
                   <th>Nota</th>
                   <th class="right">Valor</th>
                   <th class="right" style="width:160px;">Acción</th>
@@ -484,8 +528,21 @@
               </thead>
               <tbody>
                 @foreach($transportes->sortByDesc('id') as $t)
+                  @php
+                    $tipoRaw = strtoupper(trim((string)($t->tipo ?? 'ENTREGA')));
+                    $tipoTexto = $labelTipo($tipoRaw);
+                    $tipoBadgeClass = ($tipoRaw === 'RECOGIDA') ? 'pick' : 'info';
+                  @endphp
                   <tr>
                     <td>{{ !empty($t->fecha) ? \Carbon\Carbon::parse($t->fecha)->format('d/m/Y') : '—' }}</td>
+
+                    {{-- ✅ BIEN CLARO --}}
+                    <td>
+                      <span class="badge {{ $tipoBadgeClass }}">
+                        {{ $tipoTexto }}
+                      </span>
+                    </td>
+
                     <td>{{ $t->nota ?? '—' }}</td>
                     <td class="right"><b>${{ number_format((float)$t->valor, 2) }}</b></td>
                     <td class="right">
