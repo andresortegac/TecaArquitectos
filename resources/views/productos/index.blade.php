@@ -1,192 +1,202 @@
 @extends('layouts.app')
 
-@section('title','Productos')
-@section('header','Inventario de productos')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/productos.css') }}">
+@endpush
 
-{{-- CSS --}}
-@section('styles')
-<link rel="stylesheet" href="{{ asset('css/productos.css') }}">
-@endsection
+@section('title', 'Productos')
+@section('header', 'Inventario de productos')
 
 @section('content')
-
-{{-- FORMULARIO IMPORTAR EXCEL --}}
-@role('admin')
-    <div class="container import-wrapper">
-        <form action="{{ route('productos.import') }}"
-            method="POST"
-            enctype="multipart/form-data"
-            class="mb-6 import-form">
-            @csrf
-
-            <input type="file" name="archivo" required>
-
-            <button class="btn">
-                Importar Excel
-            </button>
-        </form>
-    </div>
-@endrole
-
-<div class="container mx-auto px-4">
-
-    {{-- Controles --}}
-    <div class="flex flex-col md:flex-row gap-4 mb-6">
-
-        {{-- Buscador --}}
-        <input
-            type="text"
-            id="search"
-            placeholder="Buscar producto..."
-        >
-
-        {{-- Filtro --}}
-        <select id="filterCategoria">
-            <option value="">Todas las categorías</option>
-            <option value="estructura y soportes">Estructura y soportes</option>
-            <option value="encofrado">Encofrado</option>
-            <option value="accesorio de seguridad">Accesorios de Seguridad</option>
-            <option value="herramientas y equipos">Herramientas y Equipos</option>
-            <option value="electricidad">Electricidad</option>
-            <option value="Expecial">Expecial</option>
-        </select>
-
-
-    </div>
-    <br>
-    <br>
-    
-    {{-- Tarjetas --}}
-    <div id="cards">
-
-        @foreach($productos as $producto)
-      <div
-            class="producto-card"
-            data-nombre="{{ strtolower($producto->nombre) }}"
-            data-categoria="{{ strtolower($producto->categorias ?? '') }}"
-        >
-
-
-
-            {{-- Imagen --}}
-            @if($producto->imagen)
-    <img 
-        src="{{ asset('storage/' . $producto->imagen) }}"
-        alt="{{ $producto->nombre }}"
-        class="w-full h-48 object-cover rounded"
-    >
-@else
-    <img 
-        src="{{ asset('img/tool-placeholder.jpg') }}"
-        alt="Sin imagen"
-        class="w-full h-48 object-cover rounded"
-    >
-@endif
-
-
-
-            {{-- Nombre --}}
-            <h3>{{ $producto->nombre }}</h3>
-
-            {{-- Categoría --}}
-            <p>{{ $producto->categorias ?? 'Sin descripción' }}</p>
-
-            {{-- Info --}}
-            <p><strong>Cantidad:</strong> {{ $producto->cantidad }}</p>
-            <p><strong>Ubicación:</strong> {{ $producto->ubicacion }}</p>
-            <p><strong>Costo:</strong> ${{ number_format($producto->costo, 2) }}</p>
-
-            {{-- Estado --}}
-            <div class="text-center">
-                <span class="estado {{ $producto->estado }}">
-                    {{ ucfirst($producto->estado) }}
-                </span>
+    <div class="pro-page">
+        <section class="pro-hero">
+            <div>
+                <h2>Inventario general</h2>
+                <p>Consulta, filtra y administra los productos registrados en bodega.</p>
             </div>
+            <div class="pro-hero-actions">
+                @role('admin')
+                    <a href="{{ route('productos.create') }}" class="pro-btn pro-btn-primary">Nuevo producto</a>
+                @endrole
+            </div>
+        </section>
 
-            {{-- Acciones --}}
-            @role('admin')
-                <div class="producto-acciones">
-                    <a href="{{ route('productos.edit', $producto) }}">
-                        Editar
-                    </a>
+        @role('admin')
+            <section class="pro-card">
+                <form action="{{ route('productos.import') }}" method="POST" enctype="multipart/form-data" class="pro-import-form">
+                    @csrf
+                    <label for="archivo" class="pro-upload-box">
+                        <span class="pro-upload-title">Subir archivo de inventario</span>
+                        <span class="pro-upload-subtitle">Formatos permitidos: .xlsx, .csv</span>
+                        <span id="pro-upload-name" class="pro-upload-name">Ningún archivo seleccionado</span>
+                    </label>
+                    <input id="archivo" type="file" name="archivo" accept=".xlsx,.csv" required>
+                    <button class="pro-btn pro-btn-secondary">Importar archivo</button>
+                </form>
+            </section>
+        @endrole
 
-                    <form action="{{ route('productos.destroy', $producto) }}"
-                        method="POST"
-                        onsubmit="return confirm('¿Eliminar este producto?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit">
-                            Eliminar
-                        </button>
-                    </form>
+        <section class="pro-kpis">
+            <article><span>Productos</span><strong>{{ number_format($resumen['total_productos'] ?? 0) }}</strong></article>
+            <article><span>Unidades en stock</span><strong>{{ number_format($resumen['total_stock'] ?? 0) }}</strong></article>
+        </section>
+
+        <section class="pro-card">
+            <form method="GET" class="pro-filters">
+                <div class="field field-grow">
+                    <label for="q">Buscar producto</label>
+                    <input id="q" type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nombre de producto">
                 </div>
-            @endrole
+                <div class="field">
+                    <label for="categoria">Categoría</label>
+                    <select id="categoria" name="categoria">
+                        <option value="">Todas</option>
+                        @foreach($categorias as $categoria)
+                            <option value="{{ $categoria }}" {{ ($filters['categoria'] ?? '') === $categoria ? 'selected' : '' }}>
+                                {{ $categoria }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="actions">
+                    <button type="submit">Filtrar</button>
+                    <a href="{{ route('productos.index') }}">Limpiar</a>
+                </div>
+            </form>
 
-        </div>
-        @endforeach
+            <div class="pro-grid">
+                @forelse($productos as $producto)
+                    <article class="producto-card">
+                        <img
+                            src="{{ $producto->imagen ? asset('storage/' . $producto->imagen) : asset('img/product-icon.svg') }}"
+                            alt="{{ $producto->nombre }}">
 
-    </div>
+                        <h3>{{ $producto->nombre }}</h3>
+                        <p>{{ $producto->categorias ?? 'Sin categoría' }}</p>
+                        <p><strong>Cantidad:</strong> {{ $producto->cantidad }}</p>
+                        <p><strong>Ubicación:</strong> {{ $producto->ubicacion ?: '-' }}</p>
+                        <p><strong>Costo:</strong> ${{ number_format((float) $producto->costo, 2) }}</p>
 
-    {{-- Vacío --}}
-    @if($productos->isEmpty())
-        <p class="text-center text-gray-500 mt-10">
-            No hay productos registrados.
-        </p>
-    @endif
-</div>
-<br>
-@php
-    $totalProductos = $productos->count();
-    $totalStock = $productos->sum('cantidad');
-@endphp
+                        <div class="text-center">
+                            <span class="estado {{ $producto->estado }}">
+                                {{ strtoupper($producto->estado) }}
+                            </span>
+                        </div>
 
-    <div class="producstock-wrapper">
-        <div class="flex gap-4 my-6">
-            <div class="producstock-card bg-blue">
-                <h2>{{ $totalProductos }}</h2>
-                <p>Productos</p>
+                        @role('admin')
+                            <div class="producto-acciones">
+                                <a href="{{ route('productos.edit', $producto) }}">Editar</a>
+                                <form
+                                    action="{{ route('productos.destroy', $producto) }}"
+                                    method="POST"
+                                    class="delete-product-form"
+                                    data-product-name="{{ $producto->nombre }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="open-delete-modal">Eliminar</button>
+                                </form>
+                            </div>
+                        @endrole
+                    </article>
+                @empty
+                    <p class="pro-empty">No hay productos registrados para los filtros seleccionados.</p>
+                @endforelse
             </div>
 
-            <div class="producstock-card bg-green">
-                <h2>{{ $totalStock }}</h2>
-                <p>Unidades en stock</p>
+            @if($productos->hasPages())
+                <div class="pro-pagination">
+                    @if($productos->onFirstPage())
+                        <span class="page-btn page-disabled">Anterior</span>
+                    @else
+                        <a class="page-btn" href="{{ $productos->previousPageUrl() }}">Anterior</a>
+                    @endif
+                    <span class="page-text">Página {{ $productos->currentPage() }} de {{ $productos->lastPage() }}</span>
+                    @if($productos->hasMorePages())
+                        <a class="page-btn" href="{{ $productos->nextPageUrl() }}">Siguiente</a>
+                    @else
+                        <span class="page-btn page-disabled">Siguiente</span>
+                    @endif
+                </div>
+            @endif
+        </section>
+    </div>
+
+    @role('admin')
+        <div id="delete-modal" class="pro-modal" aria-hidden="true">
+            <div class="pro-modal-backdrop"></div>
+            <div class="pro-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+                <h3 id="delete-modal-title">Confirmar eliminación</h3>
+                <p>
+                    ¿Seguro que deseas eliminar el producto
+                    <strong id="delete-modal-product-name"></strong>?
+                </p>
+                <div class="pro-modal-actions">
+                    <button type="button" class="pro-btn pro-btn-light" id="delete-modal-cancel">Cancelar</button>
+                    <button type="button" class="pro-btn pro-btn-danger" id="delete-modal-confirm">Eliminar</button>
+                </div>
             </div>
         </div>
-    </div>
-{{-- JS --}}
-<script>
-    const search = document.getElementById('search');
-    const filterCategoria = document.getElementById('filterCategoria');
-    const cards  = document.querySelectorAll('.producto-card');
 
-    function normalizar(texto) {
-        return (texto || '')
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .trim();
-    }
+        <script>
+            (function () {
+                const input = document.getElementById('archivo');
+                const name = document.getElementById('pro-upload-name');
+                if (!input || !name) return;
+                input.addEventListener('change', function () {
+                    const file = input.files && input.files[0];
+                    name.textContent = file ? file.name : 'Ningún archivo seleccionado';
+                });
+            })();
 
-    function filtrar() {
-        const texto = normalizar(search.value);
-        const categoria = normalizar(filterCategoria.value);
+            (function () {
+                const modal = document.getElementById('delete-modal');
+                const productNameEl = document.getElementById('delete-modal-product-name');
+                const cancelBtn = document.getElementById('delete-modal-cancel');
+                const confirmBtn = document.getElementById('delete-modal-confirm');
+                const openButtons = document.querySelectorAll('.open-delete-modal');
+                let activeForm = null;
 
-        cards.forEach(card => {
-            const nombre = normalizar(card.dataset.nombre);
-            const categoriaCard = normalizar(card.dataset.categoria);
+                if (!modal || !productNameEl || !cancelBtn || !confirmBtn || !openButtons.length) return;
 
-            const matchNombre = nombre.includes(texto);
-            const matchCategoria = !categoria || categoriaCard === categoria;
+                const closeModal = () => {
+                    modal.classList.remove('is-open');
+                    modal.setAttribute('aria-hidden', 'true');
+                    activeForm = null;
+                };
 
-            card.style.display = (matchNombre && matchCategoria)
-                ? 'block'
-                : 'none';
-        });
-    }
+                const openModal = (form) => {
+                    activeForm = form;
+                    productNameEl.textContent = form.dataset.productName || 'seleccionado';
+                    modal.classList.add('is-open');
+                    modal.setAttribute('aria-hidden', 'false');
+                };
 
-    search.addEventListener('input', filtrar);
-    filterCategoria.addEventListener('change', filtrar);
-</script>
+                openButtons.forEach((button) => {
+                    button.addEventListener('click', () => {
+                        const form = button.closest('.delete-product-form');
+                        if (!form) return;
+                        openModal(form);
+                    });
+                });
 
+                cancelBtn.addEventListener('click', closeModal);
+                modal.addEventListener('click', (event) => {
+                    if (event.target.classList.contains('pro-modal-backdrop')) {
+                        closeModal();
+                    }
+                });
 
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+                        closeModal();
+                    }
+                });
+
+                confirmBtn.addEventListener('click', () => {
+                    if (!activeForm) return;
+                    activeForm.submit();
+                });
+            })();
+        </script>
+    @endrole
 @endsection

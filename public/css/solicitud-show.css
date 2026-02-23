@@ -1,9 +1,9 @@
-﻿.solicitud-page {
+.ss-page {
   display: grid;
   gap: 16px;
 }
 
-.sol-hero {
+.ss-hero {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -14,90 +14,131 @@
   color: #f8fafc;
 }
 
-.sol-hero h2 {
+.ss-hero h2 {
   margin: 0 0 6px;
 }
 
-.sol-hero p {
+.ss-hero p {
   margin: 0;
   color: #cbd5e1;
 }
 
-.sol-hero-actions {
+.ss-hero-actions {
   display: flex;
   gap: 8px;
 }
 
-.sol-card {
+.ss-card {
   border: 1px solid #dbe3ee;
   border-radius: 12px;
   background: #ffffffde;
   padding: 14px;
 }
 
-.sol-alert {
+.ss-alert {
   border-radius: 10px;
   padding: 10px 12px;
   border: 1px solid;
   font-size: 13px;
 }
 
-.sol-alert-success {
+.ss-alert-success {
   color: #166534;
   border-color: #bbf7d0;
   background: #f0fdf4;
 }
 
-.sol-table-wrapper {
+.ss-card h3 {
+  margin: 0 0 12px;
+  color: #0f172a;
+  font-size: 15px;
+}
+
+.ss-kv {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.ss-kv p {
+  margin: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+}
+
+.ss-kv span {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.ss-kv strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.ss-table-wrapper {
   overflow-x: auto;
 }
 
-.table {
+.ss-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.table thead {
-  background: #f8fafc;
-}
-
-.table th,
-.table td {
+.ss-table th,
+.ss-table td {
   padding: 11px;
   border-bottom: 1px solid #e2e8f0;
   text-align: left;
   font-size: 13px;
 }
 
-.table th {
+.ss-table th {
   color: #334155;
+  background: #f8fafc;
   font-weight: 700;
 }
 
-.table td {
+.ss-table td {
   color: #334155;
 }
 
-.estado {
-  display: inline-block;
+.ss-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.ss-approved-text {
+  display: inline-flex;
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
-}
-
-.estado.pendiente {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.estado.aprobado {
   background: #dcfce7;
   color: #166534;
 }
 
-.sol-btn {
-  height: 36px;
+.ss-empty {
+  text-align: center;
+  color: #64748b;
+}
+
+.ss-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ss-btn {
+  height: 38px;
   padding: 0 12px;
   border-radius: 8px;
   border: none;
@@ -107,65 +148,37 @@
   font-weight: 700;
 }
 
-.sol-btn-primary {
+.ss-btn-primary {
   background: #1d4ed8;
   color: #fff;
+  cursor: pointer;
 }
 
-.sol-btn-light {
+.ss-btn-light {
   background: #e2e8f0;
   color: #1e293b;
 }
 
-.sol-btn-warning {
-  background: #0f172a;
+.ss-btn-danger {
+  background: #dc2626;
   color: #fff;
 }
 
-.sol-empty {
-  text-align: center;
-  color: #64748b;
-}
-
-/* Mantiene estilo del formulario existente de crear solicitud */
-.form {
-  max-width: 900px;
-  margin: 0 auto;
-  background: #fff;
-  padding: 25px 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-}
-
-.form label {
-  display: block;
-  font-weight: 600;
-  margin-top: 15px;
-  margin-bottom: 6px;
-  color: #1f2937;
-}
-
-.form input[type='text'],
-.form input[type='date'],
-.form input[type='number'] {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
 @media (max-width: 900px) {
-  .sol-hero {
+  .ss-hero {
     flex-direction: column;
   }
 
-  .sol-hero-actions {
+  .ss-hero-actions {
     width: 100%;
   }
 
-  .sol-btn {
+  .ss-btn {
     flex: 1;
     justify-content: center;
+  }
+
+  .ss-actions {
+    justify-content: stretch;
   }
 }

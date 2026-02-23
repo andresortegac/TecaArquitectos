@@ -1,161 +1,167 @@
 @extends('layouts.app')
 
-@section('title','Reportes')
-@section('header','REPORTES FINANCIEROS')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/reportes-clientes-pendientes.css') }}">
+@endpush
+
+@section('title', 'Clientes pendientes por cancelar')
+@section('header', 'Reporte de cartera de clientes')
 
 @section('content')
+    @php
+        $rol = auth()->user()->rol;
+    @endphp
 
-@php
-    $rol = auth()->user()->rol;
-@endphp
-
-<div class="contr-container">
-
-    {{-- =========================
-        RF-28 | CLIENTES PENDIENTES
-    ========================= --}}
-
-    {{-- 🔹 CABECERA DEL REPORTE --}}
-    <div class="contr-report-header">
-        <h2 class="contr-title">💰 Clientes pendientes por cancelar</h2>
-        <p class="contr-subtitle">
-            Clientes con alquileres activos o finalizados y saldo pendiente.
-        </p>
-    </div>
-
-    {{-- 🔹 RESUMEN GENERAL --}}
-    <div class="contr-card contr-mb">
-        <div class="contr-card-body contr-row contr-text-center">
-
-            <div class="contr-col">
-                <h4 class="contr-fw-bold">
-                    {{ $resumen['clientes'] ?? 0 }}
-                </h4>
-                <small class="contr-text-muted">Clientes con deuda</small>
+    <div class="rcp-page">
+        <section class="rcp-hero">
+            <div>
+                <h2>Clientes pendientes por cancelar</h2>
+                <p>Control consolidado de deuda por cliente, estado de mora y seguimiento de alquileres pendientes.</p>
             </div>
+            <a href="{{ route('reportes.index') }}" class="rcp-btn-back">Volver</a>
+        </section>
 
-            <div class="contr-col">
-                <h4 class="contr-fw-bold">
-                    {{ $resumen['alquileres'] ?? 0 }}
-                </h4>
-                <small class="contr-text-muted">Alquileres pendientes</small>
-            </div>
-
+        <section class="rcp-kpis">
+            <article class="rcp-kpi">
+                <span>Clientes con deuda</span>
+                <strong>{{ number_format($resumen['clientes'] ?? 0) }}</strong>
+            </article>
+            <article class="rcp-kpi">
+                <span>Alquileres pendientes</span>
+                <strong>{{ number_format($resumen['alquileres'] ?? 0) }}</strong>
+            </article>
             @if($rol !== 'bodega')
-            <div class="contr-col">
-                <h4 class="contr-fw-bold contr-text-danger">
-                    ${{ number_format($resumen['total_deuda'] ?? 0,0) }}
-                </h4>
-                <small class="contr-text-muted">Total adeudado</small>
-            </div>
+                <article class="rcp-kpi">
+                    <span>Total adeudado</span>
+                    <strong class="is-risk">${{ number_format($resumen['total_deuda'] ?? 0, 0) }}</strong>
+                </article>
+            @endif
+        </section>
+
+        <section class="rcp-card">
+            <form method="GET" class="rcp-filters">
+                <div class="field field-grow">
+                    <label for="cliente">Cliente</label>
+                    <input id="cliente" type="text" name="cliente" value="{{ request('cliente') }}" placeholder="Buscar por nombre">
+                </div>
+                <div class="field">
+                    <label for="estado">Estado</label>
+                    <select id="estado" name="estado">
+                        <option value="">Todos</option>
+                        <option value="al_dia" {{ request('estado') === 'al_dia' ? 'selected' : '' }}>Al día</option>
+                        <option value="moroso" {{ request('estado') === 'moroso' ? 'selected' : '' }}>Moroso</option>
+                    </select>
+                </div>
+                <div class="actions">
+                    <button type="submit">Filtrar</button>
+                    <a href="{{ route('reportes.clientes-pendientes') }}">Limpiar</a>
+                </div>
+            </form>
+
+            @if($errors->any())
+                <div class="rcp-errors">
+                    @foreach($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
             @endif
 
-        </div>
-    </div>
-
-    {{-- 🔹 FILTROS --}}
-    <div class="contr-filters contr-mb">
-        <input type="text"
-               id="filtroCliente"
-               class="contr-input"
-               placeholder="🔍 Buscar cliente...">
-
-        <select id="filtroEstado" class="contr-select">
-            <option value="">Todos</option>
-            <option value="al_dia">Al día</option>
-            <option value="moroso">Morosos</option>
-        </select>
-    </div>
-
-    {{-- 🔹 TABLA PRINCIPAL --}}
-    <div class="contr-card">
-        <div class="contr-card-body">
-
-            <table class="contr-table contr-table-hover" id="tablaClientes">
-                <thead class="contr-table-dark">
-                    <tr>
-                        <th>Cliente</th>
-                        <th>Obras</th>
-                        <th># Alquileres</th>
-
-                        @if($rol !== 'bodega')
-                            <th>Valor Adeudado</th>
-                        @endif
-
-                        <th>Último Cobro</th>
-                        <th>Días Mora</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    {{-- 🔴 FILAS DINÁMICAS --}}
-                    {{-- Se llenan desde el controlador --}}
-                    @forelse($clientesMorosos as $cliente)
-                        <tr class="contr-mora-{{ $cliente->nivel_mora }}">
-
-                            <td class="contr-client-name">
-                                {{ $cliente->nombre }}
-                            </td>
-
-                            <td>
-                                {{ $cliente->obras }}
-                            </td>
-
-                            <td class="contr-fw-bold text-center">
-                                {{ $cliente->alquileres_pendientes }}
-                            </td>
-
-                            @if($rol !== 'bodega')
-                                <td class="contr-fw-bold">
-                                    ${{ number_format($cliente->total_deuda,0) }}
-                                </td>
-                            @endif
-
-                            <td>
-                                {{ $cliente->ultimo_cobro ?? '—' }}
-                            </td>
-
-                            <td class="text-center">
-                                {{ $cliente->dias_mora }}
-                            </td>
-
-                            <td>
-                                <span class="contr-badge {{ $cliente->estado }}">
-                                    {{ strtoupper($cliente->estado) }}
-                                </span>
-                            </td>
-
-                        </tr>
-                    @empty
+            <div class="rcp-table-wrap">
+                <table class="rcp-table">
+                    <thead>
                         <tr>
-                            <td colspan="7" class="contr-empty">
-                                No hay clientes con saldos pendientes
-                            </td>
+                            <th>Cliente</th>
+                            <th>Obras</th>
+                            <th class="center">Alquileres</th>
+                            <th>Productos alquilados</th>
+                            @if($rol !== 'bodega')
+                                <th class="right">Valor adeudado</th>
+                            @endif
+                            <th>Último cobro</th>
+                            <th class="center">Días mora</th>
+                            <th>Estado</th>
                         </tr>
-                    @endforelse
+                    </thead>
+                    <tbody>
+                        @forelse($clientesMorosos as $cliente)
+                            <tr>
+                                <td>{{ $cliente->nombre }}</td>
+                                <td>{{ $cliente->obras }}</td>
+                                <td class="center">{{ $cliente->alquileres_pendientes }}</td>
+                                <td>{{ $cliente->productos_alquilados }}</td>
+                                @if($rol !== 'bodega')
+                                    <td class="right">${{ number_format((float) $cliente->total_deuda, 0) }}</td>
+                                @endif
+                                <td>{{ $cliente->ultimo_cobro }}</td>
+                                <td class="center">{{ $cliente->dias_mora }}</td>
+                                <td>
+                                    <span class="badge {{ $cliente->estado === 'moroso' ? 'badge-risk' : 'badge-ok' }}">
+                                        {{ $cliente->estado === 'moroso' ? 'MOROSO' : 'AL DIA' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="{{ $rol !== 'bodega' ? 8 : 7 }}" class="rcp-empty">
+                                    No hay clientes con saldos pendientes para los filtros seleccionados.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-                </tbody>
-            </table>
+        <section class="rcp-card">
+            <div class="rcp-section-head">
+                <h3>Reporte de devoluciones y pendientes</h3>
+                <p>
+                    Identifica herramientas devueltas parcial o totalmente y aquellas que aún se encuentran pendientes.
+                </p>
+            </div>
 
-        </div>
+            <div class="rcp-table-wrap">
+                <table class="rcp-table">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Obra</th>
+                            <th>Herramientas alquiladas</th>
+                            <th class="center">Cant. alquilada vs devuelta</th>
+                            <th class="center">Diferencias</th>
+                            <th>Fecha estimada de devolución</th>
+                            <th>Estado de devolución</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($reporteDevoluciones as $fila)
+                            <tr>
+                                <td>{{ $fila->cliente }}</td>
+                                <td>{{ $fila->obra }}</td>
+                                <td>{{ $fila->herramienta }}</td>
+                                <td class="center">{{ $fila->cantidad_alquilada }} / {{ $fila->cantidad_devuelta }}</td>
+                                <td class="center">{{ $fila->diferencia }}</td>
+                                <td>{{ $fila->fecha_estimada_devolucion }}</td>
+                                <td>
+                                    <span class="badge {{ $fila->estado_class }}">
+                                        {{ strtoupper($fila->estado) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="rcp-empty">
+                                    No hay información de devoluciones o pendientes para los filtros seleccionados.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="rcp-utils">
+                <strong>Utilidad:</strong> Control operativo de bodega, seguimiento a clientes y reducción de pérdidas.
+            </div>
+        </section>
     </div>
-
-</div>
-
-{{-- =========================
-   JS BÁSICO DE FILTRO
-========================= --}}
-<script>
-document.getElementById('filtroCliente').addEventListener('keyup', function () {
-    const filtro = this.value.toLowerCase();
-
-    document.querySelectorAll('#tablaClientes tbody tr').forEach(fila => {
-        const nombre = fila.querySelector('.contr-client-name')?.textContent.toLowerCase();
-        fila.style.display = nombre.includes(filtro) ? '' : 'none';
-    });
-});
-</script>
-
 @endsection

@@ -45,7 +45,7 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
 
     Route::resource('productos', ProductoController::class);
 
-    Route::post('/productos', [ProductoadminController::class, 'inventario'])
+    Route::post('/productos/inventario', [ProductoadminController::class, 'inventario'])
         ->name('productos.inventario');
 
 
@@ -128,10 +128,22 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/', [ReportesStockController::class, 'index'])->name('reportes.index');
         Route::get('/movimientos', [ReportesStockController::class, 'movimientos'])->name('reportes.movimientos');
         Route::get('/controlproducto', [controlproducto::class, 'controlproducto'])->name('reportes.controlproducto');
+        Route::get('/productos-alquilados-detallado', [ReportesStockController::class, 'productosAlquiladosDetallado'])
+            ->name('reportes.productos-alquilados-detallado');
         Route::get('reportes/generalrep', [ReportesStockController::class, 'reportes'])->name('reportes.generalrep');
         // ✅ RF-28
         Route::get('/clientes-pendientes',[ReporteController::class, 'clientesPendientes'])
         ->name('reportes.clientes-pendientes');
+        Route::get('/ingresos-diarios', [ReporteController::class, 'ingresosDiarios'])
+            ->name('reportes.ingresos-diarios');
+        Route::get('/cliente-detallado', [ReporteController::class, 'clienteDetallado'])
+            ->name('reportes.cliente-detallado');
+        Route::get('/cliente-detallado/pdf', [ReporteController::class, 'clienteDetalladoPdf'])
+            ->name('reportes.cliente-detallado.pdf');
+        Route::get('/incidencias-no-cobrados', [ReporteController::class, 'incidenciasDiasNoCobrados'])
+            ->name('reportes.incidencias-no-cobrados');
+        Route::get('/perdidas-mantenimiento', [ReporteController::class, 'perdidasMantenimiento'])
+            ->name('reportes.perdidas-mantenimiento');
     });
 });
 
@@ -297,6 +309,10 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::get('/clientes/{cliente}/obras', [ClienteController::class, 'obras']);
 });
 Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('gastos/export/excel', [GastoController::class, 'exportExcel'])
+        ->name('gastos.export.excel');
+    Route::get('gastos/export/pdf', [GastoController::class, 'exportPdf'])
+        ->name('gastos.export.pdf');
     Route::resource('gastos', GastoController::class)->only([
     'index', 'create', 'store'
     ]);
