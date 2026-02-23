@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title','Nueva solicitud arriendo')
 @section('header','Nueva solicitud arriendo')
 
@@ -34,7 +34,7 @@
   --radius: 18px;
   --radius-sm: 14px;
 
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--text);
 }
 
@@ -271,7 +271,7 @@
   border-color: rgba(37,99,235,.22);
 }
 
-/* ✅ BOTÓN PRINCIPAL (AZUL) */
+/* âœ… BOTÃ“N PRINCIPAL (AZUL) */
 .rent-request .btn-primary{
   background: linear-gradient(180deg, var(--primary), var(--primary-700));
   border-color: rgba(37,99,235,.35);
@@ -382,7 +382,7 @@
           <div>
             <h2>Nueva solicitud de arriendo</h2>
             <p>
-              Crea primero el contrato (PADRE). Luego, en el siguiente paso, podrás agregar productos al arriendo.
+              Crea primero el contrato (PADRE). Luego, en el siguiente paso, podrÃ¡s agregar productos al arriendo.
             </p>
           </div>
 
@@ -395,7 +395,7 @@
       <div class="grid">
         <div class="card">
           <div class="card-head">
-            <span class="pill">PASO 1 · DATOS GENERALES</span>
+            <span class="pill">PASO 1 Â· DATOS GENERALES</span>
           </div>
 
           <div class="card-body">
@@ -428,12 +428,12 @@
                   <select name="obra_id" id="obra_id" class="control">
                     <option value="">Seleccione cliente primero...</option>
                   </select>
-                  <div class="hint">Si no aplica, déjalo vacío.</div>
+                  <div class="hint">Si no aplica, dÃ©jalo vacÃ­o.</div>
                 </div>
               </div>
 
               <div class="footer">
-                {{-- ✅ Botón azul --}}
+                {{-- âœ… BotÃ³n azul --}}
                 <button type="submit" class="btn btn-primary">Siguiente</button>
               </div>
 
@@ -445,7 +445,7 @@
           <h3>Resumen</h3>
           <p>
             Este paso crea el arriendo <strong>PADRE</strong> (contrato). En el siguiente paso agregas
-            los productos (hijos) y continúas el flujo.
+            los productos (hijos) y continÃºas el flujo.
           </p>
 
           <div class="kpi">
@@ -466,7 +466,7 @@
       </div>
 
       <div class="note-bottom">
-        Nota: solo estás creando el contrato. Luego podrás añadir productos al arriendo.
+        Nota: solo estÃ¡s creando el contrato. Luego podrÃ¡s aÃ±adir productos al arriendo.
       </div>
 
     </div>
@@ -516,3 +516,4 @@
 </script>
 
 @endsection
+

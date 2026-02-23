@@ -21,7 +21,7 @@
 body{
   min-height:100vh;
   margin:0;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--text);
   display:grid;
   place-items:center;
@@ -86,7 +86,8 @@ body::before{
 }
 
 .brand-title{
-  font-family: Oswald, sans-serif;
+  font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 800;
   font-size:2rem;
   color:#fff;
   margin-top:.8rem;
@@ -116,19 +117,29 @@ body::before{
 .form-control{
   background:rgba(2,6,23,.85);
   border:1px solid rgba(245,179,1,.28);
-  color:var(--text);
+  color:var(--text) !important;
   border-radius:1rem;
   padding:.9rem .95rem .9rem 2.5rem;
+  caret-color: #f8fafc;
 }
 
 .form-control::placeholder{
-  color:#9ca3af;
+  color:#9ca3af !important;
 }
 
 .form-control:focus{
   border-color:var(--primary);
   box-shadow:0 0 0 .25rem rgba(245,179,1,.18);
   background:rgba(2,6,23,.95);
+  color: #f8fafc !important;
+}
+
+.form-control:-webkit-autofill,
+.form-control:-webkit-autofill:hover,
+.form-control:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fafc !important;
+  box-shadow: 0 0 0 1000px rgba(2,6,23,.95) inset !important;
+  caret-color: #f8fafc;
 }
 
 /* BOTONES */
