@@ -24,7 +24,7 @@
   <div class="login-card">
 
     <div class="text-center mb-4 position-relative">
-      <div class="brand-badge">👷‍♂️ ALFA DIGITAL SOLUTIONS S.A.S</div>
+      <div class="brand-badge">👷‍♂️ SISTEMA DE GESTIÓN E INVENTARIO PARA EL ALQUILER DE HERRAMIENTAS Y EQUIPOS DE OBRA</div>
       <div class="brand-title">Ingresar al Sistema</div>
       <div class="brand-sub">
         Acceso exclusivo para gestión de alquiler e inventario
@@ -46,7 +46,7 @@
         <div class="input-wrap">
           <span class="input-icon">📧</span>
           <input type="email" name="email" class="form-control"
-                 placeholder="Ej: developer@teca.arquitectos.com"
+                 placeholder="Ej: developer@alquiler.com"
                  required autocomplete="off"
                  value="{{ old('email') }}">
         </div>

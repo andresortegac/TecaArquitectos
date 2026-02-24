@@ -1,21 +1,21 @@
 :root{
   /* 🟦 FONDOS */
   --bg:#070b12;
-  --bg2:#0c1220;
-  --bg3:#111827;
-  --line:rgba(245,179,1,.22);
+  --bg2:#0b1324;
+  --bg3:#0f172a;
+  --line:rgba(59,130,246,.25);
 
-  /* 🟡 AMARILLO QUEMADO */
-  --primary:#f5b301;
-  --primary-soft:#ffd36a;
-  --primary-dark:#c49102;
+  /* 🔵 AZUL PRINCIPAL */
+  --primary:#3b82f6;
+  --primary-soft:#93c5fd;
+  --primary-dark:#1d4ed8;
 
   /* 🔴 ESTADOS */
   --danger:#dc2626;
 
   /* 📝 TEXTO */
   --text:#f1f5f9;
-  --muted:#a1a1aa;
+  --muted:#9ca3af;
 }
 
 body{
@@ -39,50 +39,60 @@ body::before{
   background:
     radial-gradient(
       1200px 700px at 10% -10%,
-      rgba(245,179,1,.18),
+      rgba(59,130,246,.20),
       transparent 60%
     ),
     radial-gradient(
       1000px 650px at 105% 0%,
-      rgba(255,183,3,.16),
+      rgba(96,165,250,.18),
       transparent 55%
     ),
     linear-gradient(
       180deg,
       rgba(2,6,23,.55),
-      rgba(2,6,23,.9)
+      rgba(2,6,23,.92)
     );
   z-index:0;
 }
 
 /* CARD */
-.login-card {
-    width: 100%;
-    max-width: 460px;
-    background: linear-gradient(180deg, rgb(0 81 255 / 0%), rgb(0 0 0 / 0%));
-    border: 1px solid rgba(245, 179, 1, .25);
-    border-radius: 1.6rem;
-    box-shadow: 0 20px 70px rgba(0, 0, 0, .75);
-    padding: 2.2rem;
-    backdrop-filter: blur(10px);
-    animation: fadeUp .45s ease;
-    position: relative;
-    z-index: 1;
+.login-card{
+  width:100%;
+  max-width:460px;
+  background:linear-gradient(
+    180deg,
+    rgba(59,130,246,.05),
+    rgba(2,6,23,.55)
+  );
+  border:1px solid rgba(59,130,246,.35);
+  border-radius:1.6rem;
+  box-shadow:0 20px 70px rgba(0,0,0,.75);
+  padding:2.2rem;
+  backdrop-filter:blur(10px);
+  animation:fadeUp .45s ease;
+  position:relative;
+  z-index:1;
 }
 
 /* BRAND */
-.brand-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: .65rem;
-    padding: .55rem 1.15rem;
-    border-radius: 999px;
-    font-weight: 900;
-    font-size: 1.05rem;
-    color: #fff7cc;
-    background: linear-gradient(135deg, rgba(245, 179, 1, .18), rgba(255, 183, 3, .12));
-    border: 1.5px solid var(--primary);
-    box-shadow: 0 0 6px rgb(243 243 243 / 90%), 0 0 16px rgb(7 3 255 / 60%);
+.brand-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.65rem;
+  padding:.55rem 1.15rem;
+  border-radius:999px;
+  font-weight:900;
+  font-size:1.05rem;
+  color:#e0ecff;
+  background:linear-gradient(
+    135deg,
+    rgba(59,130,246,.25),
+    rgba(147,197,253,.15)
+  );
+  border:1.5px solid var(--primary);
+  box-shadow:
+    0 0 8px rgba(59,130,246,.75),
+    0 0 18px rgba(37,99,235,.55);
 }
 
 .brand-title{
@@ -115,7 +125,7 @@ body::before{
 
 .form-control{
   background:rgba(2,6,23,.85);
-  border:1px solid rgba(245,179,1,.28);
+  border:1px solid rgba(59,130,246,.35);
   color:var(--text);
   border-radius:1rem;
   padding:.9rem .95rem .9rem 2.5rem;
@@ -127,40 +137,46 @@ body::before{
 
 .form-control:focus{
   border-color:var(--primary);
-  box-shadow:0 0 0 .25rem rgba(245,179,1,.18);
+  box-shadow:0 0 0 .25rem rgba(59,130,246,.25);
   background:rgba(2,6,23,.95);
 }
 
 /* BOTONES */
-.btn-brand {
-    background: linear-gradient(185deg, #0650fd, #ffffff);
-    border: none;
-    font-weight: 800;
-    border-radius: 1rem;
-    padding: .9rem;
-    color: #1f2933;
-    box-shadow: 0 12px 26px rgba(245, 179, 1, .45);
+.btn-brand{
+  background:linear-gradient(
+    185deg,
+    #2563eb,
+    #60a5fa
+  );
+  border:none;
+  font-weight:800;
+  border-radius:1rem;
+  padding:.9rem;
+  color:#020617;
+  box-shadow:0 12px 28px rgba(59,130,246,.55);
 }
 
 .btn-brand:hover{
   filter:brightness(1.08);
 }
 
-.btn-soft {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 1rem;
-    padding: .75rem;
-    color: #fff7cc;
-    text-decoration: none;
-    background: rgba(245, 179, 1, .08);
-    border: 1px solid rgb(247 247 247 / 85%);
-    box-shadow: 0 0 8px rgb(255 255 255 / 90%), 0 0 18px rgb(19 3 255);
+.btn-soft{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:1rem;
+  padding:.75rem;
+  color:#e0ecff;
+  text-decoration:none;
+  background:rgba(59,130,246,.12);
+  border:1px solid rgba(147,197,253,.55);
+  box-shadow:
+    0 0 10px rgba(59,130,246,.65),
+    0 0 20px rgba(37,99,235,.45);
 }
 
 .btn-soft:hover{
-  background:rgba(245,179,1,.16);
+  background:rgba(59,130,246,.20);
   transform:translateY(-1px);
 }
 
