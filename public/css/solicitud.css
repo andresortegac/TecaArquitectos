@@ -1,77 +1,171 @@
-
-
-/* ===== FORMULARIO SOLICITUD ===== */
-.form {
-    max-width: 900px;
-    margin: 0 auto;
-    background: #ffffff;
-    padding: 25px 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+﻿.solicitud-page {
+  display: grid;
+  gap: 16px;
 }
 
-/* Labels */
-.form label {
-    display: block;
-    font-weight: 600;
-    margin-top: 15px;
-    margin-bottom: 6px;
-    color: #1f2937;
+.sol-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-radius: 14px;
+  padding: 18px;
+  background: linear-gradient(120deg, #0b1324 0%, #1e293b 100%);
+  color: #f8fafc;
 }
 
-/* Inputs */
-.form input[type="text"],
-.form input[type="date"],
-.form input[type="number"] {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+.sol-hero h2 {
+  margin: 0 0 6px;
 }
 
-.form input:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+.sol-hero p {
+  margin: 0;
+  color: #cbd5e1;
 }
 
-/* Título sección */
-.form h3 {
-    margin-top: 30px;
-    margin-bottom: 15px;
-    font-size: 18px;
-    font-weight: 700;
-    color: #1e3a8a;
+.sol-hero-actions {
+  display: flex;
+  gap: 8px;
 }
 
-/* ===== TABLA ===== */
+.sol-card {
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  background: #ffffffde;
+  padding: 14px;
+}
+
+.sol-alert {
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid;
+  font-size: 13px;
+}
+
+.sol-alert-success {
+  color: #166534;
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.sol-table-wrapper {
+  overflow-x: auto;
+}
+
 .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .table thead {
-    background: #f1f5f9;
+  background: #f8fafc;
 }
 
 .table th,
 .table td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #e5e7eb;
+  padding: 11px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  font-size: 13px;
 }
 
 .table th {
-    font-size: 14px;
-    font-weight: 700;
-    color: #334155;
+  color: #334155;
+  font-weight: 700;
 }
 
 .table td {
-    font-size: 14px;
+  color: #334155;
 }
 
-/* Input dentro de tabla */
+.estado {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.estado.pendiente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.estado.aprobado {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sol-btn {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+}
+
+.sol-btn-primary {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.sol-btn-light {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.sol-btn-warning {
+  background: #0f172a;
+  color: #fff;
+}
+
+.sol-empty {
+  text-align: center;
+  color: #64748b;
+}
+
+/* Mantiene estilo del formulario existente de crear solicitud */
+.form {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.form label {
+  display: block;
+  font-weight: 600;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  color: #1f2937;
+}
+
+.form input[type='text'],
+.form input[type='date'],
+.form input[type='number'] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .sol-hero {
+    flex-direction: column;
+  }
+
+  .sol-hero-actions {
+    width: 100%;
+  }
+
+  .sol-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}

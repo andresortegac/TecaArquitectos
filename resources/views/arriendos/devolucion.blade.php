@@ -33,6 +33,39 @@
 
     // ✅ Último saldo devolución guardado (para pintar en la tarjeta)
     $ultimoSaldoDevolucion = optional($item->devoluciones?->sortByDesc('id')->first())->saldo_devolucion;
+
+    // ✅ NUEVO: regla domingos por ITEM
+    $cobraDomingo = (int)($item->cobra_domingo ?? 0) === 1;
+
+    // ============================
+    // ✅ NUEVO: MODO HISTORIAL / READONLY
+    // ============================
+    $itemEstado = strtolower($item->estado ?? '');
+    $arriendoEstado = strtolower($item->arriendo->estado ?? '');
+
+    $isCerrado = ((int)($item->cerrado ?? 0) === 1)
+        || ($itemEstado !== 'activo')
+        || ((int)($item->cantidad_actual ?? 0) <= 0);
+
+    $ultimaDevolucion = $item->devoluciones?->sortByDesc('id')->first();
+    $fechaCorte = $ultimaDevolucion->fecha_devolucion
+        ?? ($item->fecha_cierre ?? null)
+        ?? ($item->fecha_fin ?? null)
+        ?? ($item->updated_at ?? null);
+
+    $fechaCorteUI = $fechaCorte
+        ? \Carbon\Carbon::parse($fechaCorte)->toDateString()
+        : date('Y-m-d');
+
+    $maxDev = max(1, (int)($item->cantidad_actual ?? 0));
+
+    // ✅ labels transporte (para mostrar en historial)
+    $transporteLabels = [
+        'no' => 'No',
+        'recoger' => 'Recoger herramientas',
+        'entregar' => 'Entregar herramientas',
+        'recoger_y_entregar' => 'Recoger y entregar',
+    ];
 @endphp
 
 <div class="return-page-pro">
@@ -469,7 +502,7 @@
             width:100%;
             border-collapse: separate;
             border-spacing: 0;
-            min-width: 1120px;
+            min-width: 1320px; /* ✅ un poquito más por columna $ transporte */
         }
         .return-page-pro .rp-table thead th{
             position: sticky;
@@ -513,16 +546,26 @@
                 <div>
                     <h2 class="rp-title">Devolución · Item #{{ $item->id }} <span style="color:var(--muted); font-weight:900;">(Arriendo #{{ $item->arriendo_id }})</span></h2>
                     <div class="rp-subtitle">Contexto arriba, acción abajo. Diseño limpio para operación diaria.</div>
+
+                    @if($isCerrado)
+                        <div class="rp-note" style="margin-top:10px;">
+                            <strong>Modo historial:</strong> este item ya está cerrado/devuelto, por eso <strong>no se pueden registrar nuevas devoluciones</strong>.
+                            Los cálculos y el calendario se muestran con corte al <strong>{{ \Carbon\Carbon::parse($fechaCorteUI)->format('d/m/Y') }}</strong>.
+                        </div>
+                    @endif
                 </div>
                 <div class="rp-actions">
                     <a class="rp-btn" href="{{ route('arriendos.ver', $item->arriendo_id) }}">Volver</a>
-                    <button type="button" class="rp-btn rp-btn-primary" onclick="document.querySelector('.return-page-pro form').scrollIntoView({behavior:'smooth'})">Registrar devolución</button>
+                    <button type="button" class="rp-btn rp-btn-primary"
+                            onclick="document.querySelector('.return-page-pro form').scrollIntoView({behavior:'smooth'})"
+                            {{ $isCerrado ? 'disabled style=opacity:.55;cursor:not-allowed;' : '' }}>
+                        Registrar devolución
+                    </button>
                 </div>
             </div>
         </div>
 
         <div class="rp-body">
-            {{-- ✅ ROW 1: INFO FULL WIDTH --}}
             <div class="rp-card">
                 <div class="rp-card-title">
                     <h3>Información del arriendo</h3>
@@ -559,7 +602,6 @@
                         <div class="v">${{ number_format((float)($item->saldo ?? 0), 2) }}</div>
                     </div>
 
-                    {{-- ✅ AQUÍ va tu tarjeta de SALDO DEVOLUCIÓN (para que deje de salir "—") --}}
                     <div class="rp-kv">
                         <div class="k">Saldo devolución</div>
                         <div class="v money">
@@ -570,13 +612,17 @@
                     <div class="rp-kv">
                         <div class="k">Regla de cobro</div>
                         <div class="v" style="font-size:12.5px; font-weight:900; color:var(--muted);">
-                            Se cobra desde inicio hasta el día anterior a devolución. Domingos no se cobran.
+                            Se cobra desde inicio hasta el día anterior a devolución.
+                            @if($cobraDomingo)
+                                <strong>Domingos SÍ se cobran.</strong>
+                            @else
+                                <strong>Domingos NO se cobran.</strong>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- ✅ ROW 2: FORM (left) + CALENDAR (right) --}}
             <div class="rp-row2">
                 <form method="POST" action="{{ route('items.devolucion.store', $item) }}" class="rp-card rp-form">
                     @csrf
@@ -586,18 +632,26 @@
                         <span class="rp-chip">Campos controlados</span>
                     </div>
 
+                    @if($isCerrado)
+                        <div class="rp-note" style="margin-top:0;">
+                            Este item está en <strong>modo historial</strong>. El formulario está bloqueado para evitar cambios.
+                        </div>
+                    @endif
+
                     <div class="row">
                         <div class="field">
                             <label class="rp-label">Cantidad a devolver</label>
-                            <input class="rp-input" type="number" min="1" max="{{ (int)$item->cantidad_actual }}"
-                                   name="cantidad_devuelta" required value="{{ old('cantidad_devuelta') }}">
+                            <input class="rp-input" type="number" min="1" max="{{ $maxDev }}"
+                                   name="cantidad_devuelta" required value="{{ old('cantidad_devuelta') }}"
+                                   {{ $isCerrado ? 'disabled' : '' }}>
                             <div class="rp-help">Máximo permitido: <strong>{{ (int)$item->cantidad_actual }}</strong></div>
                         </div>
 
                         <div class="field">
                             <label class="rp-label">Fecha devolución</label>
                             <input class="rp-input" type="date" name="fecha_devolucion" required
-                                   value="{{ old('fecha_devolucion', date('Y-m-d')) }}">
+                                   value="{{ old('fecha_devolucion', $isCerrado ? $fechaCorteUI : date('Y-m-d')) }}"
+                                   {{ $isCerrado ? 'disabled' : '' }}>
                             <div class="rp-help">No se cobra el día de devolución.</div>
                         </div>
                     </div>
@@ -608,14 +662,49 @@
                         <div class="field">
                             <label class="rp-label">Días de lluvia (se descuentan)</label>
                             <input class="rp-input" type="number" min="0" name="dias_lluvia"
-                                   value="{{ old('dias_lluvia', 0) }}">
+                                   value="{{ old('dias_lluvia', 0) }}"
+                                   {{ $isCerrado ? 'disabled' : '' }}>
                         </div>
 
                         <div class="field">
-                            {{-- ✅ CAMBIO DE NOMBRE VISIBLE --}}
                             <label class="rp-label">Pérdida o daño de herramienta</label>
                             <input class="rp-input" type="number" min="0" step="0.01" name="costo_merma"
-                                   value="{{ old('costo_merma', 0) }}">
+                                   value="{{ old('costo_merma', 0) }}"
+                                   {{ $isCerrado ? 'disabled' : '' }}>
+                        </div>
+                    </div>
+
+                    {{-- ✅ Transporte / Recoger herramientas --}}
+                    <div class="row">
+                        <div class="field">
+                            <label class="rp-label">Transporte de herramientas</label>
+                            @php $tr = old('transporte_herramientas','no'); @endphp
+                            <select class="rp-input" name="transporte_herramientas" {{ $isCerrado ? 'disabled' : '' }}>
+                                <option value="no" {{ $tr==='no' ? 'selected' : '' }}>No</option>
+                                <option value="recoger" {{ $tr==='recoger' ? 'selected' : '' }}>Recoger herramientas</option>
+                                <option value="entregar" {{ $tr==='entregar' ? 'selected' : '' }}>Entregar herramientas</option>
+                                <option value="recoger_y_entregar" {{ $tr==='recoger_y_entregar' ? 'selected' : '' }}>Recoger y entregar</option>
+                            </select>
+                            <div class="rp-help">Se guarda en el historial de devoluciones.</div>
+                        </div>
+
+                        <div class="field">
+                            <label class="rp-label">Detalle transporte (opcional)</label>
+                            <input class="rp-input" type="text" name="detalle_transporte"
+                                   value="{{ old('detalle_transporte') }}"
+                                   placeholder="Ej: recoger en obra / dirección / contacto"
+                                   {{ $isCerrado ? 'disabled' : '' }}>
+                        </div>
+                    </div>
+
+                    {{-- ✅ NUEVO: Costo transporte (ESTO SE SUMA AL TOTAL) --}}
+                    <div class="row">
+                        <div class="field">
+                            <label class="rp-label">Costo transporte</label>
+                            <input class="rp-input" type="number" min="0" step="0.01" name="costo_transporte"
+                                   value="{{ old('costo_transporte', 0) }}"
+                                   {{ $isCerrado ? 'disabled' : '' }}>
+                            <div class="rp-help">Este valor se suma al total.</div>
                         </div>
                     </div>
 
@@ -623,15 +712,19 @@
                         <div class="field">
                             <label class="rp-label">Pago recibido / Abono (opcional)</label>
                             <input class="rp-input" type="number" min="0" step="0.01" name="pago"
-                                   value="{{ old('pago', 0) }}">
+                                   value="{{ old('pago', 0) }}"
+                                   {{ $isCerrado ? 'disabled' : '' }}>
                             <div class="rp-footer-actions" style="justify-content:flex-start; margin-top:10px;">
-                                <button type="button" class="rp-btn" id="btn_pagar_completo">Pagar completo</button>
+                                <button type="button" class="rp-btn" id="btn_pagar_completo"
+                                        {{ $isCerrado ? 'disabled style=opacity:.55;cursor:not-allowed;' : '' }}>
+                                    Pagar completo
+                                </button>
                             </div>
                         </div>
 
                         <div class="field">
                             <label class="rp-label">Método de pago</label>
-                            <select class="rp-input" name="payment_method">
+                            <select class="rp-input" name="payment_method" {{ $isCerrado ? 'disabled' : '' }}>
                                 @php $pm = old('payment_method','efectivo'); @endphp
                                 <option value="efectivo" {{ $pm==='efectivo' ? 'selected' : '' }}>Efectivo</option>
                                 <option value="nequi" {{ $pm==='nequi' ? 'selected' : '' }}>Nequi</option>
@@ -647,14 +740,21 @@
                             <label class="rp-label">Descripción incidencia (opcional)</label>
                             <input class="rp-input" type="text" name="descripcion_incidencia"
                                    value="{{ old('descripcion_incidencia') }}"
-                                   placeholder="Ej: lluvia fuerte / mango roto">
+                                   placeholder="Ej: lluvia fuerte / mango roto"
+                                   {{ $isCerrado ? 'disabled' : '' }}>
                         </div>
-                        {{-- ✅ ELIMINADO: Nota (opcional) --}}
                     </div>
 
-                    <div class="rp-note">
-                        Domingos se descuentan automáticamente. No se cobra el día de devolución. Si inicio y devolución son el mismo día, se cobra 1.
+                    <div class="rp-note" id="ui_rule_note">
+                        Se cobra desde inicio hasta el día anterior a devolución.
+                        @if($cobraDomingo)
+                            <strong>Domingos SÍ se cobran.</strong>
+                        @else
+                            <strong>Domingos NO se cobran.</strong>
+                        @endif
+                        Si inicio y devolución son el mismo día, se cobra 1 (si ese día es cobrable).
                         <br><strong>Nota:</strong> “Días de lluvia” es un número de descuento (no se puede pintar por fecha exacta).
+                        <br><strong>Transporte:</strong> selecciona si hay <em>recoger/entregar herramientas</em> y pon el <em>costo</em> para que se sume al total.
                     </div>
 
                     <div class="rp-summary">
@@ -690,7 +790,9 @@
                     </div>
 
                     <div class="rp-footer-actions">
-                        <button type="submit" class="rp-btn rp-btn-primary" style="background:linear-gradient(180deg,#fbbf24,#f59e0b); border-color: rgba(245,158,11,.55); color:#111827;">
+                        <button type="submit" class="rp-btn rp-btn-primary"
+                                style="background:linear-gradient(180deg,#fbbf24,#f59e0b); border-color: rgba(245,158,11,.55); color:#111827;"
+                                {{ $isCerrado ? 'disabled style=opacity:.55;cursor:not-allowed;' : '' }}>
                             Guardar devolución
                         </button>
                     </div>
@@ -735,6 +837,9 @@
 
                         <div class="rp-help" style="margin-top:10px;">
                             Tip: haz clic en un día del calendario para ponerlo como <strong>fecha de devolución</strong>.
+                            @if($isCerrado)
+                                <br><strong>Modo historial:</strong> el calendario está solo de lectura.
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -776,6 +881,8 @@
                                     <thead>
                                         <tr>
                                             <th>Fecha</th>
+                                            <th class="center">Transporte</th>
+                                            <th class="num">Transp $</th> {{-- ✅ NUEVO --}}
                                             <th class="center">Devuelto</th>
                                             <th class="center">Días</th>
                                             <th class="center">Dom</th>
@@ -793,8 +900,16 @@
                                     </thead>
                                     <tbody>
                                     @foreach($item->devoluciones->sortByDesc('id') as $d)
+                                        @php
+                                            $trKey = $d->transporte_herramientas ?? 'no';
+                                            $trText = $transporteLabels[$trKey] ?? ($trKey ?: 'No');
+                                            $costoTrans = (float)($d->costo_transporte ?? 0);
+                                        @endphp
                                         <tr>
                                             <td>{{ \Carbon\Carbon::parse($d->fecha_devolucion)->format('d/m/Y') }}</td>
+                                            <td class="center">{{ $trText }}</td>
+                                            <td class="num">${{ number_format($costoTrans, 2) }}</td>
+
                                             <td class="center">{{ (int)$d->cantidad_devuelta }}</td>
                                             <td class="center">{{ (int)$d->dias_transcurridos }}</td>
                                             <td class="center">{{ (int)$d->domingos_desc }}</td>
@@ -816,10 +931,17 @@
                                             <td class="num">${{ number_format((float)$d->saldo_resultante, 2) }}</td>
                                         </tr>
 
-                                        @if(!empty($d->descripcion_incidencia))
+                                        {{-- ✅ Mostrar detalle transporte/incidencia --}}
+                                        @php
+                                            $notaExtra = [];
+                                            if (!empty($d->detalle_transporte)) $notaExtra[] = '<strong>Detalle transporte:</strong> ' . e($d->detalle_transporte);
+                                            if (!empty($d->descripcion_incidencia)) $notaExtra[] = '<strong>Incidencia:</strong> ' . e($d->descripcion_incidencia);
+                                        @endphp
+
+                                        @if(!empty($notaExtra))
                                             <tr class="row-note">
-                                                <td colspan="14">
-                                                    <strong>Incidencia:</strong> {{ $d->descripcion_incidencia }}
+                                                <td colspan="16">
+                                                    {!! implode(' &nbsp; • &nbsp; ', $notaExtra) !!}
                                                 </td>
                                             </tr>
                                         @endif
@@ -838,11 +960,16 @@
               const tarifa = JSON.parse('{!! json_encode($tarifaVista) !!}');
               const fechaInicio = JSON.parse('{!! json_encode($fechaInicioUI) !!}');
 
+              const cobraDomingo = JSON.parse('{!! json_encode($cobraDomingo) !!}');
+              const isReadonly = JSON.parse('{!! json_encode($isCerrado) !!}');
+              const fechaCorteUI = JSON.parse('{!! json_encode($fechaCorteUI) !!}');
+
               const $root = document.querySelector('.return-page-pro');
               const $cant = $root.querySelector('[name="cantidad_devuelta"]');
               const $fec  = $root.querySelector('[name="fecha_devolucion"]');
               const $llu  = $root.querySelector('[name="dias_lluvia"]');
               const $mer  = $root.querySelector('[name="costo_merma"]');
+              const $tra  = $root.querySelector('[name="costo_transporte"]'); // ✅ NUEVO
               const $pago = $root.querySelector('[name="pago"]');
               const $btnFull = $root.querySelector('#btn_pagar_completo');
 
@@ -852,7 +979,6 @@
               const uiAbo  = $root.querySelector('#ui_abono');
               const uiSal  = $root.querySelector('#ui_saldo');
 
-              // ✅ Tarjeta superior (Saldo devolución)
               const uiSaldoCard = $root.querySelector('#ui_saldo_card');
 
               const calTitle = $root.querySelector('#rp_cal_title');
@@ -876,11 +1002,14 @@
                 if (!dateObj || !inicioObj || !devolObj) return false;
 
                 if (inicioObj.getTime() === devolObj.getTime()){
-                  return (dateObj.getTime() === inicioObj.getTime()) && (dateObj.getDay() !== 0);
+                  if (!cobraDomingo && dateObj.getDay() === 0) return false;
+                  return (dateObj.getTime() === inicioObj.getTime());
                 }
+
                 if (dateObj < inicioObj) return false;
                 if (dateObj >= devolObj) return false;
-                if (dateObj.getDay() === 0) return false;
+                if (!cobraDomingo && dateObj.getDay() === 0) return false;
+
                 return true;
               }
 
@@ -890,7 +1019,8 @@
                 if (!d1 || !d2) return 0;
 
                 if (d1.getTime() === d2.getTime()){
-                  return (d1.getDay() === 0) ? 0 : 1;
+                  if (!cobraDomingo && d1.getDay() === 0) return 0;
+                  return 1;
                 }
 
                 let dias = 0;
@@ -903,14 +1033,21 @@
                   cur.setDate(cur.getDate() + 1);
                 }
 
-                dias = Math.max(0, dias - domingos);
+                if (!cobraDomingo) dias = Math.max(0, dias - domingos);
+
                 const lluvia = Math.max(0, parseNum($llu?.value));
                 dias = Math.max(0, dias - lluvia);
+
                 return dias;
               }
 
+              function getFechaDevolucionActual(){
+                if (isReadonly) return fechaCorteUI;
+                return ($fec?.value || new Date().toISOString().slice(0,10));
+              }
+
               let viewDate = (function initView(){
-                const d = parseYMD($fec?.value) || new Date();
+                const d = parseYMD(getFechaDevolucionActual()) || new Date();
                 return new Date(d.getFullYear(), d.getMonth(), 1);
               })();
 
@@ -918,7 +1055,7 @@
 
               function renderCalendar(){
                 const inicioObj = parseYMD(fechaInicio);
-                const devolObj  = parseYMD($fec?.value || toYMD(new Date()));
+                const devolObj  = parseYMD(getFechaDevolucionActual());
                 if (!calGrid) return;
 
                 calGrid.innerHTML = '';
@@ -948,9 +1085,13 @@
                   if (devolObj && ymd === toYMD(devolObj)) cell.classList.add('is-return');
                   if (isChargeDay(d, inicioObj, devolObj)) cell.classList.add('is-charge');
 
-                  cell.style.cursor = 'pointer';
-                  cell.title = 'Seleccionar como fecha de devolución: ' + ymd;
+                  cell.style.cursor = isReadonly ? 'default' : 'pointer';
+                  cell.title = isReadonly
+                    ? ('Modo historial: ' + ymd)
+                    : ('Seleccionar como fecha de devolución: ' + ymd);
+
                   cell.addEventListener('click', function(){
+                    if (isReadonly) return;
                     if ($fec){
                       $fec.value = ymd;
                       viewDate = new Date(d.getFullYear(), d.getMonth(), 1);
@@ -964,13 +1105,16 @@
 
               function recompute(){
                 const cantidad = Math.max(0, parseNum($cant?.value));
-                const fdev = ($fec?.value || new Date().toISOString().slice(0,10));
+                const fdev = getFechaDevolucionActual();
 
                 const diasCobrables = calcDiasCobrables(fechaInicio, fdev);
                 const subtotal = diasCobrables * tarifa * cantidad;
 
                 const merma = Math.max(0, parseNum($mer?.value));
-                const total = subtotal + merma;
+                const transporte = Math.max(0, parseNum($tra?.value)); // ✅ NUEVO
+
+                // ✅ total incluye transporte
+                const total = subtotal + merma + transporte;
 
                 const abono = Math.max(0, parseNum($pago?.value));
                 const saldo = Math.max(0, total - abono);
@@ -981,26 +1125,28 @@
                 uiAbo.textContent  = money(abono);
                 uiSal.textContent  = money(saldo);
 
-                // ✅ actualizar la tarjeta superior también
                 if (uiSaldoCard) uiSaldoCard.textContent = money(saldo);
 
                 uiTot.dataset.total = money(total);
                 renderCalendar();
               }
 
-              [$cant,$fec,$llu,$mer,$pago].forEach(el => el && el.addEventListener('input', recompute));
-              $fec && $fec.addEventListener('change', function(){
-                const d = parseYMD($fec.value);
-                if (d) viewDate = new Date(d.getFullYear(), d.getMonth(), 1);
-                recompute();
-              });
+              if (!isReadonly){
+                [$cant,$fec,$llu,$mer,$tra,$pago].forEach(el => el && el.addEventListener('input', recompute)); // ✅ incluye transporte
 
-              if ($btnFull) {
-                $btnFull.addEventListener('click', function(){
-                  const t = Number(uiTot.dataset.total || 0);
-                  if ($pago) $pago.value = money(t);
+                $fec && $fec.addEventListener('change', function(){
+                  const d = parseYMD($fec.value);
+                  if (d) viewDate = new Date(d.getFullYear(), d.getMonth(), 1);
                   recompute();
                 });
+
+                if ($btnFull) {
+                  $btnFull.addEventListener('click', function(){
+                    const t = Number(uiTot.dataset.total || 0);
+                    if ($pago) $pago.value = money(t);
+                    recompute();
+                  });
+                }
               }
 
               btnPrev && btnPrev.addEventListener('click', function(){
@@ -1012,7 +1158,7 @@
                 renderCalendar();
               });
               btnToday && btnToday.addEventListener('click', function(){
-                const d = new Date();
+                const d = parseYMD(getFechaDevolucionActual()) || new Date();
                 viewDate = new Date(d.getFullYear(), d.getMonth(), 1);
                 renderCalendar();
               });

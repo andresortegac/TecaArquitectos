@@ -1,54 +1,114 @@
-.dash-wrapper {
-    padding: 20px;
+.dash-page {
+  display: grid;
+  gap: 16px;
 }
 
-.dash-title {
-    font-size: 1.8rem;
-    margin-bottom: 25px;
+.dash-hero {
+  border-radius: 14px;
+  padding: 18px;
+  background: linear-gradient(120deg, #0b1324 0%, #1e293b 100%);
+  color: #f8fafc;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.dash-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
+.dash-eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  color: #93c5fd;
+  font-weight: 700;
+}
+
+.dash-hero h2 {
+  margin: 0 0 6px;
+  font-size: 26px;
+}
+
+.dash-hero p {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.dash-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dash-btn {
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+}
+
+.dash-btn-primary {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.dash-btn-warning {
+  background: #facc15;
+  color: #111827;
+}
+
+.dash-btn-secondary {
+  background: #334155;
+  color: #fff;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
 }
 
 .dash-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 18px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,.08);
-    transition: transform .2s ease;
+  border-radius: 12px;
+  border: 1px solid #dbe3ee;
+  background: #ffffffde;
+  padding: 14px;
 }
 
-.dash-card:hover {
-    transform: translateY(-4px);
+.dash-label {
+  display: block;
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 8px;
 }
 
-.dash-icon {
-    font-size: 2rem;
+.dash-card strong {
+  font-size: 30px;
+  color: #0f172a;
+  line-height: 1;
 }
 
-.dash-card h4 {
-    margin: 0;
-    font-size: 1.6rem;
+.dash-alert {
+  border-left: 4px solid #dc2626;
 }
 
-.dash-card small {
-    color: #6c757d;
+.dash-warn {
+  border-left: 4px solid #f59e0b;
 }
 
-.dash-card.warning {
-    border-left: 6px solid #ffc107;
-}
+@media (max-width: 900px) {
+  .dash-hero {
+    flex-direction: column;
+  }
 
-.dash-card.danger {
-    border-left: 6px solid #dc3545;
-}
+  .dash-actions {
+    width: 100%;
+  }
 
-.dash-card.info {
-    border-left: 6px solid #0d6efd;
+  .dash-btn {
+    flex: 1;
+    justify-content: center;
+  }
 }

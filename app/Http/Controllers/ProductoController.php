@@ -11,16 +11,36 @@ use App\Models\Configuracion;
 
 class ProductoController extends Controller
 {
-      public function index()
+      public function index(Request $request)
     {
-        $productos = Producto::all();
+        $filters = $request->validate([
+            'q' => 'nullable|string|max:120',
+            'categoria' => 'nullable|string|max:120',
+        ]);
+
+        $query = Producto::query()->orderBy('id');
+
+        if (!empty($filters['q'])) {
+            $query->where('nombre', 'like', '%' . $filters['q'] . '%');
+        }
+
+        if (!empty($filters['categoria'])) {
+            $query->where('categorias', $filters['categoria']);
+        }
+
+        $productos = $query->paginate(20)->withQueryString();
 
         $categorias = Producto::select('categorias')
             ->distinct()
             ->whereNotNull('categorias')
             ->pluck('categorias');
 
-        return view('productos.index', compact('productos', 'categorias'));
+        $resumen = [
+            'total_productos' => Producto::count(),
+            'total_stock' => (int) Producto::sum('cantidad'),
+        ];
+
+        return view('productos.index', compact('productos', 'categorias', 'resumen', 'filters'));
     }     
        
 
@@ -118,17 +138,45 @@ class ProductoController extends Controller
     ========================== */
     public function alertasStock()
     {
+        $filters = request()->validate([
+            'q' => 'nullable|string|max:120',
+            'estado' => 'nullable|in:sin_stock,stock_bajo',
+        ]);
+
         $config = Configuracion::first();
 
         $stockMinimo = $config?->stock_minimo ?? 10;
 
-        $productos = Producto::where('cantidad', '<=', $stockMinimo)
-            ->orderBy('cantidad', 'asc')
-            ->get();
+        $query = Producto::query()
+            ->where('cantidad', '<=', $stockMinimo)
+            ->orderBy('cantidad', 'asc');
+
+        if (!empty($filters['q'])) {
+            $query->where(function ($q) use ($filters) {
+                $q->where('nombre', 'like', '%' . $filters['q'] . '%')
+                    ->orWhere('categorias', 'like', '%' . $filters['q'] . '%');
+            });
+        }
+
+        if (($filters['estado'] ?? '') === 'sin_stock') {
+            $query->where('cantidad', 0);
+        } elseif (($filters['estado'] ?? '') === 'stock_bajo') {
+            $query->where('cantidad', '>', 0);
+        }
+
+        $productos = $query->get();
+
+        $resumen = [
+            'total_alertas' => $productos->count(),
+            'sin_stock' => $productos->where('cantidad', 0)->count(),
+            'stock_bajo' => $productos->where('cantidad', '>', 0)->count(),
+        ];
 
         return view('productos.alertas', compact(
             'productos',
-            'stockMinimo'
+            'stockMinimo',
+            'resumen',
+            'filters'
         ));
     }
      

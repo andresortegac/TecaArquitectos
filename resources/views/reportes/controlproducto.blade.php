@@ -1,159 +1,153 @@
 @extends('layouts.app')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/controlproducto.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/controlproducto.css') }}">
 @endpush
 
-@section('title','Reportes')
-@section('header','CONTROL DE PRODUCTO')
+@section('title', 'Control de producto')
+@section('header', 'Control de producto y disponibilidad')
 
 @section('content')
-
-<div class="contr-container"> 
-
-    {{-- ===================== RESUMEN ===================== --}}
-    <div class="contr-card">
-        <div class="contr-card-body">
-            <div class="contr-row contr-text-center">
-
-                <div class="contr-col contr-border-end">
-                    <h4 class="contr-text-success contr-fw-bold">
-                        {{ $alquilados->count() }}
-                    </h4>
-                    <small class="contr-text-muted">productos en alquiler</small>
-                </div>
-
-                <div class="contr-col contr-border-end">
-                    <h4 class="contr-text-danger contr-fw-bold">
-                        {{ $alquilados->sum('cantidad_actual') }}
-                    </h4>
-                    <small class="contr-text-muted">unidades fuera</small>
-                </div>
-
-                <div class="contr-col contr-border-end">
-                    <h4 class="contr-text-primary contr-fw-bold">
-                        {{ $bodega->sum('cantidad') }}
-                    </h4>
-                    <small class="contr-text-muted">disponibles</small>
-                </div>
-
-                <div class="contr-col">
-                    <h4 class="contr-fw-bold">
-                        {{ $alquilados->sum('cantidad_actual') + $bodega->sum('cantidad') }}
-                    </h4>
-                    <small class="contr-text-muted">en total</small>
-                </div>
-
+    <div class="cp-page">
+        <section class="cp-hero">
+            <div>
+                <h2>Visibilidad consolidada de inventario</h2>
+                <p>Seguimiento de equipos alquilados y stock disponible en bodega para control operativo diario.</p>
             </div>
-        </div>
+            <a href="{{ route('reportes.index') }}" class="cp-btn-back">Volver</a>
+        </section>
+
+        <section class="cp-kpis">
+            <article class="cp-kpi">
+                <span>Productos en alquiler</span>
+                <strong>{{ number_format($resumen['productos_alquilados']) }}</strong>
+            </article>
+            <article class="cp-kpi">
+                <span>Unidades fuera</span>
+                <strong class="is-danger">{{ number_format($resumen['unidades_fuera']) }}</strong>
+            </article>
+            <article class="cp-kpi">
+                <span>Unidades en bodega</span>
+                <strong class="is-ok">{{ number_format($resumen['unidades_bodega']) }}</strong>
+            </article>
+            <article class="cp-kpi">
+                <span>Total de unidades</span>
+                <strong>{{ number_format($resumen['total_unidades']) }}</strong>
+            </article>
+        </section>
+
+        @if($errors->any())
+            <div class="cp-errors">
+                @foreach($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
+
+        <section class="cp-card">
+            <div class="cp-card-head">
+                <h3>Productos alquilados</h3>
+                <form method="GET" class="cp-filter">
+                    <input
+                        id="filtroAlquilados"
+                        type="text"
+                        name="alquilados"
+                        value="{{ request('alquilados') }}"
+                        placeholder="Filtrar por nombre">
+                    <button type="submit">Filtrar</button>
+                    <a href="{{ route('reportes.controlproducto', ['bodega' => request('bodega')]) }}">Limpiar</a>
+                </form>
+            </div>
+
+            <div class="cp-table-wrap">
+                <table class="cp-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre del producto</th>
+                            <th>Imagen</th>
+                            <th class="right">Cantidad total</th>
+                            <th class="right">Cantidad stock</th>
+                            <th class="right">Cantidad alquilado</th>
+                            <th>Fecha del alquiler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($alquilados as $item)
+                            <tr>
+                                <td class="cp-product-name">{{ $item->nombre }}</td>
+                                <td>
+                                    @if(!empty($item->imagen))
+                                        <img src="{{ asset('storage/' . $item->imagen) }}" class="cp-img" alt="Producto">
+                                    @else
+                                        <span class="cp-muted">Sin imagen</span>
+                                    @endif
+                                </td>
+                                <td class="right">{{ number_format((int) $item->cantidad_total) }}</td>
+                                <td class="right">{{ number_format((int) $item->cantidad_stock) }}</td>
+                                <td class="right">{{ number_format((int) $item->cantidad_alquilada) }}</td>
+                                <td>
+                                    {{ optional($item->fecha_alquiler)->format('d/m/Y') ?? '-' }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="cp-empty">No hay productos alquilados para el filtro seleccionado.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="cp-card">
+            <div class="cp-card-head">
+                <h3>Productos en bodega</h3>
+                <form method="GET" class="cp-filter">
+                    <input
+                        id="filtroBodega"
+                        type="text"
+                        name="bodega"
+                        value="{{ request('bodega') }}"
+                        placeholder="Filtrar por nombre">
+                    <button type="submit">Filtrar</button>
+                    <a href="{{ route('reportes.controlproducto', ['alquilados' => request('alquilados')]) }}">Limpiar</a>
+                </form>
+            </div>
+
+            <div class="cp-table-wrap">
+                <table class="cp-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Imagen</th>
+                            <th class="right">Cantidad</th>
+                            <th class="right">Costo</th>
+                            <th>Ubicación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($bodega as $producto)
+                            <tr>
+                                <td class="cp-product-name">{{ $producto->nombre }}</td>
+                                <td>
+                                    @if(!empty($producto->imagen))
+                                        <img src="{{ asset('storage/' . $producto->imagen) }}" class="cp-img" alt="Producto">
+                                    @else
+                                        <span class="cp-muted">Sin imagen</span>
+                                    @endif
+                                </td>
+                                <td class="right">{{ number_format((int) $producto->cantidad) }}</td>
+                                <td class="right">${{ number_format((float) $producto->costo, 0) }}</td>
+                                <td>{{ $producto->ubicacion ?: '-' }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="cp-empty">No hay productos en bodega para el filtro seleccionado.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
-
-    <hr class="contr-divider">
-
-    {{-- ===================== TABLA ALQUILADOS ===================== --}}
-    <h2 class="contr-title">📦 Productos Alquilados</h2>
-
-    @if($alquilados->isEmpty())
-        <p class="contr-empty">No hay productos alquilados</p>
-    @else
-        <div class="contr-filter">
-            <input type="text" id="filtroAlquilados"
-                   class="contr-input"
-                   placeholder="🔍 Filtrar producto alquilado...">
-        </div>
-
-        <table class="contr-table" id="tablaAlquilados">
-            <thead class="contr-table-dark">
-                <tr>
-                    <th>Producto</th>
-                    <th>Imagen</th>
-                    <th>Cantidad Inicial</th>
-                    <th>Cantidad Actual</th>
-                    <th>Tarifa Diaria</th>
-                    <th>Fecha Inicio</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($alquilados as $item)
-                <tr>
-                    <td class="contr-product-name">{{ $item->producto->nombre }}</td>
-                    <td>
-                        @if($item->producto->imagen)
-                            <img src="{{ asset('storage/'.$item->producto->imagen) }}" class="contr-img">
-                        @else
-                            Sin imagen
-                        @endif
-                    </td>
-                    <td>{{ $item->cantidad_inicial }}</td>
-                    <td>{{ $item->cantidad_actual }}</td>
-                    <td>${{ number_format($item->tarifa_diaria, 0) }}</td>
-                    <td>{{ $item->fecha_inicio_item }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-
-    <hr class="contr-divider">
-
-    {{-- ===================== TABLA BODEGA ===================== --}}
-    <h2 class="contr-title">🏠 Productos en Bodega</h2>
-
-    @if($bodega->isEmpty())
-        <p class="contr-empty">No hay productos en bodega</p>
-    @else
-        <div class="contr-filter">
-            <input type="text" id="filtroBodega"
-                   class="contr-input"
-                   placeholder="🔍 Filtrar producto en bodega...">
-        </div>
-
-        <table class="contr-table contr-table-hover" id="tablaBodega">
-            <thead class="contr-table-light">
-                <tr>
-                    <th>Producto</th>
-                    <th>Imagen</th>
-                    <th>Cantidad</th>
-                    <th>Costo</th>
-                    <th>Ubicación</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($bodega as $producto)
-                <tr>
-                    <td class="contr-product-name">{{ $producto->nombre }}</td>
-                    <td>
-                        @if($producto->imagen)
-                            <img src="{{ asset('storage/'.$producto->imagen) }}" class="contr-img">
-                        @else
-                            Sin imagen
-                        @endif
-                    </td>
-                    <td>{{ $producto->cantidad }}</td>
-                    <td>${{ number_format($producto->costo, 0) }}</td>
-                    <td>{{ $producto->ubicacion }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-
-</div>
-
-<script>
-function filtrarTabla(inputId, tablaId) {
-    const filtro = document.getElementById(inputId).value.toLowerCase();
-    document.querySelectorAll(`#${tablaId} tbody tr`).forEach(fila => {
-        const texto = fila.querySelector('.contr-product-name').textContent.toLowerCase();
-        fila.style.display = texto.includes(filtro) ? '' : 'none';
-    });
-}
-
-document.getElementById('filtroAlquilados')?.addEventListener('keyup',
-    () => filtrarTabla('filtroAlquilados', 'tablaAlquilados'));
-
-document.getElementById('filtroBodega')?.addEventListener('keyup',
-    () => filtrarTabla('filtroBodega', 'tablaBodega'));
-</script>
-
 @endsection

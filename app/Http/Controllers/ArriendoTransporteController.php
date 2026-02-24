@@ -15,8 +15,8 @@ class ArriendoTransporteController extends Controller
         }
 
         $data = $request->validate([
-            // ✅ AHORA: valores coherentes con la vista (ENTREGA/RECOGIDA)
-            'tipo'  => 'required|in:ENTREGA,RECOGIDA,entrega,recogida',
+            // ✅ En "ver": solo NO o ENTREGA
+            'tipo'  => 'required|in:NO,ENTREGA,no,entrega',
             'fecha' => 'required|date', // en tu vista ya es required
             'valor' => 'required|numeric|min:0',
             'nota'  => 'nullable|string|max:255',
@@ -24,6 +24,11 @@ class ArriendoTransporteController extends Controller
 
         // ✅ normalizamos a mayúsculas
         $data['tipo'] = strtoupper($data['tipo']);
+
+        // Si el usuario elige "NO", no registramos transporte.
+        if ($data['tipo'] === 'NO') {
+            return back()->with('success', 'Sin transporte: no se registró ningún cobro.');
+        }
 
         $arriendo->transportes()->create($data);
 

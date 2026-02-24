@@ -14,6 +14,9 @@ class ArriendoItem extends Model
         'fecha_inicio_item','fecha_fin_item','tarifa_diaria',
         'cerrado','estado',
         'precio_total','total_alquiler','total_merma','total_pagado','saldo',
+
+        // ✅ NUEVO: si se cobra domingo (1) o no (0)
+        'cobra_domingo',
     ];
 
     protected $casts = [
@@ -24,6 +27,10 @@ class ArriendoItem extends Model
         'cantidad_inicial' => 'integer',
         'cantidad_actual' => 'integer',
         'cerrado' => 'boolean',
+
+        // ✅ NUEVO
+        'cobra_domingo' => 'boolean',
+
         'precio_total' => 'float',
         'total_alquiler' => 'float',
         'total_merma' => 'float',

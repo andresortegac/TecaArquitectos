@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title','Arriendos')
 @section('header','ALQUILER')
@@ -6,7 +6,7 @@
 @push('styles')
   <link rel="stylesheet" href="{{ asset('css/ui.css') }}">
 
-  {{-- ✅ ESTILOS SOLO PARA ESTA VISTA (ENCAPSULADO) --}}
+  {{-- âœ… ESTILOS SOLO PARA ESTA VISTA (ENCAPSULADO) --}}
   <style>
     .pro-ui{
       --surface: rgba(255,255,255,.92);
@@ -21,10 +21,10 @@
 
       width: 100%;
       color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    /* ✅ Contenedor: ocupa el ancho del content (no centra raro) */
+    /* âœ… Contenedor: ocupa el ancho del content (no centra raro) */
     .pro-container{
       width: 100%;
       max-width: 100%;
@@ -34,7 +34,7 @@
       background: var(--surface);
       backdrop-filter: blur(8px);
       box-shadow: var(--shadow);
-      overflow: hidden; /* evita “bordes” raros */
+      overflow: hidden; /* evita â€œbordesâ€ raros */
     }
 
     /* Header superior */
@@ -134,7 +134,7 @@
       box-shadow: 0 0 0 5px rgba(59,130,246,.12) !important;
     }
 
-    /* ✅ Tabla pro (sin romper layout). En móvil hace scroll, en desktop no */
+    /* âœ… Tabla pro (sin romper layout). En mÃ³vil hace scroll, en desktop no */
     .table-wrap-pro{
       width: 100%;
       overflow-x: auto;
@@ -142,11 +142,11 @@
       border: 1px solid rgba(226,232,240,.95);
       background: #fff;
       margin-top: 10px;
-      position: relative; /* ✅ necesario para layering del dropdown */
+      position: relative; /* âœ… necesario para layering del dropdown */
     }
     .pro-ui .table-pro{
       width: 100%;
-      min-width: 980px; /* móvil/tablet: scroll horizontal controlado */
+      min-width: 980px; /* mÃ³vil/tablet: scroll horizontal controlado */
       border-collapse: separate !important;
       border-spacing: 0 !important;
     }
@@ -173,10 +173,10 @@
       white-space: nowrap;
     }
     .pro-ui .table-pro tbody tr{
-      position: relative; /* ✅ para z-index cuando dropdown abre */
+      position: relative; /* âœ… para z-index cuando dropdown abre */
     }
 
-    /* ✅ Hover sin cambiar colores de semáforo */
+    /* âœ… Hover sin cambiar colores de semÃ¡foro */
     .pro-ui .table-pro tbody tr:hover{
       filter: none !important;
       background: inherit !important;
@@ -192,7 +192,7 @@
       white-space: normal;
     }
 
-    /* Chips más serios (sin cambiar colores de tu ui.css) */
+    /* Chips mÃ¡s serios (sin cambiar colores de tu ui.css) */
     .pro-ui .chip{
       border-radius: 999px !important;
       padding: 7px 12px !important;
@@ -235,9 +235,9 @@
       border-radius: 14px;
       box-shadow: 0 18px 40px rgba(15,23,42,.16);
       overflow:hidden;
-      z-index: 9999 !important; /* ✅ arriba de todo */
-      will-change: transform;   /* ✅ evita flicker */
-      transform: translateZ(0); /* ✅ evita flicker */
+      z-index: 9999 !important; /* âœ… arriba de todo */
+      will-change: transform;   /* âœ… evita flicker */
+      transform: translateZ(0); /* âœ… evita flicker */
     }
     .pro-ui .menu-item{
       display:flex;
@@ -266,11 +266,11 @@
     .pro-ui .item-return .dot{ background: #3b82f6; }
     .pro-ui .item-details .dot{ background: #10b981; }
 
-    /* ✅ Fix parpadeo: cuando dropdown esté abierto, la fila sube de nivel */
+    /* âœ… Fix parpadeo: cuando dropdown estÃ© abierto, la fila sube de nivel */
     .pro-ui .table-pro tbody tr.row-open{ z-index: 60; }
     .pro-ui .table-pro tbody tr.row-open:hover{ filter: none !important; }
 
-    /* Modal (solo estética; si tu ui.css ya lo maneja, no rompe) */
+    /* Modal (solo estÃ©tica; si tu ui.css ya lo maneja, no rompe) */
     .pro-ui .modal-backdrop{
       position: fixed !important;
       inset: 0 !important;
@@ -298,9 +298,50 @@
       gap:10px;
       margin-top: 14px;
     }
+    .pro-ui .close-summary{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(59,130,246,.24);
+      background: rgba(59,130,246,.06);
+    }
+    .pro-ui .close-summary-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    @media(max-width: 820px){
+      .pro-ui .close-summary-grid{
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .pro-ui .sum-box{
+      background:#fff;
+      border: 1px solid rgba(226,232,240,.95);
+      border-radius: 12px;
+      padding: 9px 10px;
+    }
+    .pro-ui .sum-k{
+      display:block;
+      font-size: 11px;
+      color: rgba(100,116,139,.95);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .2px;
+    }
+    .pro-ui .sum-v{
+      display:block;
+      margin-top: 4px;
+      font-size: 15px;
+      font-weight: 900;
+      color: rgba(15,23,42,.95);
+      font-variant-numeric: tabular-nums;
+    }
+    .pro-ui .sum-v-danger{ color:#b91c1c; }
+    .pro-ui .sum-v-ok{ color:#166534; }
 
     /* ==============================
-       ✅ SEMAFORIZACION POR FILA
+       âœ… SEMAFORIZACION POR FILA
        AZUL: activo
        VERDE: cerrado/devuelto y saldo=0
        NARANJA: cerrado/devuelto y saldo>0 y dias<=7
@@ -327,7 +368,7 @@
     @endif
 
     @php
-      // ✅ KPIs calculados con los datos visibles (paginación)
+      // âœ… KPIs calculados con los datos visibles (paginaciÃ³n)
       $col = $arriendos->getCollection();
 
       $total = $col->count();
@@ -356,7 +397,7 @@
         {{-- TOPBAR --}}
         <div class="pro-topbar">
           <p class="pro-subtitle">
-            Lista de arriendos (Contratos PADRE), estados de pago y gestión por productos (items).
+            Lista de arriendos (Contratos PADRE), estados de pago y gestiÃ³n por productos (items).
           </p>
 
           <div class="pro-actions">
@@ -372,7 +413,7 @@
             <div class="meta">
               <div class="label">Total</div>
               <div class="value">{{ $total }}</div>
-              <div class="hint">En esta página</div>
+              <div class="hint">En esta pÃ¡gina</div>
             </div>
             <div class="ring"
                  style="--p: {{ $pctPagos }}%; --ring: var(--primary);"
@@ -478,7 +519,7 @@
           @if(\Illuminate\Support\Facades\Route::has('metricas.detalle.dia'))
             <a class="btn-sm"
                href="{{ route('metricas.detalle.dia', ['date' => now()->toDateString()]) }}">
-              Detalle día (hoy)
+              Detalle dÃ­a (hoy)
             </a>
           @endif
         </div>
@@ -548,7 +589,7 @@
                   <th class="td-right">Total</th>
                   <th class="td-right">Saldo</th>
                   <th>Mora</th>
-                  {{-- ✅ OCULTAMOS EL TITULO "SEMAFORO" --}}
+                  {{-- âœ… OCULTAMOS EL TITULO "SEMAFORO" --}}
                   <th></th>
                   <th>Estado</th>
                   <th style="width:260px;">Acciones</th>
@@ -563,7 +604,7 @@
                     $unidades = isset($a->items) ? (int)$a->items->sum('cantidad_actual') : null;
 
                     // ==============================
-                    // ✅ LOGICA SEMAFORIZACION POR FILA (NO MUESTRA TEXTO)
+                    // âœ… LOGICA SEMAFORIZACION POR FILA (NO MUESTRA TEXTO)
                     // AZUL: activo
                     // VERDE: cerrado/devuelto y saldo=0
                     // NARANJA: cerrado/devuelto y saldo>0 y dias<=7
@@ -574,7 +615,7 @@
                     $estaActivo  = (strtolower($a->estado ?? '') === 'activo') && ((int)($a->cerrado ?? 0) === 0);
                     $estaCerrado = ((int)($a->cerrado ?? 0) === 1) || (strtolower($a->estado ?? '') === 'devuelto');
 
-                    // Fecha desde que cerró (usa el mejor dato disponible; no rompe si falta)
+                    // Fecha desde que cerrÃ³ (usa el mejor dato disponible; no rompe si falta)
                     $fechaCierreRaw = $a->fecha_devolucion_real ?? ($a->fecha_fin ?? null) ?? ($a->updated_at ?? null);
                     $fechaCierre = $fechaCierreRaw ? \Carbon\Carbon::parse($fechaCierreRaw)->startOfDay() : null;
                     $diasDesdeCierre = $fechaCierre ? $fechaCierre->diffInDays(\Carbon\Carbon::today()) : 0;
@@ -590,11 +631,32 @@
                     } else {
                       $rowClass = '';
                     }
+
+                    $devAlquiler = (float)($a->dev_total_alquiler ?? 0);
+                    $devMerma = (float)($a->dev_total_merma ?? 0);
+                    $devPagado = (float)($a->dev_total_pagado ?? 0);
+                    $devTransporte = (float)($a->dev_total_transporte ?? 0);
+
+                    $itemsAlquiler = (float)(isset($a->items) ? $a->items->sum('total_alquiler') : 0);
+                    $itemsMerma = (float)(isset($a->items) ? $a->items->sum('total_merma') : 0);
+                    $itemsPagado = (float)(isset($a->items) ? $a->items->sum('total_pagado') : 0);
+
+                    $baseAlquiler = $devAlquiler > 0 ? $devAlquiler : ($itemsAlquiler > 0 ? $itemsAlquiler : (float)($a->total_alquiler ?? 0));
+                    $baseMerma = $devMerma > 0 ? $devMerma : ($itemsMerma > 0 ? $itemsMerma : (float)($a->total_merma ?? 0));
+                    $basePagado = $devPagado > 0 ? $devPagado : ($itemsPagado > 0 ? $itemsPagado : (float)($a->total_pagado ?? 0));
+
+                    $baseTransportePadre = (float)(isset($a->transportes) ? $a->transportes->sum('valor') : 0);
+                    $baseTransporte = $baseTransportePadre + $devTransporte;
+                    $baseIvaRate    = (float)($a->iva_rate ?? 0.19);
+                    $baseSubtotal   = $baseAlquiler + $baseMerma + $baseTransporte;
+                    $baseIvaValor   = (int)($a->iva_aplica ?? 0) === 1 ? ($baseSubtotal * $baseIvaRate) : 0;
+                    $baseTotalFinal = $baseSubtotal + $baseIvaValor;
+                    $baseSaldoFinal = max(0, $baseTotalFinal - $basePagado);
                   @endphp
 
                   <tr class="{{ $rowClass }}">
                     <td>
-                      {{ $a->cliente->nombre ?? '—' }}
+                      {{ $a->cliente->nombre ?? 'â€”' }}
 
                       @if(!empty($a->obra_id ?? null))
                         <span class="small">Obra: {{ $a->obra_id }}</span>
@@ -602,24 +664,24 @@
                     </td>
 
                     <td>
-                      {{ $itemsCount !== null ? $itemsCount : '—' }}
+                      {{ $itemsCount !== null ? $itemsCount : 'â€”' }}
                       <span class="small">productos</span>
                     </td>
 
                     <td>
-                      {{ $unidades !== null ? $unidades : '—' }}
+                      {{ $unidades !== null ? $unidades : 'â€”' }}
                       <span class="small">unidades</span>
                     </td>
 
                     <td>{{ $a->fecha_inicio?->format('d/m/Y H:i') }}</td>
-                    <td>{{ $a->fecha_fin ?? '—' }}</td>
+                    <td>{{ $a->fecha_fin ?? 'â€”' }}</td>
 
                     <td class="td-right">${{ number_format((float)($a->precio_total ?? 0), 2) }}</td>
                     <td class="td-right">${{ number_format((float)($a->saldo ?? 0), 2) }}</td>
 
                     <td>{{ (int)($a->dias_mora ?? 0) }}</td>
 
-                    {{-- ✅ columna vacía (semaforización solo por color de fila) --}}
+                    {{-- âœ… columna vacÃ­a (semaforizaciÃ³n solo por color de fila) --}}
                     <td></td>
 
                     <td>
@@ -633,24 +695,24 @@
                     <td>
                       <div class="actions">
                         <div class="dropdown" data-dd>
-                          <button type="button" class="btn-kebab" aria-label="Acciones">⋯</button>
+                          <button type="button" class="btn-kebab" aria-label="Acciones">â‹¯</button>
 
                           <div class="dropdown-menu">
 
                             <a class="menu-item item-return" href="{{ route('arriendos.ver', $a) }}">
                               <span class="menu-left"><span class="dot"></span>Ver / Gestionar</span>
-                              <span>›</span>
+                              <span>â€º</span>
                             </a>
 
                             <a class="menu-item item-edit" href="{{ route('arriendos.edit',$a) }}">
                               <span class="menu-left"><span class="dot"></span>Editar</span>
-                              <span>›</span>
+                              <span>â€º</span>
                             </a>
 
                             @if((int)($a->cerrado ?? 0) === 1 || $a->estado === 'devuelto')
                               <a class="menu-item item-details" href="{{ route('arriendos.detalles', $a) }}">
                                 <span class="menu-left"><span class="dot"></span>Detalles</span>
-                                <span>›</span>
+                                <span>â€º</span>
                               </a>
                             @endif
 
@@ -659,7 +721,7 @@
                                       class="menu-item item-close"
                                       onclick="document.getElementById('modalCerrar{{ $a->id }}').style.display='flex'">
                                 <span class="menu-left"><span class="dot"></span>Cerrar</span>
-                                <span>›</span>
+                                <span>â€º</span>
                               </button>
                             @endif
 
@@ -667,9 +729,9 @@
                               @csrf
                               @method('DELETE')
 
-                              <button class="menu-item item-delete" onclick="return confirm('¿Eliminar arriendo?')">
+                              <button class="menu-item item-delete" onclick="return confirm('Â¿Eliminar arriendo?')">
                                 <span class="menu-left"><span class="dot"></span>Borrar</span>
-                                <span>›</span>
+                                <span>â€º</span>
                               </button>
                             </form>
 
@@ -692,12 +754,20 @@
                           </button>
                         </div>
 
-                        <form method="POST" action="{{ route('arriendos.cerrar', $a) }}">
+                        <form method="POST"
+                              action="{{ route('arriendos.cerrar', $a) }}"
+                              class="js-cerrar-form"
+                              data-arriendo-id="{{ $a->id }}"
+                              data-base-alquiler="{{ $baseAlquiler }}"
+                              data-base-merma="{{ $baseMerma }}"
+                              data-base-pagado="{{ $basePagado }}"
+                              data-base-transporte="{{ $baseTransporte }}"
+                              data-iva-rate="{{ $baseIvaRate }}">
                           @csrf
 
                           <div class="modal-grid">
                             <div class="modal-field">
-                              <label class="small modal-label">Fecha devolución real</label>
+                              <label class="small modal-label">Fecha devoluciÃ³n real</label>
                               <input class="input"
                                      type="date"
                                      name="fecha_devolucion_real"
@@ -713,12 +783,15 @@
                                      step="0.01"
                                      name="pago"
                                      value="0">
+                              <div style="margin-top:8px;">
+                                <button type="button" class="btn-sm js-pagar-todo">Pagar saldo completo</button>
+                              </div>
                             </div>
                           </div>
 
                           <div class="modal-grid">
                             <div class="modal-field">
-                              <label class="small modal-label">Días de lluvia (se descuentan)</label>
+                              <label class="small modal-label">DÃ­as de lluvia (se descuentan)</label>
                               <input class="input"
                                      type="number"
                                      min="0"
@@ -727,7 +800,7 @@
                             </div>
 
                             <div class="modal-field">
-                              <label class="small modal-label">Costo daño/merma</label>
+                              <label class="small modal-label">Costo daÃ±o/merma</label>
                               <input class="input"
                                      type="number"
                                      min="0"
@@ -741,8 +814,8 @@
                             <div class="modal-field">
                               <label class="small modal-label">Factura con IVA</label>
                               <select class="input" name="iva_aplica">
-                                <option value="0" selected>Sin IVA</option>
-                                <option value="1">Con IVA (19%)</option>
+                                <option value="0" {{ (int)($a->iva_aplica ?? 0) === 0 ? 'selected' : '' }}>Sin IVA</option>
+                                <option value="1" {{ (int)($a->iva_aplica ?? 0) === 1 ? 'selected' : '' }}>Con IVA (19%)</option>
                               </select>
                               <div class="small modal-help" style="margin-top:6px;">
                                 El IVA se calcula sobre (alquiler + merma + transportes).
@@ -751,8 +824,47 @@
                             <div class="modal-field"></div>
                           </div>
 
+                          <div class="close-summary">
+                            <div class="close-summary-grid">
+                              <div class="sum-box">
+                                <span class="sum-k">Alquiler generado</span>
+                                <span class="sum-v js-sum-alquiler">${{ number_format($baseAlquiler, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Merma total</span>
+                                <span class="sum-v js-sum-merma">${{ number_format($baseMerma, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Transportes</span>
+                                <span class="sum-v js-sum-transporte">${{ number_format($baseTransporte, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">IVA</span>
+                                <span class="sum-v js-sum-iva">${{ number_format($baseIvaValor, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Total generado</span>
+                                <span class="sum-v js-sum-total">${{ number_format($baseTotalFinal, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Total pagado</span>
+                                <span class="sum-v js-sum-pagado">${{ number_format($basePagado, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Saldo final</span>
+                                <span class="sum-v js-sum-saldo {{ $baseSaldoFinal > 0 ? 'sum-v-danger' : 'sum-v-ok' }}">${{ number_format($baseSaldoFinal, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Estado de cierre</span>
+                                <span class="sum-v js-sum-estado {{ $baseSaldoFinal > 0 ? 'sum-v-danger' : 'sum-v-ok' }}">
+                                  {{ $baseSaldoFinal > 0 ? 'Queda saldo pendiente' : 'Cierra sin deuda' }}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
                           <div class="modal-field">
-                            <label class="small modal-label">Descripción (opcional)</label>
+                            <label class="small modal-label">DescripciÃ³n (opcional)</label>
                             <input class="input"
                                    type="text"
                                    name="descripcion_incidencia"
@@ -760,7 +872,7 @@
                           </div>
 
                           <div class="small modal-help">
-                            Domingos se descuentan automáticamente. Si queda saldo pendiente al cerrar, se activa semáforo (AMARILLO 0–9 / ROJO 10+).
+                            Domingos se descuentan automÃ¡ticamente. Si queda saldo pendiente al cerrar, se activa semÃ¡foro (AMARILLO 0â€“9 / ROJO 10+).
                           </div>
 
                           <div class="modal-actions">
@@ -781,7 +893,7 @@
 
                 @empty
                   <tr>
-                    <td colspan="10">No hay arriendos todavía.</td>
+                    <td colspan="10">No hay arriendos todavÃ­a.</td>
                   </tr>
                 @endforelse
               </tbody>
@@ -841,6 +953,102 @@
             document.addEventListener('keydown', function (e) {
               if (e.key === 'Escape') closeAll();
             });
+
+            function parseNum(v) {
+              const n = Number(v);
+              return Number.isFinite(n) ? n : 0;
+            }
+
+            function money(v) {
+              return '$' + parseNum(v).toLocaleString('es-CO', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              });
+            }
+
+            function recalcCerrarForm(form) {
+              const baseAlquiler = parseNum(form.dataset.baseAlquiler);
+              const baseMerma = parseNum(form.dataset.baseMerma);
+              const basePagado = parseNum(form.dataset.basePagado);
+              const baseTransporte = parseNum(form.dataset.baseTransporte);
+              const ivaRate = parseNum(form.dataset.ivaRate || 0.19);
+
+              const pagoInput = form.querySelector('[name="pago"]');
+              const mermaInput = form.querySelector('[name="costo_merma"]');
+              const ivaInput = form.querySelector('[name="iva_aplica"]');
+
+              const extraMerma = Math.max(0, parseNum(mermaInput?.value));
+              const pagoCierre = Math.max(0, parseNum(pagoInput?.value));
+              const ivaAplica = String(ivaInput?.value || '0') === '1';
+
+              const totalMerma = baseMerma + extraMerma;
+              const subtotal = baseAlquiler + totalMerma + baseTransporte;
+              const ivaValor = ivaAplica ? (subtotal * ivaRate) : 0;
+              const totalGenerado = subtotal + ivaValor;
+              const totalPagado = basePagado + pagoCierre;
+              const saldo = Math.max(0, totalGenerado - totalPagado);
+
+              const $alq = form.querySelector('.js-sum-alquiler');
+              const $mer = form.querySelector('.js-sum-merma');
+              const $trn = form.querySelector('.js-sum-transporte');
+              const $iva = form.querySelector('.js-sum-iva');
+              const $tot = form.querySelector('.js-sum-total');
+              const $pag = form.querySelector('.js-sum-pagado');
+              const $sal = form.querySelector('.js-sum-saldo');
+              const $est = form.querySelector('.js-sum-estado');
+
+              if ($alq) $alq.textContent = money(baseAlquiler);
+              if ($mer) $mer.textContent = money(totalMerma);
+              if ($trn) $trn.textContent = money(baseTransporte);
+              if ($iva) $iva.textContent = money(ivaValor);
+              if ($tot) $tot.textContent = money(totalGenerado);
+              if ($pag) $pag.textContent = money(totalPagado);
+              if ($sal) {
+                $sal.textContent = money(saldo);
+                $sal.classList.toggle('sum-v-danger', saldo > 0);
+                $sal.classList.toggle('sum-v-ok', saldo <= 0);
+              }
+              if ($est) {
+                $est.textContent = saldo > 0 ? 'Queda saldo pendiente' : 'Cierra sin deuda';
+                $est.classList.toggle('sum-v-danger', saldo > 0);
+                $est.classList.toggle('sum-v-ok', saldo <= 0);
+              }
+            }
+
+            document.querySelectorAll('.js-cerrar-form').forEach(form => {
+              const pagoInput = form.querySelector('[name="pago"]');
+              const mermaInput = form.querySelector('[name="costo_merma"]');
+              const ivaInput = form.querySelector('[name="iva_aplica"]');
+              const btnPagarTodo = form.querySelector('.js-pagar-todo');
+
+              [pagoInput, mermaInput, ivaInput].forEach(el => {
+                if (!el) return;
+                el.addEventListener('input', () => recalcCerrarForm(form));
+                el.addEventListener('change', () => recalcCerrarForm(form));
+              });
+
+              if (btnPagarTodo) {
+                btnPagarTodo.addEventListener('click', function () {
+                  const baseAlquiler = parseNum(form.dataset.baseAlquiler);
+                  const baseMerma = parseNum(form.dataset.baseMerma);
+                  const basePagado = parseNum(form.dataset.basePagado);
+                  const baseTransporte = parseNum(form.dataset.baseTransporte);
+                  const ivaRate = parseNum(form.dataset.ivaRate || 0.19);
+
+                  const extraMerma = Math.max(0, parseNum(mermaInput?.value));
+                  const ivaAplica = String(ivaInput?.value || '0') === '1';
+                  const subtotal = baseAlquiler + (baseMerma + extraMerma) + baseTransporte;
+                  const ivaValor = ivaAplica ? (subtotal * ivaRate) : 0;
+                  const totalGenerado = subtotal + ivaValor;
+                  const saldoActual = Math.max(0, totalGenerado - basePagado);
+
+                  if (pagoInput) pagoInput.value = saldoActual.toFixed(2);
+                  recalcCerrarForm(form);
+                });
+              }
+
+              recalcCerrarForm(form);
+            });
           })();
         </script>
 
@@ -875,3 +1083,4 @@
   </div>
 
 @endsection
+

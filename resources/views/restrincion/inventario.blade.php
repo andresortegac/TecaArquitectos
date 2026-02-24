@@ -61,7 +61,7 @@
     >
 @else
     <img 
-        src="{{ asset('img/tool-placeholder.jpg') }}"
+        src="{{ asset('img/product-icon.svg') }}"
         alt="Sin imagen"
         class="w-full h-48 object-cover rounded"
     >

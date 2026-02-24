@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title','Ver arriendo')
 @section('header','Ver arriendo')
 
@@ -34,7 +34,7 @@
   --r: 16px;
   --r2: 12px;
 
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+  font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--text);
 }
 
@@ -93,6 +93,10 @@
 .badge.warn{ background:#fffbeb; border-color:#fde68a; color:#92400e; }
 .badge.off{ background:#f1f5f9; color:#475569; }
 
+/* Badges extra para tipo */
+.badge.info{ background:#eef2ff; border-color:#c7d2fe; color:#3730a3; }
+.badge.pick{ background:#f0fdf4; border-color:#bbf7d0; color:#166534; }
+
 /* Cards */
 .card{
   background: var(--card);
@@ -111,32 +115,32 @@
   color: var(--muted);
 }
 
-/* ✅ COMPACTO SOLO EN TRANSPORTES */
+/* âœ… COMPACTO SOLO EN TRANSPORTES */
 .card.transport-card{
-  padding: 12px;              /* antes 16px (baja más si quieres: 10px) */
+  padding: 12px;
 }
 .card.transport-card .hint{
   margin-top:2px;
 }
 .card.transport-card .form{
-  margin-top:8px;             /* antes 10px */
-  padding:10px;               /* antes 12px */
+  margin-top:8px;
+  padding:10px;
 }
 .card.transport-card .help{
-  margin-top:4px;             /* antes 6px */
+  margin-top:4px;
 }
 .card.transport-card .divider{
-  margin:8px 0;               /* antes 10px */
+  margin:8px 0;
 }
 .card.transport-card .form-grid{
-  gap:8px;                    /* antes 10px */
+  gap:8px;
 }
 .card.transport-card .label{
-  margin-bottom:4px;          /* antes 6px */
+  margin-bottom:4px;
 }
 .card.transport-card .input{
-  height:34px;                /* antes 40px (baja más si quieres: 32px) */
-  border-radius:10px;         /* antes 12px */
+  height:34px;
+  border-radius:10px;
   padding:0 10px;
   font-size:13px;
 }
@@ -144,16 +148,16 @@
   height:34px;
 }
 .card.transport-card .btn{
-  padding:8px 10px;           /* antes 10px 12px */
+  padding:8px 10px;
   border-radius:10px;
   font-size:13px;
 }
 .card.transport-card .table th,
 .card.transport-card .table td{
-  padding:10px;               /* antes 12px */
+  padding:10px;
 }
 .card.transport-card .table thead th{
-  font-size:11px;             /* antes 12px */
+  font-size:11px;
 }
 
 /* Buttons */
@@ -310,6 +314,29 @@
 }
 </style>
 
+@php
+  // Transportes
+  $transportes = $arriendo->transportes ?? collect();
+  $totalTransportes = (float) $transportes->sum('valor');
+
+  // Totales base (contrato)
+  $totalContratoBase = (float)($totContrato['precio_total'] ?? 0);
+  $pagadoContratoBase = (float)($totContrato['total_pagado'] ?? 0);
+  $saldoContratoBase  = (float)($totContrato['saldo'] ?? 0);
+
+  // âœ… Totales con transportes (para que el cobro quede reflejado)
+  $totalGeneral = $totalContratoBase + $totalTransportes;
+  // Si el transporte no tiene pagos asociados, se asume pendiente:
+  $saldoGeneral = $saldoContratoBase + $totalTransportes;
+
+  // Helpers de tipo (mostrar bien claro)
+  $labelTipo = function($tipo){
+    $t = strtoupper(trim((string)$tipo));
+    if ($t === 'RECOGIDA') return 'Recogida de herramienta';
+    return 'Entrega de herramienta'; // default ENTREGA
+  };
+@endphp
+
 <div class="pro-ui">
   <div class="pro-container">
 
@@ -322,8 +349,8 @@
         </h2>
 
         <div class="pro-meta">
-          <span><b>Cliente:</b> {{ $arriendo->cliente->nombre ?? '—' }}</span>
-          <span>•</span>
+          <span><b>Cliente:</b> {{ $arriendo->cliente->nombre ?? 'â€”' }}</span>
+          <span>â€¢</span>
           <span>
             <b>Estado:</b>
             @if(strtolower($arriendo->estado ?? '') === 'activo')
@@ -336,7 +363,7 @@
       </div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <a class="btn" href="{{ route('arriendos.index') }}">← Volver</a>
+        <a class="btn" href="{{ route('arriendos.index') }}">â† Volver</a>
         @if((int)($arriendo->cerrado ?? 0) === 0 && $arriendo->estado === 'activo')
           <a class="btn primary" href="{{ route('arriendos.items.create', $arriendo) }}">+ Agregar producto</a>
         @endif
@@ -347,21 +374,21 @@
     <div class="card">
       <div class="split">
         <div>
-          <h3>Información del contrato</h3>
+          <h3>InformaciÃ³n del contrato</h3>
 
           <div class="kv">
             <b>Cliente</b>
-            <span>{{ $arriendo->cliente->nombre ?? '—' }}</span>
+            <span>{{ $arriendo->cliente->nombre ?? 'â€”' }}</span>
           </div>
 
           <div class="kv">
             <b>Obra</b>
-            <span>{{ $arriendo->obra? $arriendo->obra->direccion . ' - ' . $arriendo->obra->detalle : '—'}}</span>
+            <span>{{ $arriendo->obra? $arriendo->obra->direccion . ' - ' . $arriendo->obra->detalle : 'â€”'}}</span>
           </div>
 
           <div class="kv">
             <b>Inicio contrato</b>
-            <span>{{ $arriendo->fecha_inicio?->format('d/m/Y H:i') ?? '—' }}</span>
+            <span>{{ $arriendo->fecha_inicio?->format('d/m/Y H:i') ?? 'â€”' }}</span>
           </div>
 
           <div class="kv">
@@ -372,34 +399,50 @@
 
         <div>
           <h3>Resumen financiero</h3>
-          <div class="hint">Totales del contrato e histórico del cliente.</div>
+          <div class="hint">Totales del contrato e histÃ³rico del cliente (incluye transportes para que queden cobrados).</div>
           <div class="divider"></div>
 
           <div class="kpis">
+            {{-- Base contrato --}}
             <div class="kpi">
               <div class="label">Total contrato</div>
-              <div class="value">${{ number_format((float)$totContrato['precio_total'], 2) }}</div>
+              <div class="value">${{ number_format($totalContratoBase, 2) }}</div>
             </div>
             <div class="kpi">
               <div class="label">Pagado contrato</div>
-              <div class="value">${{ number_format((float)$totContrato['total_pagado'], 2) }}</div>
+              <div class="value">${{ number_format($pagadoContratoBase, 2) }}</div>
             </div>
             <div class="kpi">
               <div class="label">Saldo contrato</div>
-              <div class="value">${{ number_format((float)$totContrato['saldo'], 2) }}</div>
+              <div class="value">${{ number_format($saldoContratoBase, 2) }}</div>
             </div>
 
+            {{-- âœ… Transportes + totales generales --}}
             <div class="kpi">
-              <div class="label">Total histórico cliente</div>
-              <div class="value">${{ number_format((float)$totalHistorico['precio_total'], 2) }}</div>
+              <div class="label">Total transportes</div>
+              <div class="value">${{ number_format($totalTransportes, 2) }}</div>
             </div>
             <div class="kpi">
-              <div class="label">Pagado histórico</div>
-              <div class="value">${{ number_format((float)$totalHistorico['total_pagado'], 2) }}</div>
+              <div class="label">Total general (Contrato + Transportes)</div>
+              <div class="value">${{ number_format($totalGeneral, 2) }}</div>
             </div>
             <div class="kpi">
-              <div class="label">Saldo histórico</div>
-              <div class="value">${{ number_format((float)$totalHistorico['saldo'], 2) }}</div>
+              <div class="label">Saldo general (incluye transportes)</div>
+              <div class="value">${{ number_format($saldoGeneral, 2) }}</div>
+            </div>
+
+            {{-- HistÃ³rico --}}
+            <div class="kpi">
+              <div class="label">Total histÃ³rico cliente</div>
+              <div class="value">${{ number_format((float)($totalHistorico['precio_total'] ?? 0), 2) }}</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Pagado histÃ³rico</div>
+              <div class="value">${{ number_format((float)($totalHistorico['total_pagado'] ?? 0), 2) }}</div>
+            </div>
+            <div class="kpi">
+              <div class="label">Saldo histÃ³rico</div>
+              <div class="value">${{ number_format((float)($totalHistorico['saldo'] ?? 0), 2) }}</div>
             </div>
           </div>
         </div>
@@ -407,17 +450,13 @@
     </div>
 
     {{-- TRANSPORTES --}}
-    @php
-      $transportes = $arriendo->transportes ?? collect();
-      $totalTransportes = (float) $transportes->sum('valor');
-    @endphp
-
-    {{-- ✅ Solo agregué class="transport-card" para compactar este bloque --}}
     <div class="card transport-card">
       <div class="row">
         <div>
           <h3 style="margin:0;">Transportes / Entregas</h3>
-          <div class="hint">Registra entregas o recogidas. Ambas suman al total.</div>
+          <div class="hint">
+            Registra <b>Entrega de herramienta</b> o <b>Recogida de herramienta</b>. Ambas suman al total.
+          </div>
         </div>
         <div>
           <span class="badge warn">Total transportes: <b>${{ number_format($totalTransportes, 2) }}</b></span>
@@ -429,12 +468,16 @@
           @csrf
 
           <div style="margin-bottom:8px;">
-            <label class="label">Tipo</label>
+            <label class="label">Tipo (muy importante)</label>
             <select class="input" name="tipo" required>
-              <option value="ENTREGA" {{ old('tipo', 'ENTREGA') === 'ENTREGA' ? 'selected' : '' }}>ENTREGA</option>
-              <option value="RECOGIDA" {{ old('tipo') === 'RECOGIDA' ? 'selected' : '' }}>RECOGIDA</option>
+              <option value="NO" {{ old('tipo', 'NO') === 'NO' ? 'selected' : '' }}>
+                NO - Sin transporte
+              </option>
+              <option value="ENTREGA" {{ old('tipo', 'ENTREGA') === 'ENTREGA' ? 'selected' : '' }}>
+                ENTREGA - Entrega de herramienta
+              </option>
             </select>
-            <div class="help">Selecciona si es entrega o recogida.</div>
+            <div class="help">Solo permitido: No o Entrega de herramienta.</div>
           </div>
 
           <div class="form-grid">
@@ -464,29 +507,43 @@
         </form>
       @else
         <div class="hint" style="margin-top:10px;">
-          Este arriendo no está activo o ya está cerrado. No se pueden agregar transportes.
+          Este arriendo no estÃ¡ activo o ya estÃ¡ cerrado. No se pueden agregar transportes.
         </div>
       @endif
 
       <div style="margin-top:10px;">
         @if($transportes->isEmpty())
-          <div class="hint">No hay transportes registrados aún.</div>
+          <div class="hint">No hay transportes registrados aÃºn.</div>
         @else
           <div class="table-wrap">
             <table class="table">
               <thead>
                 <tr>
                   <th>Fecha</th>
+                  <th>Tipo</th>
                   <th>Nota</th>
                   <th class="right">Valor</th>
-                  <th class="right" style="width:160px;">Acción</th>
+                  <th class="right" style="width:160px;">AcciÃ³n</th>
                 </tr>
               </thead>
               <tbody>
                 @foreach($transportes->sortByDesc('id') as $t)
+                  @php
+                    $tipoRaw = strtoupper(trim((string)($t->tipo ?? 'ENTREGA')));
+                    $tipoTexto = $labelTipo($tipoRaw);
+                    $tipoBadgeClass = ($tipoRaw === 'RECOGIDA') ? 'pick' : 'info';
+                  @endphp
                   <tr>
-                    <td>{{ !empty($t->fecha) ? \Carbon\Carbon::parse($t->fecha)->format('d/m/Y') : '—' }}</td>
-                    <td>{{ $t->nota ?? '—' }}</td>
+                    <td>{{ !empty($t->fecha) ? \Carbon\Carbon::parse($t->fecha)->format('d/m/Y') : 'â€”' }}</td>
+
+                    {{-- âœ… BIEN CLARO --}}
+                    <td>
+                      <span class="badge {{ $tipoBadgeClass }}">
+                        {{ $tipoTexto }}
+                      </span>
+                    </td>
+
+                    <td>{{ $t->nota ?? 'â€”' }}</td>
                     <td class="right"><b>${{ number_format((float)$t->valor, 2) }}</b></td>
                     <td class="right">
                       @if((int)($arriendo->cerrado ?? 0) === 0 && $arriendo->estado === 'activo')
@@ -494,12 +551,12 @@
                           @csrf
                           @method('DELETE')
                           <button class="btn danger"
-                                  onclick="return confirm('¿Seguro que deseas borrar este transporte?')">
+                                  onclick="return confirm('Â¿Seguro que deseas borrar este transporte?')">
                             Borrar
                           </button>
                         </form>
                       @else
-                        <span class="badge off">—</span>
+                        <span class="badge off">â€”</span>
                       @endif
                     </td>
                   </tr>
@@ -516,12 +573,12 @@
       <div class="row">
         <div>
           <h3 style="margin:0;">Productos alquilados (Items)</h3>
-          <div class="hint">Listado de productos, cantidades, días, totales y acciones.</div>
+          <div class="hint">Listado de productos, cantidades, dÃ­as, totales y acciones.</div>
         </div>
       </div>
 
       @if($arriendo->items->isEmpty())
-        <div class="hint">No hay productos aún. Agrega el primero.</div>
+        <div class="hint">No hay productos aÃºn. Agrega el primero.</div>
       @else
         <div class="table-wrap">
           <table class="table">
@@ -531,10 +588,10 @@
                 <th class="center">Inicial</th>
                 <th class="center">Actual</th>
                 <th>Inicio item</th>
-                <th class="right">Tarifa/día</th>
-                <th class="right">Valor día</th>
-                <th class="center">Días alquilados</th>
-                <th class="center">Días cobrables</th>
+                <th class="right">Tarifa/dÃ­a</th>
+                <th class="right">Valor dÃ­a</th>
+                <th class="center">DÃ­as alquilados</th>
+                <th class="center">DÃ­as cobrables</th>
                 <th class="right">Total</th>
                 <th class="right">Pagado</th>
                 <th class="right">Saldo</th>
@@ -578,10 +635,10 @@
                 @endphp
 
                 <tr>
-                  <td class="product"><b>{{ $it->producto->nombre ?? '—' }}</b></td>
+                  <td class="product"><b>{{ $it->producto->nombre ?? 'â€”' }}</b></td>
                   <td class="center">{{ (int)$it->cantidad_inicial }}</td>
                   <td class="center">{{ (int)$it->cantidad_actual }}</td>
-                  <td>{{ $it->fecha_inicio_item?->format('d/m/Y H:i') ?? '—' }}</td>
+                  <td>{{ $it->fecha_inicio_item?->format('d/m/Y H:i') ?? 'â€”' }}</td>
 
                   <td class="right">${{ number_format($tarifa, 2) }}</td>
                   <td class="right">${{ number_format($valorDia, 2) }}</td>
@@ -603,10 +660,11 @@
 
                   <td class="right actions">
                     <div class="actions-box">
+                      {{-- âœ… SOLUCIÃ“N: aunque estÃ© cerrado, igual deja ENTRAR A VER lo ocurrido (historial). --}}
                       @if((int)($it->cerrado ?? 0) === 0 && $it->estado === 'activo')
-                        <a class="btn warning" href="{{ route('items.devolucion.create', $it) }}">Devolución</a>
+                        <a class="btn warning" href="{{ route('items.devolucion.create', $it) }}">DevoluciÃ³n</a>
                       @else
-                        <span class="badge off">Cerrado</span>
+                        <a class="btn" href="{{ route('items.devolucion.create', $it) }}">Ver historial</a>
                       @endif
 
                       <a class="btn" href="{{ route('arriendos.detalles', $arriendo) }}">Detalles</a>
@@ -615,7 +673,7 @@
                         @csrf
                         @method('DELETE')
                         <button class="btn danger"
-                                onclick="return confirm('¿Seguro que deseas borrar este alquiler (item)?')">
+                                onclick="return confirm('Â¿Seguro que deseas borrar este alquiler (item)?')">
                           Borrar
                         </button>
                       </form>
@@ -634,3 +692,4 @@
 </div>
 
 @endsection
+

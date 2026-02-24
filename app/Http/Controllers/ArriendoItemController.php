@@ -35,14 +35,18 @@ class ArriendoItemController extends Controller
             'producto_id' => 'required|exists:productos,id',
             'cantidad' => 'required|integer|min:1',
             'fecha_inicio_item' => 'nullable|date',
+
+            // ✅ NUEVO: viene desde la vista (select)
+            'cobra_domingo' => 'required|in:0,1',
         ]);
 
         // ✅ si no envían fecha_inicio_item, usa la del padre
         $inicioItem = $data['fecha_inicio_item'] ?? $arriendo->fecha_inicio;
         $cantidadSolicitada = (int)$data['cantidad'];
+        $cobraDomingo = (int)$data['cobra_domingo']; // 0 o 1
 
         try {
-            DB::transaction(function () use ($data, $arriendo, $inicioItem, $cantidadSolicitada) {
+            DB::transaction(function () use ($data, $arriendo, $inicioItem, $cantidadSolicitada, $cobraDomingo) {
 
                 // 🔒 Bloqueo para evitar carreras (dos usuarios alquilando a la vez)
                 $producto = Producto::where('id', $data['producto_id'])
@@ -73,6 +77,9 @@ class ArriendoItemController extends Controller
 
                     'cerrado' => 0,
                     'estado' => 'activo',
+
+                    // ✅ NUEVO: regla domingos por item
+                    'cobra_domingo' => $cobraDomingo,
 
                     'precio_total' => 0,
                     'total_alquiler' => 0,
