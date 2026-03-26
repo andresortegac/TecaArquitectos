@@ -24,6 +24,15 @@
     display:flex; justify-content:space-between; align-items:flex-start;
     gap:12px; flex-wrap:wrap; margin-bottom:12px;
   }
+  .brand-head {
+    display:flex; align-items:flex-start; gap:12px;
+  }
+  .brand-logo {
+    width:86px;
+    max-width:86px;
+    height:auto;
+    object-fit:contain;
+  }
   .doc-title { margin:0; font-size:20px; font-weight:800; }
   .doc-sub { margin-top:2px; }
 
@@ -55,7 +64,7 @@
   .total-strong { font-weight:900; }
   .saldo-strong { font-weight:900; }
 
-  /* ✅ Caja de total final (super clara) */
+  /* Caja de total final */
   .final-total {
     border:2px solid #111827;
     border-radius:14px;
@@ -135,10 +144,34 @@
 
   /* ====== Print ====== */
   @media print {
-    .no-print { display:none !important; }
-    body { background:#fff !important; }
+    html, body {
+      background:#fff !important;
+      overflow:visible !important;
+    }
+    .app,
+    .principal-content,
+    .principal-page {
+      display:block !important;
+      width:100% !important;
+      margin:0 !important;
+      padding:0 !important;
+      background:#fff !important;
+      box-shadow:none !important;
+      border-radius:0 !important;
+      overflow:visible !important;
+    }
+    .principal-content::before {
+      display:none !important;
+      content:none !important;
+    }
+    .sidebar,
+    .principal-topbar,
+    .no-print {
+      display:none !important;
+    }
     .factura-wrap { padding:0; border-radius:0; }
     .box { border:0; }
+    .brand-logo { width:72px !important; max-width:72px !important; }
     .table th { background:#f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .mov-table th { background:#f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .final-total { border:2px solid #111827 !important; background:#f2f2f2 !important; }
@@ -151,9 +184,6 @@
 </div>
 
 @php
-  /**
-   * ✅ Totales desde items + devoluciones (tu lógica original)
-   */
   $items = $arriendo->items ?? collect();
 
   $g_items_count = $items->count();
@@ -194,36 +224,21 @@
     $g_saldo += $saldoMostrado;
   }
 
-  // Si el controlador manda $totales, los usamos; si no, usamos los calculados.
   $totales = $totales ?? [
     'total_alquiler' => $g_total_alquiler,
     'total_merma' => $g_total_merma,
     'total_pagado' => $g_total_abonado,
-    'precio_total' => $g_total_cobrado, // ✅ cobrado del arriendo (sin transportes)
-    'saldo' => $g_saldo,                // ✅ saldo del arriendo (sin transportes)
+    'precio_total' => $g_total_cobrado,
+    'saldo' => $g_saldo,
   ];
 
-  /**
-   * ✅ TRANSPORTES
-   */
   $transportes = $arriendo->transportes ?? collect();
   $total_transportes = (float) $transportes->sum('valor');
 
-  /**
-   * ✅ TOTAL DE TODO (SUPER CLARO)
-   * - Total cobrado arriendo: $totales['precio_total']
-   * - Total transportes: $total_transportes
-   * - TOTAL GENERAL: suma de ambos
-   */
   $total_general_todo = (float)$totales['precio_total'] + $total_transportes;
-
-  // Total abonado se mantiene igual (si no hay pagos de transporte registrados)
   $total_abonado_general = (float)$totales['total_pagado'];
-
-  // Saldo general: saldo del arriendo + transportes (se asume transporte pendiente si no tiene pagos)
   $saldo_general_todo = (float)$totales['saldo'] + $total_transportes;
 
-  // Helper para que quede bien claro el tipo
   $labelTipo = function($tipo){
     $t = strtoupper(trim((string)$tipo));
     if ($t === 'RECOGIDA') return 'Recogida de herramienta';
@@ -233,12 +248,15 @@
 
 <div class="factura-wrap">
 
-  {{-- ====== IDENTIDAD DEL DOCUMENTO ====== --}}
   <div class="topbar">
-    <div>
-      <h2 class="doc-title">Factura de Arriendo / Informe de Detalle</h2>
-      <div class="muted doc-sub">
-        Arriendo #{{ $arriendo->id }} · Emisión: {{ now()->format('d/m/Y H:i') }}
+    <div class="brand-head">
+      <img src="{{ asset('img/LOGIN/logo_factura.jpeg') }}" alt="Alfa Digital SAS" class="brand-logo">
+      <div>
+        <h2 class="doc-title">Factura de Arriendo / Informe de Detalle</h2>
+        <div class="muted"><strong>ALFA DIGITAL SAS</strong></div>
+        <div class="muted doc-sub">
+          Arriendo #{{ $arriendo->id }} · Emisión: {{ now()->format('d/m/Y H:i') }}
+        </div>
       </div>
     </div>
     <div style="text-align:right;">
@@ -252,7 +270,6 @@
     </div>
   </div>
 
-  {{-- ====== METADATOS ====== --}}
   <div class="meta-grid">
     <div class="box">
       <div><strong>Cliente:</strong> {{ $arriendo->cliente->nombre ?? '—' }}</div>
@@ -268,8 +285,6 @@
         <div class="label">Herramientas (items)</div><div class="value">{{ $g_items_count }}</div>
         <div class="label">Unidades en obra</div><div class="value total-strong">{{ $g_unidades_restantes }}</div>
         <div class="label">Movimientos</div><div class="value">{{ $movs }}</div>
-
-        {{-- ✅ SALDO GENERAL INCLUYENDO TRANSPORTES --}}
         <div class="label">Saldo general (incluye transportes)</div>
         <div class="value saldo-strong">${{ number_format($saldo_general_todo, 2) }}</div>
       </div>
@@ -279,26 +294,22 @@
     </div>
   </div>
 
-  {{-- ====== RESUMEN EJECUTIVO ====== --}}
   <div class="summary-grid">
     <div class="box">
       <div class="summary-title">Resumen general (dinero)</div>
       <div class="kpi-grid">
-
         <div class="label">Total alquiler</div>
         <div class="value">${{ number_format((float)$totales['total_alquiler'], 2) }}</div>
 
         <div class="label">Total merma</div>
         <div class="value">${{ number_format((float)$totales['total_merma'], 2) }}</div>
 
-        {{-- ✅ SEPARACIÓN CLARA --}}
         <div class="label">Total cobrado arriendo (sin transporte)</div>
         <div class="value">${{ number_format((float)$totales['precio_total'], 2) }}</div>
 
         <div class="label">Total transportes realizados</div>
         <div class="value">${{ number_format($total_transportes, 2) }}</div>
 
-        {{-- ✅ TOTAL DE TODO (SÚPER CLARO) --}}
         <div class="label total-strong">TOTAL GENERAL (Arriendo + Transportes)</div>
         <div class="value total-strong">${{ number_format($total_general_todo, 2) }}</div>
 
@@ -324,7 +335,6 @@
     </div>
   </div>
 
-  {{-- ✅ TOTALIZACIÓN FINAL (MUY VISIBLE) --}}
   <h3 class="section-title">Totalización final</h3>
   <div class="box final-total">
     <div class="ttl">TOTAL GENERAL A PAGAR (incluye arriendo + transportes)</div>
@@ -352,7 +362,6 @@
     </div>
   </div>
 
-  {{-- ====== TRANSPORTES EN FACTURA (BIEN CLARO) ====== --}}
   <h3 class="section-title">Transportes (Entrega / Recogida de herramienta)</h3>
 
   @if(empty($transportes) || $transportes->isEmpty())
@@ -396,7 +405,6 @@
     </div>
   @endif
 
-  {{-- ====== DETALLE POR HERRAMIENTA ====== --}}
   <h3 class="section-title">Detalle por herramienta</h3>
 
   @if(empty($arriendo->items) || $arriendo->items->isEmpty())
@@ -455,7 +463,6 @@
 
         <div class="item-sections">
 
-          {{-- Estado de unidades --}}
           <div class="mini-box">
             <div class="mini-title">Estado de unidades</div>
             <div class="line"><div class="lbl">Cantidad inicial</div><div class="val">{{ $cantidadInicial }}</div></div>
@@ -463,7 +470,6 @@
             <div class="line"><div class="lbl">Restante (en obra)</div><div class="val">{{ $cantidadRestanteCalc }}</div></div>
           </div>
 
-          {{-- Resumen financiero del item --}}
           <div class="mini-box">
             <div class="mini-title">Resumen financiero del item</div>
             <div class="line"><div class="lbl">Tarifa / día</div><div class="val">${{ number_format($tarifa,2) }}</div></div>
@@ -481,7 +487,6 @@
 
         </div>
 
-        {{-- Tabla de movimientos --}}
         <div style="margin-top:10px;">
           @if($devsDesc->isEmpty())
             <div class="muted">No hay movimientos todavía para esta herramienta.</div>
@@ -546,7 +551,6 @@
 
   @endif
 
-  {{-- ====== INCIDENCIAS GENERALES ====== --}}
   <h3 class="section-title">Incidencias del arriendo</h3>
   @if(empty($arriendo->incidencias) || $arriendo->incidencias->isEmpty())
     <div class="box">No hay incidencias registradas.</div>

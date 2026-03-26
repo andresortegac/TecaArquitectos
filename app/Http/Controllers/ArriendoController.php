@@ -11,6 +11,7 @@ use App\Models\Payment; // ✅ NUEVO (para recaudado hoy/mes)
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 
 class ArriendoController extends Controller
 {
@@ -309,146 +310,132 @@ class ArriendoController extends Controller
             'costo_merma' => 'nullable|numeric|min:0',
             'descripcion_incidencia' => 'nullable|string|max:255',
             'pago' => 'nullable|numeric|min:0',
-
-            // ✅ NUEVO: IVA solo al cierre
             'iva_aplica' => 'nullable|in:0,1',
         ]);
 
-        // ✅ si tienes items, usamos lógica nueva
-        $arriendo->load(['items', 'items.producto', 'transportes', 'producto']);
+        $arriendo->load(['items', 'items.producto', 'items.devoluciones', 'transportes', 'producto']);
 
         $fechaEntrega = $arriendo->fecha_entrega ?? $arriendo->fecha_inicio;
         $fechaEntrega = Carbon::parse($fechaEntrega)->toDateString();
-
         $fechaDevol = Carbon::parse($data['fecha_devolucion_real'])->toDateString();
 
         if (Carbon::parse($fechaDevol)->lt(Carbon::parse($fechaEntrega))) {
             return back()
-                ->withErrors(['fecha_devolucion_real' => 'La fecha de devolución no puede ser anterior a la fecha de entrega/inicio.'])
+                ->withErrors(['fecha_devolucion_real' => 'La fecha de devolucion no puede ser anterior a la fecha de entrega/inicio.'])
                 ->withInput();
         }
 
-        // ✅ Guardar si IVA aplica (decisión final)
-        if ($request->has('iva_aplica')) {
-            $arriendo->iva_aplica = (int)($data['iva_aplica'] ?? 0);
-            $arriendo->save();
-        }
-
-        // ✅ Pagos (si pagas algo al cerrar)
         $pago = (float)($data['pago'] ?? 0);
         $totalMermaExtra = (float)($data['costo_merma'] ?? 0);
         $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
         $desc = $data['descripcion_incidencia'] ?? null;
 
-        // ============================================================
-        // ✅ NUEVA LÓGICA si hay ITEMS (PADRE + ITEMS)
-        // ============================================================
         if ($arriendo->items && $arriendo->items->count() > 0) {
+            DB::transaction(function () use ($request, $data, $arriendo, $fechaDevol, $diasLluvia, $totalMermaExtra, $pago, $desc) {
+                if ($request->has('iva_aplica')) {
+                    $arriendo->iva_aplica = (int)($data['iva_aplica'] ?? 0);
+                    $arriendo->save();
+                }
 
-            // Valores reales consolidados desde historial de devoluciones (fuente de verdad de cierre/factura)
-            $devCount            = (int)$arriendo->devoluciones()->count();
-            $devTotalAlquiler    = (float)$arriendo->devoluciones()->sum('total_alquiler');
-            $devTotalMerma       = (float)$arriendo->devoluciones()->sum('total_merma');
-            $devTotalPagado      = (float)$arriendo->devoluciones()->sum('pago_recibido');
-            $devTotalTransporte  = (float)$arriendo->devoluciones()->sum('costo_transporte');
+                $this->cerrarItemsPendientesDelArriendo($arriendo, $fechaDevol);
+                $arriendo->load(['items', 'transportes']);
 
-            $itemsTotalAlquiler  = (float)$arriendo->items->sum('total_alquiler');
-            $itemsTotalMerma     = (float)$arriendo->items->sum('total_merma');
-            $itemsTotalPagado    = (float)$arriendo->items->sum('total_pagado');
+                $devCount = (int)$arriendo->devoluciones()->count();
+                $devTotalAlquiler = (float)$arriendo->devoluciones()->sum('total_alquiler');
+                $devTotalMerma = (float)$arriendo->devoluciones()->sum('total_merma');
+                $devTotalPagado = (float)$arriendo->devoluciones()->sum('pago_recibido');
+                $devTotalTransporte = (float)$arriendo->devoluciones()->sum('costo_transporte');
 
-            $totalAlquiler = $devCount > 0 ? $devTotalAlquiler : $itemsTotalAlquiler;
-            $totalMermaBase = $devCount > 0 ? $devTotalMerma : $itemsTotalMerma;
-            $totalPagadoBase = $devCount > 0 ? $devTotalPagado : $itemsTotalPagado;
+                $itemsTotalAlquiler = (float)$arriendo->items->sum('total_alquiler');
+                $itemsTotalMerma = (float)$arriendo->items->sum('total_merma');
+                $itemsTotalPagado = (float)$arriendo->items->sum('total_pagado');
 
-            $totalMerma = $totalMermaBase + $totalMermaExtra;
-            $totalPagado = $totalPagadoBase + $pago;
+                $totalAlquiler = $devCount > 0 ? $devTotalAlquiler : $itemsTotalAlquiler;
+                $totalMermaBase = $devCount > 0 ? $devTotalMerma : $itemsTotalMerma;
+                $totalPagadoBase = $devCount > 0 ? $devTotalPagado : $itemsTotalPagado;
 
-            // Transporte real: transportes del padre + transporte cobrado en devoluciones
-            $totalTransportesPadre = (float)($arriendo->transportes?->sum('valor') ?? 0);
-            $totalTransportes = $totalTransportesPadre + $devTotalTransporte;
+                $totalMerma = $totalMermaBase + $totalMermaExtra;
+                $totalPagado = $totalPagadoBase + $pago;
 
-            $subtotal = $totalAlquiler + $totalMerma + $totalTransportes;
+                $totalTransportesPadre = (float)($arriendo->transportes?->sum('valor') ?? 0);
+                $totalTransportes = $totalTransportesPadre + $devTotalTransporte;
 
-            $ivaAplica = (int)($arriendo->iva_aplica ?? 0) === 1;
-            $ivaRate   = (float)($arriendo->iva_rate ?? 0.19);
-            $ivaValor  = $ivaAplica ? ($subtotal * $ivaRate) : 0;
+                $subtotal = $totalAlquiler + $totalMerma + $totalTransportes;
+                $ivaAplica = (int)($arriendo->iva_aplica ?? 0) === 1;
+                $ivaRate = (float)($arriendo->iva_rate ?? 0.19);
+                $ivaValor = $ivaAplica ? ($subtotal * $ivaRate) : 0;
 
-            $totalFinal = $subtotal + $ivaValor;
-            $saldo = max(0, $totalFinal - $totalPagado);
+                $totalFinal = $subtotal + $ivaValor;
+                $saldo = max(0, $totalFinal - $totalPagado);
+                $sem = $this->calcularSemaforoMoroso($fechaDevol, $saldo);
 
-            $sem = $this->calcularSemaforoMoroso($fechaDevol, $saldo);
-
-            $arriendo->update([
-                'fecha_fin' => $fechaDevol,
-                'fecha_devolucion_real' => $fechaDevol,
-
-                'cerrado' => 1,
-                'estado' => 'devuelto',
-
-                // aquí no recalculamos días por item porque ya lo manejas por devoluciones/items,
-                // pero guardamos lo que ya tienes en PADRE para no romper.
-                'dias_lluvia_desc' => $diasLluvia,
-                'total_alquiler' => $totalAlquiler,
-                'total_merma' => $totalMerma,
-                'total_pagado' => $totalPagado,
-                'saldo' => $saldo,
-                'precio_total' => $totalFinal,
-
-                'dias_mora' => $sem['dias_mora'],
-                'semaforo_pago' => $sem['semaforo'],
-            ]);
-
-            // incidencias opcionales (igual que tu código)
-            if ($diasLluvia > 0) {
-                Incidencia::create([
-                    'arriendo_id' => $arriendo->id,
-                    'tipo' => 'LLUVIA',
-                    'dias' => $diasLluvia,
-                    'costo' => 0,
-                    'descripcion' => $desc ?? 'Incidencia por lluvia al cierre',
+                $arriendo->update([
+                    'fecha_fin' => $fechaDevol,
+                    'fecha_devolucion_real' => $fechaDevol,
+                    'cerrado' => 1,
+                    'estado' => 'devuelto',
+                    'dias_lluvia_desc' => $diasLluvia,
+                    'total_alquiler' => $totalAlquiler,
+                    'total_merma' => $totalMerma,
+                    'total_pagado' => $totalPagado,
+                    'saldo' => $saldo,
+                    'precio_total' => $totalFinal,
+                    'dias_mora' => $sem['dias_mora'],
+                    'semaforo_pago' => $sem['semaforo'],
                 ]);
-            }
 
-            if ($totalMermaExtra > 0) {
-                Incidencia::create([
-                    'arriendo_id' => $arriendo->id,
-                    'tipo' => 'DANO',
-                    'dias' => 0,
-                    'costo' => $totalMermaExtra,
-                    'descripcion' => $desc ?? 'Incidencia por daño/merma al cierre',
-                ]);
-            }
+                if ($diasLluvia > 0) {
+                    Incidencia::create([
+                        'arriendo_id' => $arriendo->id,
+                        'tipo' => 'LLUVIA',
+                        'dias' => $diasLluvia,
+                        'costo' => 0,
+                        'descripcion' => $desc ?? 'Incidencia por lluvia al cierre',
+                    ]);
+                }
+
+                if ($totalMermaExtra > 0) {
+                    Incidencia::create([
+                        'arriendo_id' => $arriendo->id,
+                        'tipo' => 'DANO',
+                        'dias' => 0,
+                        'costo' => $totalMermaExtra,
+                        'descripcion' => $desc ?? 'Incidencia por dano/merma al cierre',
+                    ]);
+                }
+            });
 
             return redirect()->route('arriendos.index')
-                ->with('success', 'Arriendo cerrado (items + transportes + IVA aplicado si corresponde).');
+                ->with('success', 'Arriendo cerrado. Se liquidaron tambien los items pendientes con la fecha indicada.');
         }
 
-        // ============================================================
-        // ✅ FALLBACK: LÓGICA ANTIGUA si NO hay ITEMS
-        // ============================================================
+        if ($request->has('iva_aplica')) {
+            $arriendo->iva_aplica = (int)($data['iva_aplica'] ?? 0);
+            $arriendo->save();
+        }
+
         $start = Carbon::parse($fechaEntrega)->startOfDay();
-        $end   = Carbon::parse($fechaDevol)->startOfDay();
+        $end = Carbon::parse($fechaDevol)->startOfDay();
 
         $diasTrans = $start->diffInDays($end);
-        if ($diasTrans === 0) $diasTrans = 1;
+        if ($diasTrans === 0) {
+            $diasTrans = 1;
+        }
 
         $domingos = $this->contarDomingosExcluyendoFin($fechaEntrega, $fechaDevol);
-        $diasLluvia = (int)($data['dias_lluvia'] ?? 0);
         $diasCobrables = max(0, $diasTrans - $domingos - $diasLluvia);
 
         $tarifa = (float)($arriendo->producto->costo ?? 0);
         $totalAlquiler = $diasCobrables * $tarifa * (int)($arriendo->cantidad ?? 0);
-
-        $totalMerma = (float)($data['costo_merma'] ?? 0);
+        $totalMerma = $totalMermaExtra;
         $totalPagado = (float)($arriendo->total_pagado ?? 0) + $pago;
 
         $totalTransportes = (float)($arriendo->transportes?->sum('valor') ?? 0);
         $subtotal = $totalAlquiler + $totalMerma + $totalTransportes;
 
         $ivaAplica = (int)($arriendo->iva_aplica ?? 0) === 1;
-        $ivaRate   = (float)($arriendo->iva_rate ?? 0.19);
-        $ivaValor  = $ivaAplica ? ($subtotal * $ivaRate) : 0;
-
+        $ivaRate = (float)($arriendo->iva_rate ?? 0.19);
+        $ivaValor = $ivaAplica ? ($subtotal * $ivaRate) : 0;
         $totalFinal = $subtotal + $ivaValor;
 
         $saldo = max(0, $totalFinal - $totalPagado);
@@ -457,26 +444,20 @@ class ArriendoController extends Controller
         $arriendo->update([
             'fecha_fin' => $fechaDevol,
             'fecha_devolucion_real' => $fechaDevol,
-
             'cerrado' => 1,
             'estado' => 'devuelto',
-
             'dias_transcurridos' => $diasTrans,
             'domingos_desc' => $domingos,
             'dias_lluvia_desc' => $diasLluvia,
             'dias_cobrables' => $diasCobrables,
-
             'total_alquiler' => $totalAlquiler,
             'total_merma' => $totalMerma,
             'total_pagado' => $totalPagado,
             'saldo' => $saldo,
             'precio_total' => $totalFinal,
-
             'dias_mora' => $sem['dias_mora'],
             'semaforo_pago' => $sem['semaforo'],
         ]);
-
-        $desc = $data['descripcion_incidencia'] ?? null;
 
         if ($diasLluvia > 0) {
             Incidencia::create([
@@ -494,17 +475,106 @@ class ArriendoController extends Controller
                 'tipo' => 'DANO',
                 'dias' => 0,
                 'costo' => $totalMerma,
-                'descripcion' => $desc ?? 'Incidencia por daño/merma al cierre',
+                'descripcion' => $desc ?? 'Incidencia por dano/merma al cierre',
             ]);
         }
 
         return redirect()->route('arriendos.index')
-            ->with('success', 'Arriendo cerrado. Cálculos aplicados y semáforo actualizado.');
+            ->with('success', 'Arriendo cerrado. Calculos aplicados y semaforo actualizado.');
     }
 
-    /* ============================================================
-     * 9) FUNCIONES INTERNAS
-     * ============================================================ */
+    private function cerrarItemsPendientesDelArriendo(Arriendo $arriendo, string $fechaDevol): void
+    {
+        $arriendo->loadMissing(['items.producto', 'items.devoluciones']);
+
+        foreach ($arriendo->items as $item) {
+            $cantidadPendiente = (int)($item->cantidad_actual ?? 0);
+            $itemActivo = ((int)($item->cerrado ?? 0) === 0) && (($item->estado ?? 'activo') === 'activo');
+
+            if ($cantidadPendiente <= 0) {
+                if ((int)($item->cerrado ?? 0) === 0) {
+                    $item->update([
+                        'fecha_fin_item' => $fechaDevol,
+                        'cerrado' => 1,
+                        'estado' => 'devuelto',
+                    ]);
+                }
+                continue;
+            }
+
+            if (!$itemActivo) {
+                continue;
+            }
+
+            $fechaInicioItem = $item->fecha_inicio_item ?? $arriendo->fecha_inicio;
+            $fechaInicioItem = Carbon::parse($fechaInicioItem)->toDateString();
+
+            $start = Carbon::parse($fechaInicioItem)->startOfDay();
+            $end = Carbon::parse($fechaDevol)->startOfDay();
+            $diasTrans = $start->diffInDays($end);
+            if ($diasTrans === 0) {
+                $diasTrans = 1;
+            }
+
+            $cobraDomingo = (int)($item->cobra_domingo ?? 0) === 1;
+            $domingos = $this->contarDomingosExcluyendoFin($fechaInicioItem, $fechaDevol);
+            $domingosDesc = $cobraDomingo ? 0 : $domingos;
+            $diasCobrables = $cobraDomingo ? max(0, $diasTrans) : max(0, $diasTrans - $domingosDesc);
+
+            $tarifa = (float)($item->tarifa_diaria ?? ($item->producto->costo ?? 0));
+            $totalAlquilerParcial = $diasCobrables * $tarifa * $cantidadPendiente;
+            $totalCobradoParcial = $totalAlquilerParcial;
+
+            $nuevoTotalAlquiler = (float)($item->total_alquiler ?? 0) + $totalAlquilerParcial;
+            $nuevoTotalMerma = (float)($item->total_merma ?? 0);
+            $nuevoTotalPagado = (float)($item->total_pagado ?? 0);
+            $nuevoPrecioTotal = $nuevoTotalAlquiler + $nuevoTotalMerma;
+            $nuevoSaldo = max(0, $nuevoPrecioTotal - $nuevoTotalPagado);
+
+            $producto = Producto::where('id', $item->producto_id)->lockForUpdate()->first();
+            if ($producto) {
+                $producto->update([
+                    'cantidad' => (int)($producto->cantidad ?? 0) + $cantidadPendiente,
+                ]);
+            }
+
+            $item->update([
+                'cantidad_actual' => 0,
+                'fecha_fin_item' => $fechaDevol,
+                'cerrado' => 1,
+                'estado' => 'devuelto',
+                'precio_total' => $nuevoPrecioTotal,
+                'total_alquiler' => $nuevoTotalAlquiler,
+                'total_merma' => $nuevoTotalMerma,
+                'total_pagado' => $nuevoTotalPagado,
+                'saldo' => $nuevoSaldo,
+            ]);
+
+            DevolucionArriendo::create([
+                'arriendo_id' => $item->arriendo_id,
+                'arriendo_item_id' => $item->id,
+                'fecha_devolucion' => $fechaDevol,
+                'cantidad_devuelta' => $cantidadPendiente,
+                'dias_transcurridos' => $diasTrans,
+                'domingos_desc' => $domingosDesc,
+                'dias_lluvia_desc' => 0,
+                'dias_cobrables' => $diasCobrables,
+                'tarifa_diaria' => $tarifa,
+                'total_alquiler' => $totalAlquilerParcial,
+                'total_merma' => 0,
+                'costo_transporte' => 0,
+                'total_cobrado' => $totalCobradoParcial,
+                'pago_recibido' => 0,
+                'saldo_devolucion' => $totalCobradoParcial,
+                'cantidad_restante' => 0,
+                'saldo_resultante' => $nuevoSaldo,
+                'descripcion_incidencia' => 'Cierre automatico del arriendo',
+                'transporte_herramientas' => 'no',
+                'detalle_transporte' => 'Cierre automatico del arriendo',
+                'nota' => 'Cierre automatico del arriendo',
+            ]);
+        }
+    }
 
     private function contarDomingosExcluyendoFin(string $inicio, string $fin): int
     {

@@ -674,28 +674,26 @@
                         </div>
                     </div>
 
-                    {{-- ✅ Transporte / Recoger herramientas --}}
-                    <div class="row">
-                        <div class="field">
-                            <label class="rp-label">Transporte de herramientas</label>
-                            @php $tr = old('transporte_herramientas','no'); @endphp
-                            <select class="rp-input" name="transporte_herramientas" {{ $isCerrado ? 'disabled' : '' }}>
-                                <option value="no" {{ $tr==='no' ? 'selected' : '' }}>No</option>
-                                <option value="recoger" {{ $tr==='recoger' ? 'selected' : '' }}>Recoger herramientas</option>
-                                <option value="entregar" {{ $tr==='entregar' ? 'selected' : '' }}>Entregar herramientas</option>
-                                <option value="recoger_y_entregar" {{ $tr==='recoger_y_entregar' ? 'selected' : '' }}>Recoger y entregar</option>
-                            </select>
-                            <div class="rp-help">Se guarda en el historial de devoluciones.</div>
-                        </div>
+                  {{-- ✅ Transporte / Recoger herramientas --}}
+<div class="row">
+    <div class="field">
+        <label class="rp-label">Transporte de herramientas</label>
+        @php $tr = old('transporte_herramientas','no'); @endphp
+        <select class="rp-input" name="transporte_herramientas" {{ $isCerrado ? 'disabled' : '' }}>
+            <option value="no" {{ $tr==='no' ? 'selected' : '' }}>No</option>
+            <option value="recoger" {{ $tr==='recoger' ? 'selected' : '' }}>Recoger herramientas</option>
+        </select>
+        <div class="rp-help">Se guarda en el historial de devoluciones.</div>
+    </div>
 
-                        <div class="field">
-                            <label class="rp-label">Detalle transporte (opcional)</label>
-                            <input class="rp-input" type="text" name="detalle_transporte"
-                                   value="{{ old('detalle_transporte') }}"
-                                   placeholder="Ej: recoger en obra / dirección / contacto"
-                                   {{ $isCerrado ? 'disabled' : '' }}>
-                        </div>
-                    </div>
+    <div class="field">
+        <label class="rp-label">Detalle transporte (opcional)</label>
+        <input class="rp-input" type="text" name="detalle_transporte"
+               value="{{ old('detalle_transporte') }}"
+               placeholder="Ej: recoger en obra / dirección / contacto"
+               {{ $isCerrado ? 'disabled' : '' }}>
+    </div>
+</div>
 
                     {{-- ✅ NUEVO: Costo transporte (ESTO SE SUMA AL TOTAL) --}}
                     <div class="row">
