@@ -363,7 +363,7 @@
       </div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <a class="btn" href="{{ route('arriendos.index') }}">â† Volver</a>
+        <a class="btn" href="{{ route('arriendos.index') }}">Volver</a>
         @if((int)($arriendo->cerrado ?? 0) === 0 && $arriendo->estado === 'activo')
           <a class="btn primary" href="{{ route('arriendos.items.create', $arriendo) }}">+ Agregar producto</a>
         @endif
@@ -374,11 +374,11 @@
     <div class="card">
       <div class="split">
         <div>
-          <h3>InformaciÃ³n del contrato</h3>
+          <h3>Información del contrato</h3>
 
           <div class="kv">
             <b>Cliente</b>
-            <span>{{ $arriendo->cliente->nombre ?? 'â€”' }}</span>
+            <span>{{ $arriendo->cliente->nombre ?? '-' }}</span>
           </div>
 
           <div class="kv">
@@ -399,7 +399,7 @@
 
         <div>
           <h3>Resumen financiero</h3>
-          <div class="hint">Totales del contrato e histÃ³rico del cliente (incluye transportes para que queden cobrados).</div>
+          <div class="hint">Totales del contrato e histórico del cliente (incluye transportes para que queden cobrados).</div>
           <div class="divider"></div>
 
           <div class="kpis">
@@ -431,17 +431,17 @@
               <div class="value">${{ number_format($saldoGeneral, 2) }}</div>
             </div>
 
-            {{-- HistÃ³rico --}}
+            {{-- historico --}}
             <div class="kpi">
-              <div class="label">Total histÃ³rico cliente</div>
+              <div class="label">Total historico cliente</div>
               <div class="value">${{ number_format((float)($totalHistorico['precio_total'] ?? 0), 2) }}</div>
             </div>
             <div class="kpi">
-              <div class="label">Pagado histÃ³rico</div>
+              <div class="label">Pagado historico</div>
               <div class="value">${{ number_format((float)($totalHistorico['total_pagado'] ?? 0), 2) }}</div>
             </div>
             <div class="kpi">
-              <div class="label">Saldo histÃ³rico</div>
+              <div class="label">Saldo historico</div>
               <div class="value">${{ number_format((float)($totalHistorico['saldo'] ?? 0), 2) }}</div>
             </div>
           </div>
@@ -507,7 +507,7 @@
         </form>
       @else
         <div class="hint" style="margin-top:10px;">
-          Este arriendo no estÃ¡ activo o ya estÃ¡ cerrado. No se pueden agregar transportes.
+          Este arriendo no esta activo o ya esta cerrado. No se pueden agregar transportes.
         </div>
       @endif
 
@@ -523,7 +523,7 @@
                   <th>Tipo</th>
                   <th>Nota</th>
                   <th class="right">Valor</th>
-                  <th class="right" style="width:160px;">AcciÃ³n</th>
+                  <th class="right" style="width:160px;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -573,12 +573,12 @@
       <div class="row">
         <div>
           <h3 style="margin:0;">Productos alquilados (Items)</h3>
-          <div class="hint">Listado de productos, cantidades, dÃ­as, totales y acciones.</div>
+          <div class="hint">Listado de productos, cantidades, dias, totales y acciones.</div>
         </div>
       </div>
 
       @if($arriendo->items->isEmpty())
-        <div class="hint">No hay productos aÃºn. Agrega el primero.</div>
+        <div class="hint">No hay productos aun. Agrega el primero.</div>
       @else
         <div class="table-wrap">
           <table class="table">
@@ -588,10 +588,10 @@
                 <th class="center">Inicial</th>
                 <th class="center">Actual</th>
                 <th>Inicio item</th>
-                <th class="right">Tarifa/dÃ­a</th>
-                <th class="right">Valor dÃ­a</th>
-                <th class="center">DÃ­as alquilados</th>
-                <th class="center">DÃ­as cobrables</th>
+                <th class="right">Tarifa/dia</th>
+                <th class="right">Valor dia</th>
+                <th class="center">Di­as alquilados</th>
+                <th class="center">Dias cobrables</th>
                 <th class="right">Total</th>
                 <th class="right">Pagado</th>
                 <th class="right">Saldo</th>
@@ -660,9 +660,9 @@
 
                   <td class="right actions">
                     <div class="actions-box">
-                      {{-- âœ… SOLUCIÃ“N: aunque estÃ© cerrado, igual deja ENTRAR A VER lo ocurrido (historial). --}}
+                      {{-- âœ… SOLUCION: aunque esta cerrado, igual deja ENTRAR A VER lo ocurrido (historial). --}}
                       @if((int)($it->cerrado ?? 0) === 0 && $it->estado === 'activo')
-                        <a class="btn warning" href="{{ route('items.devolucion.create', $it) }}">DevoluciÃ³n</a>
+                        <a class="btn warning" href="{{ route('items.devolucion.create', $it) }}">Devolución</a>
                       @else
                         <a class="btn" href="{{ route('items.devolucion.create', $it) }}">Ver historial</a>
                       @endif
@@ -673,7 +673,7 @@
                         @csrf
                         @method('DELETE')
                         <button class="btn danger"
-                                onclick="return confirm('Â¿Seguro que deseas borrar este alquiler (item)?')">
+                                onclick="return confirm('¿Seguro que deseas borrar este alquiler (item)?')">
                           Borrar
                         </button>
                       </form>
