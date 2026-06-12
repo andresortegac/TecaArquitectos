@@ -55,7 +55,7 @@
             {{-- Imagen --}}
             @if($producto->imagen)
     <img 
-        src="{{ asset('storage/' . $producto->imagen) }}"
+        src="{{ $producto->imagen_url }}"
         alt="{{ $producto->nombre }}"
         class="w-full h-48 object-cover rounded"
     >

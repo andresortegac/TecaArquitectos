@@ -57,7 +57,7 @@
                                 <td>{{ $item->producto?->nombre ?? 'Producto no disponible' }}</td>
                                 <td>
                                     @if(!empty($item->producto?->imagen))
-                                        <img src="{{ asset('storage/' . $item->producto->imagen) }}" class="rpa-img" alt="Producto">
+                                        <img src="{{ $item->producto->imagen_url }}" class="rpa-img" alt="Producto">
                                     @else
                                         <span class="rpa-muted">Sin imagen</span>
                                     @endif

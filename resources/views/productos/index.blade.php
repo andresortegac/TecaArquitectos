@@ -68,7 +68,7 @@
                 @forelse($productos as $producto)
                     <article class="producto-card">
                         <img
-                            src="{{ $producto->imagen ? asset('storage/' . $producto->imagen) : asset('img/product-icon.svg') }}"
+                            src="{{ $producto->imagen_url }}"
                             alt="{{ $producto->nombre }}">
 
                         <h3>{{ $producto->nombre }}</h3>

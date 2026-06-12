@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Producto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use App\Imports\ProductosImport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -63,8 +64,7 @@ class ProductoController extends Controller
 
         // 👉 Guardar imagen
         if ($request->hasFile('imagen')) {
-            $data['imagen'] = $request->file('imagen')
-                ->store('productos', 'public');
+            $data['imagen'] = $this->storeProductImage($request);
         }
 
         Producto::create($data);
@@ -97,11 +97,10 @@ class ProductoController extends Controller
 
             // borrar imagen anterior si existe
             if ($producto->imagen) {
-                Storage::disk('public')->delete($producto->imagen);
+                $this->deleteProductImage($producto->imagen);
             }
 
-            $data['imagen'] = $request->file('imagen')
-                ->store('productos', 'public');
+            $data['imagen'] = $this->storeProductImage($request);
         }
 
         $producto->update($data);
@@ -114,7 +113,7 @@ class ProductoController extends Controller
     {
         // 🗑️ borrar imagen del storage
         if ($producto->imagen) {
-            Storage::disk('public')->delete($producto->imagen);
+            $this->deleteProductImage($producto->imagen);
         }
 
         $producto->delete();
@@ -178,6 +177,31 @@ class ProductoController extends Controller
             'resumen',
             'filters'
         ));
+    }
+
+    private function storeProductImage(Request $request): string
+    {
+        $file = $request->file('imagen');
+        $directory = public_path(Producto::IMAGE_DIR);
+
+        File::ensureDirectoryExists($directory);
+
+        $filename = uniqid('producto_', true) . '.' . $file->getClientOriginalExtension();
+        $file->move($directory, $filename);
+
+        return Producto::IMAGE_DIR . '/' . $filename;
+    }
+
+    private function deleteProductImage(string $imagen): void
+    {
+        $imagen = ltrim($imagen, '/');
+
+        if (str_starts_with($imagen, Producto::IMAGE_DIR . '/') || str_starts_with($imagen, 'storage/')) {
+            File::delete(public_path($imagen));
+            return;
+        }
+
+        Storage::disk('public')->delete($imagen);
     }
      
 }

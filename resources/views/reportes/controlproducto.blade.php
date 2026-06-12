@@ -77,7 +77,7 @@
                                 <td class="cp-product-name">{{ $item->nombre }}</td>
                                 <td>
                                     @if(!empty($item->imagen))
-                                        <img src="{{ asset('storage/' . $item->imagen) }}" class="cp-img" alt="Producto">
+                                        <img src="{{ \App\Models\Producto::imageUrl($item->imagen) }}" class="cp-img" alt="Producto">
                                     @else
                                         <span class="cp-muted">Sin imagen</span>
                                     @endif
@@ -131,7 +131,7 @@
                                 <td class="cp-product-name">{{ $producto->nombre }}</td>
                                 <td>
                                     @if(!empty($producto->imagen))
-                                        <img src="{{ asset('storage/' . $producto->imagen) }}" class="cp-img" alt="Producto">
+                                        <img src="{{ $producto->imagen_url }}" class="cp-img" alt="Producto">
                                     @else
                                         <span class="cp-muted">Sin imagen</span>
                                     @endif

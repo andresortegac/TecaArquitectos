@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Producto extends Model
 {
     use HasFactory;
+
+    public const IMAGE_DIR = 'uploads/productos';
     
 
     protected $fillable = [
@@ -39,9 +41,28 @@ class Producto extends Model
             'cantidad_aprobada'
         )->withTimestamps();
     }
-        public function getImagenUrlAttribute()
+    public static function imageUrl(?string $imagen): string
     {
-        return asset($this->imagen);
+        if (empty($imagen)) {
+            return asset('img/product-icon.svg');
+        }
+
+        $imagen = ltrim($imagen, '/');
+
+        if (str_starts_with($imagen, 'http://') || str_starts_with($imagen, 'https://')) {
+            return $imagen;
+        }
+
+        if (str_starts_with($imagen, self::IMAGE_DIR . '/') || str_starts_with($imagen, 'storage/')) {
+            return asset($imagen);
+        }
+
+        return asset('storage/' . $imagen);
+    }
+
+    public function getImagenUrlAttribute()
+    {
+        return self::imageUrl($this->imagen);
     }
 
 }
