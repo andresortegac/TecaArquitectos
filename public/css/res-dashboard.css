@@ -25,7 +25,9 @@
 
 .dash-hero h2 {
   margin: 0 0 6px;
-  font-size: 26px;
+  font-size: clamp(22px, 3vw, 26px);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 
 .dash-hero p {
@@ -46,7 +48,10 @@
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   font-weight: 700;
+  text-align: center;
+  white-space: normal;
 }
 
 .dash-btn-primary {
@@ -98,7 +103,7 @@
   border-left: 4px solid #f59e0b;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .dash-hero {
     flex-direction: column;
   }
@@ -109,6 +114,25 @@
 
   .dash-btn {
     flex: 1;
-    justify-content: center;
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 520px) {
+  .dash-hero {
+    padding: 14px;
+  }
+
+  .dash-actions {
+    flex-direction: column;
+  }
+
+  .dash-btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .dash-card {
+    padding: 12px;
   }
 }

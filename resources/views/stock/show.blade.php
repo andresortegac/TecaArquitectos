@@ -26,7 +26,7 @@
                         <div class="col-md-5">
                             <div class="product-image-box">
                                 <img
-                                    src="{{ $producto->imagen ? asset('storage/' . $producto->imagen) : asset('img/product-icon.svg') }}"
+                                    src="{{ $producto->imagen_url }}"
                                     alt="{{ $producto->nombre }}">
                             </div>
                         </div>

@@ -71,7 +71,7 @@
                     <div class="pe-image-row">
                         <img
                             id="preview"
-                            src="{{ $producto->imagen ? asset('storage/' . $producto->imagen) : asset('img/product-icon.svg') }}"
+                            src="{{ $producto->imagen_url }}"
                             alt="{{ $producto->nombre }}"
                             class="pe-image-preview">
                         <label for="imagen" class="pe-upload-box">
@@ -102,7 +102,7 @@
                 const file = input.files && input.files[0];
                 if (!file) {
                     fileName.textContent = '{{ $producto->imagen ? basename($producto->imagen) : 'Ningún archivo seleccionado' }}';
-                    preview.src = '{{ $producto->imagen ? asset('storage/' . $producto->imagen) : asset('img/product-icon.svg') }}';
+                    preview.src = '{{ $producto->imagen_url }}';
                     return;
                 }
                 preview.src = URL.createObjectURL(file);
