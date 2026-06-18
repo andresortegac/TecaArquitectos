@@ -175,11 +175,16 @@
 }
 
 .rent-request .card-body{ padding: 18px; }
-.rent-request .form{ display:grid; gap: 12px; }
+.rent-request .form{
+  display:grid;
+  gap: 12px;
+  width: 100%;
+  max-width: none;
+}
 
 .rent-request .row2{
   display:grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 @media (max-width: 640px){
@@ -187,6 +192,11 @@
 }
 
 /* Fields */
+.rent-request .field{
+  width: 100%;
+  min-width: 0;
+}
+
 .rent-request .field label{
   display:flex;
   align-items:center;
@@ -198,39 +208,53 @@
 }
 
 .rent-request .control{
+  display: block;
   width: 100%;
-  padding: 12px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(15,23,42,.12);
-  background: #ffffff;
+  max-width: none;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(148,163,184,.70);
+  background-color: rgba(255,255,255,.96);
   color: rgba(15,23,42,.92);
   outline: none;
-  box-shadow: 0 1px 0 rgba(2,8,23,.03);
+  box-shadow: inset 0 1px 2px rgba(15,23,42,.04);
+  font-size: 14px;
+  font-weight: 600;
   transition: border-color .16s ease, box-shadow .16s ease, transform .05s ease, background .16s ease;
 }
 
 .rent-request .control:hover{
-  border-color: rgba(37,99,235,.24);
+  border-color: rgba(37,99,235,.42);
+  background-color: #fff;
 }
 
 .rent-request .control:focus{
-  border-color: rgba(37,99,235,.52);
-  box-shadow: 0 0 0 4px rgba(37,99,235,.16);
+  border-color: rgba(37,99,235,.70);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.14), inset 0 1px 2px rgba(15,23,42,.04);
 }
 
 .rent-request select.control{
   appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
   background-image:
-    linear-gradient(45deg, transparent 50%, rgba(15,23,42,.55) 50%),
-    linear-gradient(135deg, rgba(15,23,42,.55) 50%, transparent 50%),
-    linear-gradient(to right, transparent, transparent);
+    linear-gradient(45deg, transparent 50%, #475569 50%),
+    linear-gradient(135deg, #475569 50%, transparent 50%),
+    linear-gradient(180deg, #f8fafc, #eef4ff);
   background-position:
-    calc(100% - 18px) 50%,
-    calc(100% - 12px) 50%,
-    100% 0;
-  background-size: 6px 6px, 6px 6px, 2.5em 2.5em;
+    calc(100% - 20px) 50%,
+    calc(100% - 14px) 50%,
+    right 0 top 0;
+  background-size: 6px 6px, 6px 6px, 42px 100%;
   background-repeat: no-repeat;
-  padding-right: 44px;
+  padding-right: 52px;
+}
+
+.rent-request select.control:disabled{
+  cursor: wait;
+  color: rgba(100,116,139,.86);
+  background-color: #f8fafc;
 }
 
 .rent-request .hint{
@@ -246,8 +270,10 @@
   align-items:center;
   justify-content:center;
   gap: 8px;
-  padding: 10px 14px;
-  border-radius: 14px;
+  min-height: 40px !important;
+  width: auto !important;
+  padding: 0 16px !important;
+  border-radius: 10px !important;
   font-size: 13px;
   font-weight: 950;
   letter-spacing: .2px;
@@ -273,14 +299,15 @@
 
 /* ✅ BOTÓN PRINCIPAL (AZUL) */
 .rent-request .btn-primary{
-  background: linear-gradient(180deg, var(--primary), var(--primary-700));
-  border-color: rgba(37,99,235,.35);
-  color: #fff;
-  box-shadow: 0 14px 34px rgba(37,99,235,.20);
+  min-width: 132px !important;
+  background: linear-gradient(180deg, var(--primary), var(--primary-700)) !important;
+  border-color: rgba(37,99,235,.35) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 26px rgba(37,99,235,.20) !important;
 }
 .rent-request .btn-primary:hover{
-  background: linear-gradient(180deg, var(--primary-700), var(--primary-800));
-  box-shadow: 0 18px 44px rgba(37,99,235,.24);
+  background: linear-gradient(180deg, var(--primary-700), var(--primary-800)) !important;
+  box-shadow: 0 14px 30px rgba(37,99,235,.24) !important;
 }
 .rent-request .btn-primary:focus{
   outline: none;
@@ -288,9 +315,25 @@
 }
 
 .rent-request .footer{
-  display:flex;
-  justify-content:flex-end;
-  padding-top: 6px;
+  display:grid;
+  place-items:center;
+  width: 100%;
+  justify-self: stretch;
+  min-height: 62px;
+  margin: 4px 0 0;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, rgba(248,250,252,.70), rgba(241,245,249,.95));
+  border-top: 1px solid rgba(15,23,42,.08);
+  grid-column: 1 / -1;
+}
+
+.rent-request .footer .btn-primary{
+  flex: 0 0 auto !important;
+  align-self: center !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  min-width: 136px !important;
+  padding: 0 18px !important;
 }
 
 /* Side panel */
@@ -415,21 +458,19 @@
                 <div class="hint">Selecciona el cliente para listar sus obras.</div>
               </div>
 
-              <div class="row2">
-                <div class="field">
-                  <label for="fecha_inicio">Fecha de inicio</label>
-                  <input id="fecha_inicio" class="control" type="datetime-local" name="fecha_inicio" required
-                         value="{{ old('fecha_inicio', now()->format('Y-m-d\TH:i')) }}">
-                  <div class="hint">Puedes ajustar la hora si es necesario.</div>
-                </div>
+              <div class="field">
+                <label for="fecha_inicio">Fecha de inicio</label>
+                <input id="fecha_inicio" class="control" type="datetime-local" name="fecha_inicio" required
+                       value="{{ old('fecha_inicio', now()->format('Y-m-d\TH:i')) }}">
+                <div class="hint">Puedes ajustar la hora si es necesario.</div>
+              </div>
 
-                <div class="field">
-                  <label for="obra_id">Obra (opcional)</label>
-                  <select name="obra_id" id="obra_id" class="control">
-                    <option value="">Seleccione cliente primero...</option>
-                  </select>
-                  <div class="hint">Si no aplica, déjalo vacío.</div>
-                </div>
+              <div class="field">
+                <label for="obra_id">Obra (opcional)</label>
+                <select name="obra_id" id="obra_id" class="control">
+                  <option value="">Seleccione cliente primero...</option>
+                </select>
+                <div class="hint">Si no aplica, déjalo vacío.</div>
               </div>
 
               <div class="footer">

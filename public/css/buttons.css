@@ -1,0 +1,121 @@
+:root {
+  --btn-primary-bg: #1d4ed8;
+  --btn-primary-bg-hover: #1e40af;
+  --btn-secondary-bg: #eef4ff;
+  --btn-secondary-bg-hover: #dbeafe;
+  --btn-secondary-text: #0f172a;
+  --btn-danger-bg: #dc2626;
+  --btn-danger-bg-hover: #b91c1c;
+  --btn-warning-bg: #f59e0b;
+  --btn-warning-bg-hover: #d97706;
+  --btn-radius: 8px;
+  --btn-shadow: 0 8px 18px rgba(15, 23, 42, .12);
+  --btn-shadow-hover: 0 12px 24px rgba(15, 23, 42, .16);
+}
+
+body :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class*="btn"]:not(.nav-item):not(.btn-kebab):not(.menu-item),
+body .principal-page :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class*="btn"]:not(.nav-item):not(.btn-kebab):not(.menu-item) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: 38px !important;
+  padding: 0 14px !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--btn-radius) !important;
+  font-family: var(--app-font, "Inter", "Segoe UI", Arial, sans-serif) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  transition:
+    background-color .16s ease,
+    border-color .16s ease,
+    color .16s ease,
+    box-shadow .16s ease,
+    transform .12s ease !important;
+}
+
+body :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class*="btn"]:not(.nav-item):not(.btn-kebab):not(.menu-item):hover {
+  transform: translateY(-1px);
+  box-shadow: var(--btn-shadow-hover);
+}
+
+body :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class*="btn"]:not(.nav-item):not(.btn-kebab):not(.menu-item):active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+body :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class*="btn"]:not(.nav-item):not(.btn-kebab):not(.menu-item):focus-visible {
+  outline: 3px solid rgba(37, 99, 235, .24) !important;
+  outline-offset: 2px !important;
+}
+
+body :is(.btn-primary, .gas-btn-primary, .pro-btn-primary, .pc-btn-primary, .pe-btn-primary, .mov-btn-primary, .sol-btn-primary, .ss-btn-primary, .ds-btn-primary, .conf-btn-primary, .dash-btn-primary, .repor-btn-primary, .btn-filtrar, .btn-guardar, .btn-obra, .btn-nueva-obra, .stk-btn-success),
+body .btn:not(.btn-secondary):not(.btn-ghost):not(.btn-warning):not(.btn-danger):not(.danger):not(.warning) {
+  background: var(--btn-primary-bg) !important;
+  color: #fff !important;
+  box-shadow: var(--btn-shadow) !important;
+}
+
+body :is(.btn-primary, .gas-btn-primary, .pro-btn-primary, .pc-btn-primary, .pe-btn-primary, .mov-btn-primary, .sol-btn-primary, .ss-btn-primary, .ds-btn-primary, .conf-btn-primary, .dash-btn-primary, .repor-btn-primary, .btn-filtrar, .btn-guardar, .btn-obra, .btn-nueva-obra, .stk-btn-success):hover,
+body .btn:not(.btn-secondary):not(.btn-ghost):not(.btn-warning):not(.btn-danger):not(.danger):not(.warning):hover {
+  background: var(--btn-primary-bg-hover) !important;
+}
+
+body :is(.btn-secondary, .btn-ghost, .gas-btn-secondary, .pro-btn-secondary, .pc-btn-secondary, .pe-btn-secondary, .mov-btn-light, .sol-btn-light, .ss-btn-light, .ds-btn-light, .conf-btn-light, .pro-btn-light, .stk-btn-secondary, .btn-limpiar, .btn-volver, .btn-exportar, .btn-back, .rid-btn-back, .gr-btn-back, .rcp-btn-back, .rpa-btn-back, .rin-btn-back, .rpm-btn-back, .cp-btn-back) {
+  background: var(--btn-secondary-bg) !important;
+  border-color: #cbd5e1 !important;
+  color: var(--btn-secondary-text) !important;
+  box-shadow: none !important;
+}
+
+body :is(.btn-secondary, .btn-ghost, .gas-btn-secondary, .pro-btn-secondary, .pc-btn-secondary, .pe-btn-secondary, .mov-btn-light, .sol-btn-light, .ss-btn-light, .ds-btn-light, .conf-btn-light, .pro-btn-light, .stk-btn-secondary, .btn-limpiar, .btn-volver, .btn-exportar, .btn-back, .rid-btn-back, .gr-btn-back, .rcp-btn-back, .rpa-btn-back, .rin-btn-back, .rpm-btn-back, .cp-btn-back):hover {
+  background: var(--btn-secondary-bg-hover) !important;
+  border-color: #93c5fd !important;
+  color: #1d4ed8 !important;
+}
+
+body :is(.btn-danger, .pro-btn-danger, .ss-btn-danger, .btn-eliminar),
+body :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class~="danger"] {
+  background: var(--btn-danger-bg) !important;
+  color: #fff !important;
+  box-shadow: var(--btn-shadow) !important;
+}
+
+body :is(.btn-danger, .pro-btn-danger, .ss-btn-danger, .btn-eliminar):hover,
+body :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class~="danger"]:hover {
+  background: var(--btn-danger-bg-hover) !important;
+}
+
+body :is(.btn-warning, .sol-btn-warning, .dash-btn-warning, .repor-btn-warning, .btn-editar),
+body :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class~="warning"] {
+  background: var(--btn-warning-bg) !important;
+  color: #111827 !important;
+  box-shadow: var(--btn-shadow) !important;
+}
+
+body :is(.btn-warning, .sol-btn-warning, .dash-btn-warning, .repor-btn-warning, .btn-editar):hover,
+body :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class~="warning"]:hover {
+  background: var(--btn-warning-bg-hover) !important;
+  color: #111827 !important;
+}
+
+body :is(.btn-sm, .stk-btn-sm) {
+  min-height: 32px !important;
+  padding: 0 10px !important;
+  font-size: 12px !important;
+}
+
+body :is(.btn-action) {
+  min-width: 38px;
+}
+
+body :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class*="btn"]:disabled,
+body :is(a, button, input[type="submit"], input[type="button"], input[type="reset"])[class*="btn"].disabled {
+  opacity: .55 !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+}
