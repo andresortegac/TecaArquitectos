@@ -6,7 +6,7 @@
 @push('styles')
   <link rel="stylesheet" href="{{ asset('css/ui.css') }}">
 
-  {{-- âœ… ESTILOS SOLO PARA ESTA VISTA (ENCAPSULADO) --}}
+  {{-- ✅ ESTILOS SOLO PARA ESTA VISTA (ENCAPSULADO) --}}
   <style>
     .pro-ui{
       --surface: rgba(255,255,255,.92);
@@ -24,7 +24,7 @@
       font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    /* âœ… Contenedor: ocupa el ancho del content (no centra raro) */
+    /* ✅ Contenedor: ocupa el ancho del content (no centra raro) */
     .pro-container{
       width: 100%;
       max-width: 100%;
@@ -34,7 +34,7 @@
       background: var(--surface);
       backdrop-filter: blur(8px);
       box-shadow: var(--shadow);
-      overflow: hidden; /* evita â€œbordesâ€ raros */
+      overflow: hidden; /* evita "bordes" raros */
     }
 
     /* Header superior */
@@ -134,7 +134,7 @@
       box-shadow: 0 0 0 5px rgba(59,130,246,.12) !important;
     }
 
-    /* âœ… Tabla pro (sin romper layout). En mÃ³vil hace scroll, en desktop no */
+    /* ✅ Tabla pro (sin romper layout). En móvil hace scroll, en desktop no */
     .table-wrap-pro{
       width: 100%;
       overflow-x: auto;
@@ -142,11 +142,11 @@
       border: 1px solid rgba(226,232,240,.95);
       background: #fff;
       margin-top: 10px;
-      position: relative; /* âœ… necesario para layering del dropdown */
+      position: relative; /* ✅ necesario para layering del dropdown */
     }
     .pro-ui .table-pro{
       width: 100%;
-      min-width: 980px; /* mÃ³vil/tablet: scroll horizontal controlado */
+      min-width: 980px; /* móvil/tablet: scroll horizontal controlado */
       border-collapse: separate !important;
       border-spacing: 0 !important;
     }
@@ -173,10 +173,10 @@
       white-space: nowrap;
     }
     .pro-ui .table-pro tbody tr{
-      position: relative; /* âœ… para z-index cuando dropdown abre */
+      position: relative; /* ✅ para z-index cuando dropdown abre */
     }
 
-    /* âœ… Hover sin cambiar colores de semÃ¡foro */
+    /* ✅ Hover sin cambiar colores de semáforo */
     .pro-ui .table-pro tbody tr:hover{
       filter: none !important;
       background: inherit !important;
@@ -192,7 +192,7 @@
       white-space: normal;
     }
 
-    /* Chips mÃ¡s serios (sin cambiar colores de tu ui.css) */
+    /* Chips más serios (sin cambiar colores de tu ui.css) */
     .pro-ui .chip{
       border-radius: 999px !important;
       padding: 7px 12px !important;
@@ -235,9 +235,9 @@
       border-radius: 14px;
       box-shadow: 0 18px 40px rgba(15,23,42,.16);
       overflow:hidden;
-      z-index: 9999 !important; /* âœ… arriba de todo */
-      will-change: transform;   /* âœ… evita flicker */
-      transform: translateZ(0); /* âœ… evita flicker */
+      z-index: 9999 !important; /* ✅ arriba de todo */
+      will-change: transform;   /* ✅ evita flicker */
+      transform: translateZ(0); /* ✅ evita flicker */
     }
     .pro-ui .menu-item{
       display:flex;
@@ -266,11 +266,11 @@
     .pro-ui .item-return .dot{ background: #3b82f6; }
     .pro-ui .item-details .dot{ background: #10b981; }
 
-    /* âœ… Fix parpadeo: cuando dropdown estÃ© abierto, la fila sube de nivel */
+    /* ✅ Fix parpadeo: cuando dropdown esté abierto, la fila sube de nivel */
     .pro-ui .table-pro tbody tr.row-open{ z-index: 60; }
     .pro-ui .table-pro tbody tr.row-open:hover{ filter: none !important; }
 
-    /* Modal (solo estÃ©tica; si tu ui.css ya lo maneja, no rompe) */
+    /* Modal (solo estética; si tu ui.css ya lo maneja, no rompe) */
     .pro-ui .modal-backdrop{
       position: fixed !important;
       inset: 0 !important;
@@ -341,7 +341,7 @@
     .pro-ui .sum-v-ok{ color:#166534; }
 
     /* ==============================
-       âœ… SEMAFORIZACION POR FILA
+       ✅ SEMAFORIZACION POR FILA
        AZUL: activo
        VERDE: cerrado/devuelto y saldo=0
        NARANJA: cerrado/devuelto y saldo>0 y dias<=7
@@ -368,7 +368,7 @@
     @endif
 
     @php
-      // âœ… KPIs calculados con los datos visibles (paginaciÃ³n)
+      // ✅ KPIs calculados con los datos visibles (paginación)
       $col = $arriendos->getCollection();
 
       $total = $col->count();
@@ -397,7 +397,7 @@
         {{-- TOPBAR --}}
         <div class="pro-topbar">
           <p class="pro-subtitle">
-            Lista de arriendos (Contratos PADRE), estados de pago y gestiÃ³n por productos (items).
+            Lista de arriendos (Contratos PADRE), estados de pago y gestión por productos (items).
           </p>
 
           <div class="pro-actions">
@@ -413,7 +413,7 @@
             <div class="meta">
               <div class="label">Total</div>
               <div class="value">{{ $total }}</div>
-              <div class="hint">En esta pÃ¡gina</div>
+              <div class="hint">En esta página</div>
             </div>
             <div class="ring"
                  style="--p: {{ $pctPagos }}%; --ring: var(--primary);"
@@ -519,7 +519,7 @@
           @if(\Illuminate\Support\Facades\Route::has('metricas.detalle.dia'))
             <a class="btn-sm"
                href="{{ route('metricas.detalle.dia', ['date' => now()->toDateString()]) }}">
-              Detalle dÃ­a (hoy)
+              Detalle día (hoy)
             </a>
           @endif
         </div>
@@ -589,7 +589,7 @@
                   <th class="td-right">Total</th>
                   <th class="td-right">Saldo</th>
                   <th>Mora</th>
-                  {{-- âœ… OCULTAMOS EL TITULO "SEMAFORO" --}}
+                  {{-- ✅ OCULTAMOS EL TITULO "SEMAFORO" --}}
                   <th></th>
                   <th>Estado</th>
                   <th style="width:260px;">Acciones</th>
@@ -604,7 +604,7 @@
                     $unidades = isset($a->items) ? (int)$a->items->sum('cantidad_actual') : null;
 
                     // ==============================
-                    // âœ… LOGICA SEMAFORIZACION POR FILA (NO MUESTRA TEXTO)
+                    // ✅ LOGICA SEMAFORIZACION POR FILA (NO MUESTRA TEXTO)
                     // AZUL: activo
                     // VERDE: cerrado/devuelto y saldo=0
                     // NARANJA: cerrado/devuelto y saldo>0 y dias<=7
@@ -615,7 +615,7 @@
                     $estaActivo  = (strtolower($a->estado ?? '') === 'activo') && ((int)($a->cerrado ?? 0) === 0);
                     $estaCerrado = ((int)($a->cerrado ?? 0) === 1) || (strtolower($a->estado ?? '') === 'devuelto');
 
-                    // Fecha desde que cerrÃ³ (usa el mejor dato disponible; no rompe si falta)
+                    // Fecha desde que cerró (usa el mejor dato disponible; no rompe si falta)
                     $fechaCierreRaw = $a->fecha_devolucion_real ?? ($a->fecha_fin ?? null) ?? ($a->updated_at ?? null);
                     $fechaCierre = $fechaCierreRaw ? \Carbon\Carbon::parse($fechaCierreRaw)->startOfDay() : null;
                     $diasDesdeCierre = $fechaCierre ? $fechaCierre->diffInDays(\Carbon\Carbon::today()) : 0;
@@ -656,7 +656,7 @@
 
                   <tr class="{{ $rowClass }}">
                     <td>
-                      {{ $a->cliente->nombre ?? 'â€”' }}
+                      {{ $a->cliente->nombre ?? '—' }}
 
                       @if(!empty($a->obra_id ?? null))
                         <span class="small">Obra: {{ $a->obra_id }}</span>
@@ -664,24 +664,24 @@
                     </td>
 
                     <td>
-                      {{ $itemsCount !== null ? $itemsCount : 'â€”' }}
+                      {{ $itemsCount !== null ? $itemsCount : '—' }}
                       <span class="small">productos</span>
                     </td>
 
                     <td>
-                      {{ $unidades !== null ? $unidades : 'â€”' }}
+                      {{ $unidades !== null ? $unidades : '—' }}
                       <span class="small">unidades</span>
                     </td>
 
                     <td>{{ $a->fecha_inicio?->format('d/m/Y H:i') }}</td>
-                    <td>{{ $a->fecha_fin ?? 'â€”' }}</td>
+                    <td>{{ $a->fecha_fin ?? '—' }}</td>
 
                     <td class="td-right">${{ number_format((float)($a->precio_total ?? 0), 2) }}</td>
                     <td class="td-right">${{ number_format((float)($a->saldo ?? 0), 2) }}</td>
 
                     <td>{{ (int)($a->dias_mora ?? 0) }}</td>
 
-                    {{-- âœ… columna vacÃ­a (semaforizaciÃ³n solo por color de fila) --}}
+                    {{-- ✅ columna vacía (semaforización solo por color de fila) --}}
                     <td></td>
 
                     <td>
@@ -695,24 +695,24 @@
                     <td>
                       <div class="actions">
                         <div class="dropdown" data-dd>
-                          <button type="button" class="btn-kebab" aria-label="Acciones">â‹¯</button>
+                          <button type="button" class="btn-kebab" aria-label="Acciones">⋯</button>
 
                           <div class="dropdown-menu">
 
                             <a class="menu-item item-return" href="{{ route('arriendos.ver', $a) }}">
                               <span class="menu-left"><span class="dot"></span>Ver / Gestionar</span>
-                              <span>â€º</span>
+                              <span>›</span>
                             </a>
 
                             <a class="menu-item item-edit" href="{{ route('arriendos.edit',$a) }}">
                               <span class="menu-left"><span class="dot"></span>Editar</span>
-                              <span>â€º</span>
+                              <span>›</span>
                             </a>
 
                             @if((int)($a->cerrado ?? 0) === 1 || $a->estado === 'devuelto')
                               <a class="menu-item item-details" href="{{ route('arriendos.detalles', $a) }}">
                                 <span class="menu-left"><span class="dot"></span>Detalles</span>
-                                <span>â€º</span>
+                                <span>›</span>
                               </a>
                             @endif
 
@@ -721,7 +721,7 @@
                                       class="menu-item item-close"
                                       onclick="document.getElementById('modalCerrar{{ $a->id }}').style.display='flex'">
                                 <span class="menu-left"><span class="dot"></span>Cerrar</span>
-                                <span>â€º</span>
+                                <span>›</span>
                               </button>
                             @endif
 
@@ -729,9 +729,9 @@
                               @csrf
                               @method('DELETE')
 
-                              <button class="menu-item item-delete" onclick="return confirm('Â¿Eliminar arriendo?')">
+                              <button class="menu-item item-delete" onclick="return confirm('¿Eliminar arriendo?')">
                                 <span class="menu-left"><span class="dot"></span>Borrar</span>
-                                <span>â€º</span>
+                                <span>›</span>
                               </button>
                             </form>
 
@@ -767,7 +767,7 @@
 
                           <div class="modal-grid">
                             <div class="modal-field">
-                              <label class="small modal-label">Fecha devoluciÃ³n real</label>
+                              <label class="small modal-label">Fecha devolución real</label>
                               <input class="input"
                                      type="date"
                                      name="fecha_devolucion_real"
@@ -791,7 +791,7 @@
 
                           <div class="modal-grid">
                             <div class="modal-field">
-                              <label class="small modal-label">DÃ­as de lluvia (se descuentan)</label>
+                              <label class="small modal-label">Días de lluvia (se descuentan)</label>
                               <input class="input"
                                      type="number"
                                      min="0"
@@ -800,7 +800,7 @@
                             </div>
 
                             <div class="modal-field">
-                              <label class="small modal-label">Costo daÃ±o/merma</label>
+                              <label class="small modal-label">Costo daño/merma</label>
                               <input class="input"
                                      type="number"
                                      min="0"
@@ -864,7 +864,7 @@
                           </div>
 
                           <div class="modal-field">
-                            <label class="small modal-label">DescripciÃ³n (opcional)</label>
+                            <label class="small modal-label">Descripción (opcional)</label>
                             <input class="input"
                                    type="text"
                                    name="descripcion_incidencia"
@@ -872,7 +872,7 @@
                           </div>
 
                           <div class="small modal-help">
-                            Domingos se descuentan automÃ¡ticamente. Si queda saldo pendiente al cerrar, se activa semÃ¡foro (AMARILLO 0â€“9 / ROJO 10+).
+                            Domingos se descuentan automáticamente. Si queda saldo pendiente al cerrar, se activa semáforo (AMARILLO 0–9 / ROJO 10+).
                           </div>
 
                           <div class="modal-actions">
@@ -893,7 +893,7 @@
 
                 @empty
                   <tr>
-                    <td colspan="10">No hay arriendos todavÃ­a.</td>
+                    <td colspan="10">No hay arriendos todavía.</td>
                   </tr>
                 @endforelse
               </tbody>
@@ -1083,4 +1083,3 @@
   </div>
 
 @endsection
-
