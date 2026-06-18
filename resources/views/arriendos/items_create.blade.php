@@ -316,15 +316,15 @@
 
     <div class="items3d-hero">
       <div>
-        <h2 class="items3d-title">Agregar Producto al Arriendo #{{ $arriendo->id }}</h2>
-        <p class="items3d-sub">Registra un ítem con control de stock en tiempo real y cálculo instantáneo de tarifa diaria.</p>
+        <h2 class="items3d-title">Agregar producto al arriendo #{{ $arriendo->id }}</h2>
+        <p class="items3d-sub">Registra un producto con control de stock en tiempo real y cálculo instantáneo de tarifa diaria.</p>
       </div>
       <a class="items3d-btn" href="{{ route('arriendos.ver', $arriendo) }}">Volver</a>
     </div>
 
     <div class="items3d-layout">
       <div class="items3d-card">
-        <div class="items3d-head">Datos del Contrato</div>
+        <div class="items3d-head">Datos del contrato</div>
         <div class="items3d-body">
           <div class="items3d-meta">
             <div class="items3d-meta-box">
@@ -336,7 +336,7 @@
               <span class="items3d-v">{{ $arriendo->obra ? $arriendo->obra->direccion . ' - ' . $arriendo->obra->detalle : '-' }}</span>
             </div>
             <div class="items3d-meta-box">
-              <span class="items3d-k">Inicio Contrato</span>
+              <span class="items3d-k">Inicio del contrato</span>
               <span class="items3d-v">{{ $arriendo->fecha_inicio?->format('d/m/Y H:i') ?? '-' }}</span>
             </div>
             <div class="items3d-meta-box">
@@ -348,7 +348,7 @@
       </div>
 
       <aside class="items3d-card items3d-side">
-        <div class="items3d-head">Resumen Operativo</div>
+        <div class="items3d-head">Resumen operativo</div>
         <div class="items3d-body">
           <p>Este formulario agrega un producto hijo al contrato padre. Si el stock no alcanza, el sistema bloquea el guardado automáticamente.</p>
           <div class="items3d-meta" style="margin-top:10px;">
@@ -365,7 +365,7 @@
               <span class="items3d-v">Configurable</span>
             </div>
             <div class="items3d-meta-box">
-              <span class="items3d-k">Fecha inicio item</span>
+              <span class="items3d-k">Fecha de inicio del producto</span>
               <span class="items3d-v">Opcional</span>
             </div>
           </div>
@@ -374,7 +374,7 @@
     </div>
 
     <div class="items3d-card" style="margin-top:12px;">
-      <div class="items3d-head">Registro del Item</div>
+      <div class="items3d-head">Registro del producto</div>
       <div class="items3d-body">
         <form method="POST" action="{{ route('arriendos.items.store', $arriendo) }}" class="items3d-form">
           @csrf

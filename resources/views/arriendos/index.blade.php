@@ -11,6 +11,8 @@
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@500;700;800&display=swap');
 
     .pro-ui{
+      --primary: #2563eb;
+      --success: #16a34a;
       --surface: linear-gradient(150deg, rgba(255,255,255,.94), rgba(241,245,255,.9));
       --card: rgba(255,255,255,.86);
       --text: #081225;
@@ -514,6 +516,310 @@
         min-height: 42px;
       }
     }
+
+    /* Senior polish: operational, dense, and professional */
+    .pro-ui{
+      --surface: #f6f8fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --line-strong: #c8d3e3;
+      --brand: #1d4ed8;
+      --brand-2: #0f766e;
+      --brand-3: #111827;
+      --shadow: 0 16px 38px rgba(15,23,42,.08);
+      --shadow2: 0 10px 24px rgba(15,23,42,.06);
+      --r: 12px;
+      font-family: "Manrope", "Segoe UI", system-ui, sans-serif;
+    }
+
+    .pro-ui::before,
+    .pro-ui::after{
+      display:none !important;
+    }
+
+    .pro-container{
+      border-radius: 14px !important;
+      background: var(--surface) !important;
+      border: 1px solid var(--line) !important;
+      box-shadow: var(--shadow) !important;
+      padding: 16px !important;
+    }
+    .pro-container::before{ display:none !important; }
+
+    .pro-topbar{
+      align-items:center !important;
+      padding: 4px 2px 16px !important;
+      margin-bottom: 14px !important;
+      border-bottom: 1px solid var(--line) !important;
+    }
+    .pro-topbar::after{ display:none !important; }
+    .pro-heading{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width: min(100%, 520px);
+    }
+    .pro-title-main{
+      margin:0;
+      font-family:"Space Grotesk", "Manrope", sans-serif;
+      font-size: clamp(22px, 2.4vw, 30px);
+      line-height:1.05;
+      font-weight:800;
+      color:#0f172a;
+      letter-spacing:0;
+    }
+    .pro-subtitle{
+      margin:0 !important;
+      max-width: 820px !important;
+      color:#64748b !important;
+      font-size:13px !important;
+    }
+    .pro-actions{
+      margin-left:auto;
+    }
+
+    .pro-ui .btn-primary,
+    .pro-ui .btn-ghost,
+    .pro-ui .btn-sm{
+      min-height: 38px;
+      border-radius: 8px !important;
+      box-shadow:none !important;
+      font-weight:800;
+    }
+    .pro-ui .btn-primary{
+      background:#1d4ed8 !important;
+      border-color:#1d4ed8 !important;
+      color:#fff !important;
+    }
+    .pro-ui .btn-ghost,
+    .pro-ui .btn-sm{
+      background:#fff !important;
+      border-color:var(--line-strong) !important;
+      color:#1e293b !important;
+    }
+    .pro-ui .btn-primary:hover,
+    .pro-ui .btn-ghost:hover,
+    .pro-ui .btn-sm:hover{
+      transform: translateY(-1px) !important;
+      box-shadow:0 8px 18px rgba(15,23,42,.08) !important;
+    }
+
+    .pro-ui .card{
+      border-radius: 10px !important;
+      background:#fff !important;
+      border:1px solid var(--line) !important;
+      box-shadow:var(--shadow2) !important;
+    }
+    .pro-ui .card::before{ display:none !important; }
+    .pro-ui .card-header{
+      min-height: 48px;
+      padding: 12px 14px !important;
+      border-bottom: 1px solid var(--line) !important;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .pro-ui .card-title{
+      font-size: 13px !important;
+      text-transform: uppercase;
+      color:#334155;
+      letter-spacing:.06em !important;
+    }
+
+    .pro-ui .kpi-grid{
+      display:grid !important;
+      grid-template-columns: repeat(5, minmax(160px, 1fr));
+      gap:10px !important;
+      margin-bottom: 12px !important;
+    }
+    .pro-ui .card.kpi{
+      min-height: 112px !important;
+      border-radius: 10px !important;
+      background:#fff !important;
+      box-shadow:var(--shadow2) !important;
+      border-left: 4px solid #cbd5e1 !important;
+    }
+    .pro-ui .card.kpi:nth-child(1){ border-left-color:#2563eb !important; }
+    .pro-ui .card.kpi:nth-child(2){ border-left-color:#16a34a !important; }
+    .pro-ui .card.kpi:nth-child(3){ border-left-color:#64748b !important; }
+    .pro-ui .card.kpi:nth-child(4){ border-left-color:#0f766e !important; }
+    .pro-ui .card.kpi:nth-child(5){ border-left-color:#0891b2 !important; }
+    .pro-ui .card.kpi:hover{
+      transform: translateY(-2px) !important;
+      box-shadow:0 14px 28px rgba(15,23,42,.09) !important;
+    }
+    .pro-ui .card.kpi .meta .label{
+      color:#64748b !important;
+      font-size:11px !important;
+      letter-spacing:.08em !important;
+    }
+    .pro-ui .card.kpi .meta .value{
+      font-size:24px !important;
+      color:#0f172a !important;
+    }
+    .pro-ui .ring{
+      width:54px !important;
+      height:54px !important;
+      box-shadow:none !important;
+      border:1px solid #e2e8f0;
+    }
+
+    .report-strip{
+      margin: 4px 0 12px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .report-strip::before{
+      content:"Reportes";
+      color:#64748b;
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      margin-right:2px;
+    }
+
+    .pro-ui .input{
+      height:40px !important;
+      border-radius: 8px !important;
+      background:#fff !important;
+      box-shadow:none !important;
+      font-size:13px !important;
+    }
+
+    .table-wrap-pro{
+      border-radius: 10px !important;
+      box-shadow:none !important;
+      background:#fff !important;
+      overflow-x:auto !important;
+      overflow-y:visible !important;
+    }
+    .pro-ui .table-pro{
+      min-width: 1040px;
+    }
+    .pro-ui .table-pro thead th{
+      background:#f8fafc !important;
+      color:#475569 !important;
+      font-size:11px !important;
+      letter-spacing:.08em !important;
+      padding: 11px 10px !important;
+      text-align:left !important;
+    }
+    .pro-ui .table-pro tbody td{
+      padding: 12px 10px !important;
+      font-size:13px !important;
+      color:#1f2937 !important;
+      text-align:left !important;
+      background:#fff;
+    }
+    .pro-ui .table-pro tbody tr:hover{
+      transform:none !important;
+      box-shadow:none !important;
+    }
+    .pro-ui .table-pro tbody tr:hover td{
+      background:#f8fbff !important;
+    }
+    .td-right{ text-align:right !important; }
+    .pro-ui .table-pro thead th.td-right,
+    .pro-ui .table-pro tbody td.td-right{
+      text-align:right !important;
+    }
+    .small{
+      text-align:left !important;
+      color:#64748b !important;
+      font-size:11px !important;
+    }
+    .pro-ui .chip{
+      border-radius: 999px !important;
+      padding: 5px 10px !important;
+      box-shadow:none !important;
+      font-size:12px !important;
+      border-color:#dbe3ef;
+    }
+    .pro-ui .chip.blue{
+      background:#eff6ff !important;
+      color:#1d4ed8 !important;
+      border-color:#bfdbfe !important;
+    }
+    .pro-ui .chip.gray{
+      background:#f1f5f9 !important;
+      color:#475569 !important;
+      border-color:#cbd5e1 !important;
+    }
+
+    .pro-ui .btn-kebab{
+      width:34px !important;
+      height:34px !important;
+      border-radius:8px !important;
+      box-shadow:none !important;
+      background:#fff !important;
+    }
+    .pro-ui .dropdown-menu{
+      border-radius:10px !important;
+      box-shadow:0 18px 38px rgba(15,23,42,.16) !important;
+      background:#fff !important;
+      border-color:#dbe3ef !important;
+      min-width: 210px !important;
+    }
+    .pro-ui .menu-item{
+      font-size:13px !important;
+      padding:10px 12px !important;
+    }
+    .pro-ui .dot{
+      width:8px !important;
+      height:8px !important;
+      box-shadow:none !important;
+    }
+
+    .tr-flag-blue td,
+    .tr-flag-green td,
+    .tr-flag-amber td,
+    .tr-flag-red td{
+      color:#1f2937 !important;
+    }
+    .tr-flag-blue td{ background:#f7fbff !important; }
+    .tr-flag-green td{ background:#f7fdf9 !important; }
+    .tr-flag-amber td{ background:#fffaf0 !important; }
+    .tr-flag-red td{ background:#fff7f7 !important; }
+    .tr-flag-blue  td:first-child{ box-shadow: inset 4px 0 0 #2563eb !important; }
+    .tr-flag-green td:first-child{ box-shadow: inset 4px 0 0 #16a34a !important; }
+    .tr-flag-amber td:first-child{ box-shadow: inset 4px 0 0 #f59e0b !important; }
+    .tr-flag-red   td:first-child{ box-shadow: inset 4px 0 0 #dc2626 !important; }
+
+    .pro-ui .modal-dialog{
+      max-width: 860px !important;
+      border-radius:12px !important;
+    }
+    .pro-ui .close-summary{
+      border-radius:10px !important;
+      background:#f8fafc !important;
+      border-color:#dbe3ef !important;
+    }
+    .pro-ui .sum-box{
+      border-radius:8px !important;
+      background:#fff !important;
+      box-shadow:none !important;
+    }
+
+    @media(max-width: 1180px){
+      .pro-ui .kpi-grid{
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+      }
+    }
+    @media(max-width: 700px){
+      .pro-ui .kpi-grid{
+        grid-template-columns: 1fr;
+      }
+      .pro-actions{
+        margin-left:0;
+        width:100%;
+      }
+    }
   </style>
 @endpush
 
@@ -550,9 +856,12 @@
 
         {{-- TOPBAR --}}
         <div class="pro-topbar">
-          <p class="pro-subtitle">
-            Lista de arriendos (Contratos PADRE), estados de pago y gestión por productos (items).
-          </p>
+          <div class="pro-heading">
+            <h1 class="pro-title-main">Contratos de arriendo</h1>
+            <p class="pro-subtitle">
+              Control operativo de contratos, saldos, estados de pago y productos asociados.
+            </p>
+          </div>
 
           <div class="pro-actions">
             <a class="btn-ghost" href="{{ route('arriendos.index') }}">Refrescar</a>
@@ -639,7 +948,7 @@
         </div>
 
         {{-- MINI REPORTES --}}
-        <div style="margin:10px 0 0; display:flex; gap:8px; flex-wrap:wrap;">
+        <div class="report-strip">
           @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual'))
             <a class="btn-sm" href="{{ route('metricas.reporte.anual', ['year' => request('year', now()->year)]) }}">
               Reporte anual
@@ -710,7 +1019,7 @@
         {{-- ✅ OJO: class="card card-table" para que el dropdown no se recorte --}}
         <div class="card card-table" style="margin-top:12px;">
           <div class="card-header">
-            <h3 class="card-title">Lista de arriendos (Contratos PADRE)</h3>
+            <h3 class="card-title">Contratos de arriendo</h3>
           </div>
 
           <div class="table-wrap-pro">
@@ -718,7 +1027,7 @@
               <thead>
                 <tr>
                   <th>Cliente</th>
-                  <th>Items</th>
+                  <th>Productos</th>
                   <th>Unidades</th>
                   <th>Inicio</th>
                   <th>Fin</th>
@@ -830,7 +1139,7 @@
 
                           <div class="dropdown-menu">
                             <a class="menu-item item-return" href="{{ route('arriendos.ver', $a) }}">
-                              <span class="menu-left"><span class="dot"></span>Ver / Gestionar</span>
+                              <span class="menu-left"><span class="dot"></span>Ver y gestionar</span>
                               <span class="menu-arrow">›</span>
                             </a>
 
@@ -870,8 +1179,8 @@
                             <form action="{{ route('arriendos.destroy',$a) }}" method="POST">
                               @csrf
                               @method('DELETE')
-                              <button class="menu-item item-delete" onclick="return confirm('¿Eliminar arriendo?')">
-                                <span class="menu-left"><span class="dot"></span>Borrar</span>
+                              <button class="menu-item item-delete" onclick="return confirm('¿Seguro que deseas eliminar este arriendo?')">
+                                <span class="menu-left"><span class="dot"></span>Eliminar</span>
                                 <span class="menu-arrow">›</span>
                               </button>
                             </form>
@@ -923,7 +1232,7 @@
                   <label class="small modal-label">Fecha devolución real</label>
                   <input class="input" type="date" name="fecha_devolucion_real" required value="{{ now()->format('Y-m-d') }}">
                   <div class="small modal-help js-cierre-auto-help" style="margin-top:6px;">
-                    Los items pendientes se cerrarán automáticamente con esta fecha.
+                    Los productos pendientes se cerrarán automáticamente con esta fecha.
                   </div>
                 </div>
 
@@ -965,7 +1274,7 @@
               <div class="close-summary">
                 <div class="close-summary-grid">
                   <div class="sum-box">
-                    <span class="sum-k">Items pendientes</span>
+                    <span class="sum-k">Productos pendientes</span>
                     <span class="sum-v js-sum-items-pendientes">0</span>
                   </div>
                   <div class="sum-box">
@@ -1009,11 +1318,11 @@
 
               <div class="modal-field">
                 <label class="small modal-label">Descripción (opcional)</label>
-                <input class="input" type="text" name="descripcion_incidencia" placeholder="Ej: lluvia fuerte / mango roto">
+                <input class="input" type="text" name="descripcion_incidencia" placeholder="Ej: lluvia fuerte o mango roto">
               </div>
 
               <div class="small modal-help">
-                Domingos se descuentan automáticamente. Si queda saldo pendiente al cerrar, se activa semáforo (AMARILLO / ROJO según tu backend).
+                Los domingos se descuentan automáticamente. Si queda saldo pendiente al cerrar, se actualiza el semáforo de pago.
               </div>
               <div class="small modal-help" style="margin-top:6px;">
                 Si hay herramientas pendientes, el sistema las devuelve y las liquida automáticamente con la fecha elegida al guardar el cierre.

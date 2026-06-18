@@ -16,7 +16,7 @@ class ArriendoItemController extends Controller
 
         if ((int)($arriendo->cerrado ?? 0) === 1 || $arriendo->estado !== 'activo') {
             return redirect()->route('arriendos.index')
-                ->with('success', 'Este arriendo padre ya está cerrado o no está activo.');
+                ->with('success', 'Este contrato ya está cerrado o no está activo.');
         }
 
         $productos = Producto::orderBy('nombre')->get();
@@ -28,7 +28,7 @@ class ArriendoItemController extends Controller
     {
         if ((int)($arriendo->cerrado ?? 0) === 1 || $arriendo->estado !== 'activo') {
             return redirect()->route('arriendos.index')
-                ->with('success', 'Este arriendo padre ya está cerrado o no está activo.');
+                ->with('success', 'Este contrato ya está cerrado o no está activo.');
         }
 
         $data = $request->validate([
@@ -62,7 +62,7 @@ class ArriendoItemController extends Controller
 
                 $tarifa = (float)($producto->costo ?? 0);
 
-                // ✅ Crear item del arriendo
+                // Crear producto del arriendo.
                 ArriendoItem::create([
                     'arriendo_id' => $arriendo->id,
                     'producto_id' => $data['producto_id'],
@@ -102,7 +102,7 @@ class ArriendoItemController extends Controller
                 ]);
         }
 
-        // ✅ Recalcular totales del PADRE después de agregar el item
+        // Recalcular totales del contrato después de agregar el producto.
         $this->recalcularTotalesPadre($arriendo->fresh());
 
         return redirect()->route('arriendos.ver', $arriendo)
@@ -110,7 +110,7 @@ class ArriendoItemController extends Controller
     }
 
     /**
-     * ✅ BORRAR ITEM (ALQUILER) DEL PADRE
+     * Elimina un producto del contrato.
      * - Solo permite borrar si NO tiene devoluciones (historial).
      * - Recalcula totales del padre después de borrar.
      */
@@ -121,18 +121,18 @@ class ArriendoItemController extends Controller
         // si el padre ya está cerrado, no dejar borrar
         if ((int)($item->arriendo->cerrado ?? 0) === 1 || $item->arriendo->estado !== 'activo') {
             return redirect()->route('arriendos.ver', $item->arriendo_id)
-                ->with('success', 'No puedes borrar: el contrato padre está cerrado o no activo.');
+                ->with('success', 'No puedes borrar este producto: el contrato está cerrado o no está activo.');
         }
 
         // si ya tiene devoluciones, no dejar borrar
         if ($item->devoluciones && $item->devoluciones->count() > 0) {
             return redirect()->route('arriendos.ver', $item->arriendo_id)
-                ->with('success', 'No puedes borrar este item porque ya tiene devoluciones registradas.');
+                ->with('success', 'No puedes borrar este producto porque ya tiene devoluciones registradas.');
         }
 
         $arriendo = $item->arriendo;
 
-        // ✅ devolver stock al borrar el item (como no tiene devoluciones)
+        // Devuelve stock al eliminar el producto, si no tiene devoluciones.
         try {
             DB::transaction(function () use ($item) {
                 $producto = Producto::where('id', $item->producto_id)->lockForUpdate()->first();
@@ -146,19 +146,19 @@ class ArriendoItemController extends Controller
             });
         } catch (\Exception $e) {
             return redirect()->route('arriendos.ver', $arriendo)
-                ->with('success', 'No se pudo eliminar el item. Intenta nuevamente.');
+                ->with('success', 'No se pudo eliminar el producto. Intenta nuevamente.');
         }
 
         // ✅ recalcular totales del padre
         $this->recalcularTotalesPadre($arriendo->fresh());
 
         return redirect()->route('arriendos.ver', $arriendo)
-            ->with('success', 'Item eliminado correctamente.');
+            ->with('success', 'Producto eliminado correctamente.');
     }
 
     /**
      * ✅ REGLA NUEVA:
-     * Total del PADRE = (items alquiler + items merma) + (transportes) + (IVA si aplica)
+     * Total del contrato = productos + transportes + IVA si aplica.
      */
     private function recalcularTotalesPadre(Arriendo $arriendo): void
     {

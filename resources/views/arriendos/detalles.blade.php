@@ -282,7 +282,7 @@
     <div class="box">
       <div class="summary-title">Resumen ejecutivo (estado)</div>
       <div class="kpi-grid">
-        <div class="label">Herramientas (items)</div><div class="value">{{ $g_items_count }}</div>
+        <div class="label">Herramientas</div><div class="value">{{ $g_items_count }}</div>
         <div class="label">Unidades en obra</div><div class="value total-strong">{{ $g_unidades_restantes }}</div>
         <div class="label">Movimientos</div><div class="value">{{ $movs }}</div>
         <div class="label">Saldo general (incluye transportes)</div>
@@ -408,7 +408,7 @@
   <h3 class="section-title">Detalle por herramienta</h3>
 
   @if(empty($arriendo->items) || $arriendo->items->isEmpty())
-    <div class="box">No hay items en este arriendo.</div>
+    <div class="box">No hay productos en este arriendo.</div>
   @else
 
     @foreach($arriendo->items as $it)
@@ -447,7 +447,7 @@
           <div>
             <p class="item-name">{{ $it->producto->nombre ?? 'Producto' }}</p>
             <div class="muted item-meta">
-              Item #{{ $it->id }} ·
+              Producto #{{ $it->id }} ·
               Inicio: {{ $it->fecha_inicio_item ? \Carbon\Carbon::parse($it->fecha_inicio_item)->format('d/m/Y H:i') : '—' }}
               @if(!empty($it->fecha_fin_item))
                 · Fin: {{ \Carbon\Carbon::parse($it->fecha_fin_item)->format('d/m/Y') }}
@@ -471,11 +471,11 @@
           </div>
 
           <div class="mini-box">
-            <div class="mini-title">Resumen financiero del item</div>
+            <div class="mini-title">Resumen financiero del producto</div>
             <div class="line"><div class="lbl">Tarifa / día</div><div class="val">${{ number_format($tarifa,2) }}</div></div>
             <div class="line"><div class="lbl">Total cobrado (registros)</div><div class="val">${{ number_format($totalCobradoDevs,2) }}</div></div>
             <div class="line"><div class="lbl">Total abonado (registros)</div><div class="val">${{ number_format($totalAbonadoDevs,2) }}</div></div>
-            <div class="line"><div class="lbl">Saldo del item</div><div class="val">${{ number_format($saldoMostrado,2) }}</div></div>
+            <div class="line"><div class="lbl">Saldo del producto</div><div class="val">${{ number_format($saldoMostrado,2) }}</div></div>
 
             <div class="last-move">
               <div><strong>Último movimiento:</strong> {{ $ultimoFecha }}</div>

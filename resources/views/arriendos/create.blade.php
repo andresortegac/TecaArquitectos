@@ -471,7 +471,7 @@
           <div>
             <h2>Nueva solicitud de arriendo</h2>
             <p>
-              Crea primero el contrato (PADRE). Luego, en el siguiente paso, podrás agregar productos al arriendo.
+              Crea primero el contrato. Luego podrás agregar los productos asociados al arriendo.
             </p>
           </div>
 
@@ -533,7 +533,7 @@
         <aside class="side">
           <h3>Resumen</h3>
           <p>
-            Este paso crea el arriendo <strong>PADRE</strong> (contrato). En el siguiente paso agregas
+            Este paso crea el contrato de arriendo. En el siguiente paso agregas
             los productos (hijos) y continúas el flujo.
           </p>
 

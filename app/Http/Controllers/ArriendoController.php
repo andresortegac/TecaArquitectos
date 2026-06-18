@@ -12,9 +12,17 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use App\Services\PaymentService;
 
 class ArriendoController extends Controller
 {
+    protected PaymentService $payments;
+
+    public function __construct(PaymentService $payments)
+    {
+        $this->payments = $payments;
+    }
+
     /* ============================================================
      * 1) LISTADO (INDEX) + FILTROS + SEMÁFORO ACTUALIZADO
      * ============================================================ */
@@ -108,7 +116,7 @@ class ArriendoController extends Controller
             'obra_id'      => 'nullable|integer',
         ]);
 
-        // ✅ Crear SOLO el PADRE (contrato). NO producto aquí.
+        // Crea el contrato base. Los productos se agregan después.
         $arriendo = Arriendo::create([
             'cliente_id' => $data['cliente_id'],
 
@@ -121,7 +129,7 @@ class ArriendoController extends Controller
             'estado' => 'activo',
             'cerrado' => 0,
 
-            // ✅ Totales del contrato (se recalculan sumando items)
+            // Totales del contrato. Se recalculan al agregar productos.
             'precio_total' => 0,
             'dias_transcurridos' => 0,
             'domingos_desc' => 0,
@@ -143,7 +151,7 @@ class ArriendoController extends Controller
         ]);
 
         return redirect()->route('arriendos.ver', $arriendo)
-            ->with('success', 'Arriendo PADRE creado. Ahora agrega productos.');
+            ->with('success', 'Contrato de arriendo creado correctamente. Ahora agrega los productos.');
     }
 
     /* ============================================================
@@ -158,7 +166,7 @@ class ArriendoController extends Controller
     }
 
     // ============================================================
-    // PADRE PARA PODER VER
+    // Vista principal del contrato.
     // ============================================================
     public function ver(Arriendo $arriendo)
     {
@@ -170,7 +178,7 @@ class ArriendoController extends Controller
 
         $totalTransportes = (float)($arriendo->transportes?->sum('valor') ?? 0);
 
-        // ✅ Totales del PADRE calculados desde los items (siempre correctos)
+        // Totales del contrato calculados desde los productos.
         $totContrato = [
             'total_alquiler' => (float)$arriendo->items->sum('total_alquiler'),
             'total_merma'    => (float)$arriendo->items->sum('total_merma'),
@@ -186,7 +194,7 @@ class ArriendoController extends Controller
         $totContrato['precio_total'] = $subtotal + $ivaValor;
         $totContrato['saldo']        = max(0, $totContrato['precio_total'] - $totContrato['total_pagado']);
 
-        // ✅ Total histórico del cliente (sumando todos los PADRES)
+        // Total histórico del cliente.
         $padresCliente = Arriendo::where('cliente_id', $arriendo->cliente_id)
             ->with(['items', 'transportes'])
             ->get();
@@ -226,7 +234,7 @@ class ArriendoController extends Controller
 
     /* ============================================================
      * ✅ NUEVO (NECESARIO):
-     *  VER REGISTROS INDIVIDUALES DE DEVOLUCIONES DEL PADRE
+     * Ver registros individuales de devoluciones del contrato.
      * ============================================================ */
     public function devoluciones(Arriendo $arriendo)
     {
@@ -300,7 +308,7 @@ class ArriendoController extends Controller
 
     /* ============================================================
      * 8) CERRAR / DEVOLVER ARRIENDO
-     * ✅ AHORA soporta PADRE+ITEMS + transportes + IVA al cerrar
+     * Soporta productos, transportes e IVA al cerrar.
      * ============================================================ */
     public function cerrar(Request $request, Arriendo $arriendo)
     {
@@ -321,7 +329,7 @@ class ArriendoController extends Controller
 
         if (Carbon::parse($fechaDevol)->lt(Carbon::parse($fechaEntrega))) {
             return back()
-                ->withErrors(['fecha_devolucion_real' => 'La fecha de devolucion no puede ser anterior a la fecha de entrega/inicio.'])
+                ->withErrors(['fecha_devolucion_real' => 'La fecha de devolución no puede ser anterior a la fecha de entrega o inicio.'])
                 ->withInput();
         }
 
@@ -384,6 +392,8 @@ class ArriendoController extends Controller
                     'semaforo_pago' => $sem['semaforo'],
                 ]);
 
+                $this->registrarPagoCierre($arriendo, $pago);
+
                 if ($diasLluvia > 0) {
                     Incidencia::create([
                         'arriendo_id' => $arriendo->id,
@@ -400,13 +410,13 @@ class ArriendoController extends Controller
                         'tipo' => 'DANO',
                         'dias' => 0,
                         'costo' => $totalMermaExtra,
-                        'descripcion' => $desc ?? 'Incidencia por dano/merma al cierre',
+                        'descripcion' => $desc ?? 'Incidencia por daño o merma al cierre',
                     ]);
                 }
             });
 
             return redirect()->route('arriendos.index')
-                ->with('success', 'Arriendo cerrado. Se liquidaron tambien los items pendientes con la fecha indicada.');
+                ->with('success', 'Arriendo cerrado correctamente. También se liquidaron los productos pendientes con la fecha indicada.');
         }
 
         if ($request->has('iva_aplica')) {
@@ -459,6 +469,8 @@ class ArriendoController extends Controller
             'semaforo_pago' => $sem['semaforo'],
         ]);
 
+        $this->registrarPagoCierre($arriendo, $pago);
+
         if ($diasLluvia > 0) {
             Incidencia::create([
                 'arriendo_id' => $arriendo->id,
@@ -475,12 +487,31 @@ class ArriendoController extends Controller
                 'tipo' => 'DANO',
                 'dias' => 0,
                 'costo' => $totalMerma,
-                'descripcion' => $desc ?? 'Incidencia por dano/merma al cierre',
+                'descripcion' => $desc ?? 'Incidencia por daño o merma al cierre',
             ]);
         }
 
         return redirect()->route('arriendos.index')
-            ->with('success', 'Arriendo cerrado. Calculos aplicados y semaforo actualizado.');
+            ->with('success', 'Arriendo cerrado correctamente. Cálculos aplicados y semáforo actualizado.');
+    }
+
+    private function registrarPagoCierre(Arriendo $arriendo, float $pago): void
+    {
+        if ($pago <= 0) {
+            return;
+        }
+
+        $this->payments->createConfirmedPayment([
+            'user_id' => auth()->id(),
+            'arriendo_id' => $arriendo->id,
+            'client_id' => $arriendo->cliente_id,
+            'obra_id' => $arriendo->obra_id,
+            'source_type' => Arriendo::class,
+            'source_id' => $arriendo->id,
+            'note' => 'Pago cierre arriendo #' . $arriendo->id,
+        ], [
+            ['method' => 'efectivo', 'amount' => (int)round($pago)],
+        ]);
     }
 
     private function cerrarItemsPendientesDelArriendo(Arriendo $arriendo, string $fechaDevol): void
