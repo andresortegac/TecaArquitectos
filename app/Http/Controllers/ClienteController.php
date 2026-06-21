@@ -7,10 +7,26 @@ use Illuminate\Http\Request;
 
 class ClienteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $clientes = Cliente::latest()->paginate(10);
-        return view('clientes.index', compact('clientes'));
+        $filters = $request->validate([
+            'q' => 'nullable|string|max:120',
+        ]);
+
+        $query = Cliente::query()->latest();
+
+        if (!empty($filters['q'])) {
+            $query->where(function ($q) use ($filters) {
+                $q->where('nombre', 'like', '%' . $filters['q'] . '%')
+                    ->orWhere('documento', 'like', '%' . $filters['q'] . '%')
+                    ->orWhere('telefono', 'like', '%' . $filters['q'] . '%')
+                    ->orWhere('email', 'like', '%' . $filters['q'] . '%');
+            });
+        }
+
+        $clientes = $query->paginate(10)->withQueryString();
+
+        return view('clientes.index', compact('clientes', 'filters'));
     }
 
     public function create()

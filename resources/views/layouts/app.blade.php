@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}?v={{ filemtime(public_path('css/solicitud.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}?v={{ filemtime(public_path('css/movimiento.css')) }}">
 
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}?v={{ filemtime(public_path('js/app.js')) }}" defer></script>
 
     @stack('styles')
 </head>

@@ -42,10 +42,10 @@
         </section>
 
         <section class="pro-card">
-            <form method="GET" class="pro-filters">
+            <form method="GET" class="pro-filters" data-live-filter>
                 <div class="field field-grow">
-                    <label for="q">Buscar producto</label>
-                    <input id="q" type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nombre de producto">
+                    <label for="q">Buscar producto o categoría</label>
+                    <input id="q" type="search" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nombre o categoría" autocomplete="off">
                 </div>
                 <div class="field">
                     <label for="categoria">Categoría</label>

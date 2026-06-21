@@ -22,7 +22,10 @@ class ProductoController extends Controller
         $query = Producto::query()->orderBy('id');
 
         if (!empty($filters['q'])) {
-            $query->where('nombre', 'like', '%' . $filters['q'] . '%');
+            $query->where(function ($q) use ($filters) {
+                $q->where('nombre', 'like', '%' . $filters['q'] . '%')
+                    ->orWhere('categorias', 'like', '%' . $filters['q'] . '%');
+            });
         }
 
         if (!empty($filters['categoria'])) {
