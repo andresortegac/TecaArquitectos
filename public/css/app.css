@@ -141,6 +141,15 @@ body {
     padding: 18px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.principal-page > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 /* FORM */
@@ -551,6 +560,7 @@ body {
 
   .principal-page {
     padding: 12px;
+    overflow-x: hidden;
   }
 }
 

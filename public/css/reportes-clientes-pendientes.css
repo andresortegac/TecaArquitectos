@@ -1,6 +1,9 @@
 .rcp-page {
   display: grid;
   gap: 18px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .rcp-hero {
@@ -12,6 +15,7 @@
   padding: 20px;
   background: linear-gradient(120deg, #0b1324 0%, #1e293b 100%);
   color: #f8fafc;
+  min-width: 0;
 }
 
 .rcp-hero h2 {
@@ -41,8 +45,9 @@
 
 .rcp-kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
   gap: 12px;
+  min-width: 0;
 }
 
 .rcp-kpi {
@@ -74,6 +79,9 @@
   border-radius: 14px;
   background: #ffffffde;
   padding: 14px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .rcp-filters {
@@ -161,7 +169,11 @@
   border: 1px solid #dbe3ee;
   border-radius: 12px;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   background: #fff;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .rcp-table {
@@ -269,5 +281,52 @@
   .rcp-btn-back {
     justify-content: center;
     flex: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  .rcp-page {
+    gap: 12px;
+  }
+
+  .rcp-hero,
+  .rcp-card {
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .rcp-hero h2 {
+    font-size: 20px;
+    overflow-wrap: anywhere;
+  }
+
+  .rcp-hero p,
+  .rcp-section-head p {
+    overflow-wrap: anywhere;
+  }
+
+  .rcp-kpi {
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .rcp-filters {
+    gap: 10px;
+  }
+
+  .field input,
+  .field select,
+  .actions button,
+  .actions a {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .rcp-table {
+    min-width: 720px;
   }
 }
