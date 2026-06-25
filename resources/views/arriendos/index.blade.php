@@ -344,9 +344,9 @@
 
     .pro-ui .dropdown-menu{
       display:none;
-      position:absolute;
-      right:0;
-      top: calc(100% + 8px);
+      position:fixed;
+      right:auto;
+      top:auto;
       min-width: 220px;
       background: linear-gradient(180deg, #f9fbff, #f2f6fc);
       border:1px solid rgba(166,183,209,.45);
@@ -1358,42 +1358,60 @@
                 dd.classList.remove('open');
                 const tr = dd.closest('tr');
                 if (tr) tr.classList.remove('row-open');
-                const menu = dd.querySelector('.dropdown-menu');
+                const menu = dd._openMenu || dd.querySelector('.dropdown-menu');
                 if (menu){
+                  dd.appendChild(menu);
+                  dd._openMenu = null;
+                  menu.style.display = '';
+                  menu.style.position = '';
                   menu.style.left = '';
-                  menu.style.right = '0';
-                  menu.style.top = 'calc(100% + 8px)';
+                  menu.style.right = '';
+                  menu.style.top = '';
                   menu.style.bottom = '';
+                  menu.style.width = '';
                 }
               });
             }
 
             function fitDropdownIntoViewport(dd){
               const menu = dd.querySelector('.dropdown-menu');
-              if (!menu) return;
+              const btn = dd.querySelector('.btn-kebab');
+              if (!menu || !btn) return;
+
+              if (menu.parentElement !== document.body) {
+                document.body.appendChild(menu);
+              }
+              dd._openMenu = menu;
 
               // reset base
+              menu.style.display = 'block';
+              menu.style.position = 'fixed';
               menu.style.left = '';
-              menu.style.right = '0';
-              menu.style.top = 'calc(100% + 8px)';
+              menu.style.right = 'auto';
+              menu.style.top = '';
               menu.style.bottom = '';
+              menu.style.width = '';
 
-              const pad = 10;
+              const pad = 12;
+              const gap = 8;
+              const btnRect = btn.getBoundingClientRect();
+              const menuRect = menu.getBoundingClientRect();
+              const menuWidth = Math.min(menuRect.width, window.innerWidth - (pad * 2));
+              const menuHeight = menuRect.height;
 
-              // medir luego del display:block
-              const r = menu.getBoundingClientRect();
+              let left = btnRect.right - menuWidth;
+              left = Math.max(pad, Math.min(left, window.innerWidth - menuWidth - pad));
 
-              // si se sale por derecha -> alinear a la izquierda
-              if (r.right > window.innerWidth - pad) {
-                menu.style.right = 'auto';
-                menu.style.left = '0';
+              let top = btnRect.bottom + gap;
+              if (top + menuHeight > window.innerHeight - pad) {
+                top = btnRect.top - menuHeight - gap;
               }
+              top = Math.max(pad, Math.min(top, window.innerHeight - menuHeight - pad));
 
-              // si se sale por abajo -> abrir hacia arriba
-              const r2 = menu.getBoundingClientRect();
-              if (r2.bottom > window.innerHeight - pad) {
-                menu.style.top = 'auto';
-                menu.style.bottom = 'calc(100% + 8px)';
+              menu.style.left = left + 'px';
+              menu.style.top = top + 'px';
+              if (menuWidth !== menuRect.width) {
+                menu.style.width = menuWidth + 'px';
               }
             }
 
@@ -1430,6 +1448,10 @@
               const dd = document.querySelector('[data-dd].open');
               if (dd) fitDropdownIntoViewport(dd);
             });
+            window.addEventListener('scroll', function(){
+              const dd = document.querySelector('[data-dd].open');
+              if (dd) fitDropdownIntoViewport(dd);
+            }, true);
 
             // helpers
             function parseNum(v) {

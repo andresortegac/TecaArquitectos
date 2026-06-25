@@ -363,7 +363,7 @@
       </div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <a class="btn" href="{{ route('arriendos.index') }}">â† Volver</a>
+        <a class="btn" href="{{ route('arriendos.index') }}">Volver</a>
         @if((int)($arriendo->cerrado ?? 0) === 0 && $arriendo->estado === 'activo')
           <a class="btn primary" href="{{ route('arriendos.items.create', $arriendo) }}">+ Agregar producto</a>
         @endif
@@ -507,7 +507,7 @@
         </form>
       @else
         <div class="hint" style="margin-top:10px;">
-          Este arriendo no estÃ¡ activo o ya estÃ¡ cerrado. No se pueden agregar transportes.
+          Este arriendo no esta activo o ya esta cerrado. No se pueden agregar transportes.
         </div>
       @endif
 
@@ -523,7 +523,7 @@
                   <th>Tipo</th>
                   <th>Nota</th>
                   <th class="right">Valor</th>
-                  <th class="right" style="width:160px;">AcciÃ³n</th>
+                  <th class="right" style="width:160px;">Acción</th>
                 </tr>
               </thead>
               <tbody>
@@ -573,12 +573,12 @@
       <div class="row">
         <div>
           <h3 style="margin:0;">Productos alquilados (Items)</h3>
-          <div class="hint">Listado de productos, cantidades, dÃ­as, totales y acciones.</div>
+          <div class="hint">Listado de productos, cantidades, di­as, totales y acciones.</div>
         </div>
       </div>
 
       @if($arriendo->items->isEmpty())
-        <div class="hint">No hay productos aÃºn. Agrega el primero.</div>
+        <div class="hint">No hay productos alquilados. Agrega el primero.</div>
       @else
         <div class="table-wrap">
           <table class="table">
@@ -588,10 +588,10 @@
                 <th class="center">Inicial</th>
                 <th class="center">Actual</th>
                 <th>Inicio item</th>
-                <th class="right">Tarifa/dÃ­a</th>
-                <th class="right">Valor dÃ­a</th>
-                <th class="center">DÃ­as alquilados</th>
-                <th class="center">DÃ­as cobrables</th>
+                <th class="right">Tarifa/día</th>
+                <th class="right">Valor día</th>
+                <th class="center">Di­as alquilados</th>
+                <th class="center">Di­as cobrables</th>
                 <th class="right">Total</th>
                 <th class="right">Pagado</th>
                 <th class="right">Saldo</th>
@@ -660,7 +660,7 @@
 
                   <td class="right actions">
                     <div class="actions-box">
-                      {{-- âœ… SOLUCIÃ“N: aunque estÃ© cerrado, igual deja ENTRAR A VER lo ocurrido (historial). --}}
+                      {{--… SOLUCION: aunque estÃ© cerrado, igual deja ENTRAR A VER lo ocurrido (historial). --}}
                       @if((int)($it->cerrado ?? 0) === 0 && $it->estado === 'activo')
                         <a class="btn warning" href="{{ route('items.devolucion.create', $it) }}">Devolución</a>
                       @else

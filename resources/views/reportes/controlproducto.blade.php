@@ -77,7 +77,7 @@
                                 <td class="cp-product-name">{{ $item->nombre }}</td>
                                 <td>
                                     @if(!empty($item->imagen))
-                                        <img src="{{ \App\Models\Producto::imageUrl($item->imagen) }}" class="cp-img" alt="Producto">
+                                        <img src="{{ \App\Models\Producto::imageUrl($item->imagen, $item->nombre) }}" class="cp-img" alt="Producto">
                                     @else
                                         <span class="cp-muted">Sin imagen</span>
                                     @endif
