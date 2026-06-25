@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/reportes-clientes-pendientes.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/reportes-clientes-pendientes.css') }}?v={{ filemtime(public_path('css/reportes-clientes-pendientes.css')) }}">
 @endpush
 
 @section('title', 'Clientes pendientes por cancelar')
@@ -85,16 +85,16 @@
                     <tbody>
                         @forelse($clientesMorosos as $cliente)
                             <tr>
-                                <td>{{ $cliente->nombre }}</td>
-                                <td>{{ $cliente->obras }}</td>
-                                <td class="center">{{ $cliente->alquileres_pendientes }}</td>
-                                <td>{{ $cliente->productos_alquilados }}</td>
+                                <td data-label="Cliente">{{ $cliente->nombre }}</td>
+                                <td data-label="Obras">{{ $cliente->obras }}</td>
+                                <td data-label="Alquileres" class="center">{{ $cliente->alquileres_pendientes }}</td>
+                                <td data-label="Productos">{{ $cliente->productos_alquilados }}</td>
                                 @if($rol !== 'bodega')
-                                    <td class="right">${{ number_format((float) $cliente->total_deuda, 0) }}</td>
+                                    <td data-label="Valor adeudado" class="right">${{ number_format((float) $cliente->total_deuda, 0) }}</td>
                                 @endif
-                                <td>{{ $cliente->ultimo_cobro }}</td>
-                                <td class="center">{{ $cliente->dias_mora }}</td>
-                                <td>
+                                <td data-label="Último cobro">{{ $cliente->ultimo_cobro }}</td>
+                                <td data-label="Días mora" class="center">{{ $cliente->dias_mora }}</td>
+                                <td data-label="Estado">
                                     <span class="badge {{ $cliente->estado === 'moroso' ? 'badge-risk' : 'badge-ok' }}">
                                         {{ $cliente->estado === 'moroso' ? 'MOROSO' : 'AL DIA' }}
                                     </span>
@@ -136,13 +136,13 @@
                     <tbody>
                         @forelse($reporteDevoluciones as $fila)
                             <tr>
-                                <td>{{ $fila->cliente }}</td>
-                                <td>{{ $fila->obra }}</td>
-                                <td>{{ $fila->herramienta }}</td>
-                                <td class="center">{{ $fila->cantidad_alquilada }} / {{ $fila->cantidad_devuelta }}</td>
-                                <td class="center">{{ $fila->diferencia }}</td>
-                                <td>{{ $fila->fecha_estimada_devolucion }}</td>
-                                <td>
+                                <td data-label="Cliente">{{ $fila->cliente }}</td>
+                                <td data-label="Obra">{{ $fila->obra }}</td>
+                                <td data-label="Herramientas">{{ $fila->herramienta }}</td>
+                                <td data-label="Cantidades" class="center">{{ $fila->cantidad_alquilada }} / {{ $fila->cantidad_devuelta }}</td>
+                                <td data-label="Diferencias" class="center">{{ $fila->diferencia }}</td>
+                                <td data-label="Fecha estimada">{{ $fila->fecha_estimada_devolucion }}</td>
+                                <td data-label="Estado">
                                     <span class="badge {{ $fila->estado_class }}">
                                         {{ strtoupper($fila->estado) }}
                                     </span>

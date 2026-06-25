@@ -246,7 +246,8 @@
 
 .rent-request .card-body{ padding: 18px; min-width: 0; }
 .rent-request .form{
-  display:grid;
+  display:flex;
+  flex-direction: column;
   gap: 12px;
   max-width: none;
   width: 100%;
@@ -261,6 +262,12 @@
 }
 @media (max-width: 640px){
   .rent-request .row2{ grid-template-columns: 1fr; }
+}
+
+@media (max-width: 900px){
+  .rent-request .row2{ grid-template-columns: 1fr; }
+  .rent-request .rr-actions{ justify-content: stretch; }
+  .rent-request .rr-submit{ width: 100%; }
 }
 
 /* Fields */
@@ -319,7 +326,7 @@
 }
 
 /* Botones */
-.rent-request .btn{
+.rent-request .rr-btn{
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -335,45 +342,51 @@
   transition: transform .12s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, color .2s ease, filter .2s ease;
   user-select:none;
   white-space: nowrap;
+  min-width: 0;
+  min-height: 42px;
+  line-height: 1.2;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
 }
 
-.rent-request .btn:active{ transform: translateY(1px); }
+.rent-request .rr-btn:active{ transform: translateY(1px); }
 
-.rent-request .btn-ghost{
+.rent-request .rr-back{
   background: linear-gradient(180deg, #ffffff, #eef5ff);
   border-color: var(--border-strong);
   color: rgba(15,23,42,.90);
   box-shadow: 0 10px 20px rgba(5,20,48,.10), inset 0 1px 0 rgba(255,255,255,.85);
 }
-.rent-request .btn-ghost:hover{
+.rent-request .rr-back:hover{
   transform: translateY(-2px);
   box-shadow: 0 15px 28px rgba(5,20,48,.16), inset 0 1px 0 rgba(255,255,255,.92);
   border-color: rgba(31,103,243,.32);
 }
 
 /* ✅ BOTÓN PRINCIPAL (AZUL) */
-.rent-request .btn-primary{
+.rent-request .rr-submit{
   background: linear-gradient(140deg, var(--primary-700), var(--primary) 62%, #2fafff);
   border-color: rgba(31,103,243,.40);
   color: #fff;
   box-shadow: 0 16px 34px rgba(20,74,193,.28), inset 0 1px 0 rgba(255,255,255,.22);
 }
-.rent-request .btn-primary:hover{
+.rent-request .rr-submit:hover{
   background: linear-gradient(140deg, var(--primary-800), var(--primary-700) 60%, var(--primary));
   box-shadow: 0 20px 42px rgba(20,74,193,.34), inset 0 1px 0 rgba(255,255,255,.28);
   transform: translateY(-2px);
   filter: saturate(1.06);
 }
-.rent-request .btn-primary:focus{
+.rent-request .rr-submit:focus{
   outline: none;
   box-shadow: 0 0 0 4px rgba(31,103,243,.18), 0 20px 42px rgba(20,74,193,.34);
 }
 
-.rent-request .footer{
+.rent-request .rr-actions{
   display:flex;
   justify-content:flex-end;
   padding-top: 6px;
   min-width: 0;
+  width: 100%;
 }
 
 /* Side panel */
@@ -490,12 +503,14 @@
     text-align: center;
     white-space: normal;
   }
-  .rent-request .footer{
+  .rent-request .rr-actions{
     justify-content: stretch;
   }
-  .rent-request .btn{
+  .rent-request .rr-submit{
     width: 100%;
+    max-width: 100%;
     min-height: 42px;
+    height: auto;
     white-space: normal;
   }
 }
@@ -543,7 +558,7 @@
           </div>
 
           <div class="actions-top">
-            <a class="btn btn-ghost" href="{{ route('arriendos.index') }}">Volver</a>
+            <a class="rr-btn rr-back" href="{{ route('arriendos.index') }}">Volver</a>
           </div>
         </div>
       </div>
@@ -588,9 +603,8 @@
                 </div>
               </div>
 
-              <div class="footer">
-                {{-- ✅ Botón azul --}}
-                <button type="submit" class="btn btn-primary">Siguiente</button>
+              <div class="rr-actions">
+                <button type="submit" class="rr-btn rr-submit">Siguiente</button>
               </div>
 
             </form>

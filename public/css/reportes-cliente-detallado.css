@@ -17,6 +17,7 @@
 
 .rcd-hero h2 {
   margin: 0 0 6px;
+  overflow-wrap: anywhere;
 }
 
 .rcd-hero p {
@@ -141,6 +142,8 @@
   border-radius: 10px;
   background: #fff;
   -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .rcd-table {
@@ -201,5 +204,128 @@
   .field,
   .actions {
     grid-column: span 12;
+  }
+}
+
+@media (max-width: 1100px) {
+  .rcd-page {
+    gap: 12px;
+  }
+
+  .rcd-hero,
+  .rcd-card {
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .rcd-hero h2 {
+    font-size: 20px;
+    line-height: 1.15;
+  }
+
+  .rcd-hero p {
+    overflow-wrap: anywhere;
+  }
+
+  .rcd-hero-actions,
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .rcd-kpis {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  }
+
+  .table-wrap {
+    border: 0;
+    overflow: visible;
+    background: transparent;
+  }
+
+  .rcd-table {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .rcd-table thead {
+    display: none;
+  }
+
+  .rcd-table tbody,
+  .rcd-table tr,
+  .rcd-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .rcd-table tbody {
+    display: grid;
+    gap: 10px;
+  }
+
+  .rcd-table tr {
+    border: 1px solid #dbe3ee;
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .rcd-table td {
+    display: grid;
+    grid-template-columns: minmax(92px, 38%) minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  .rcd-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .rcd-table td::before {
+    content: attr(data-label);
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .rcd-table .right,
+  .rcd-table .center {
+    text-align: right;
+  }
+
+  .empty {
+    display: block !important;
+    text-align: center !important;
+    padding: 14px !important;
+  }
+
+  .empty::before {
+    content: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .rcd-table td {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    text-align: left;
+  }
+
+  .rcd-table .right,
+  .rcd-table .center {
+    text-align: left;
   }
 }

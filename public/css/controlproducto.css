@@ -1,6 +1,9 @@
 .cp-page {
   display: grid;
   gap: 18px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .cp-hero {
@@ -12,11 +15,13 @@
   padding: 20px;
   background: linear-gradient(120deg, #0b1324 0%, #1e293b 100%);
   color: #f8fafc;
+  min-width: 0;
 }
 
 .cp-hero h2 {
   margin: 0 0 8px;
   font-size: 24px;
+  overflow-wrap: anywhere;
 }
 
 .cp-hero p {
@@ -41,8 +46,9 @@
 
 .cp-kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
   gap: 12px;
+  min-width: 0;
 }
 
 .cp-kpi {
@@ -86,6 +92,9 @@
   border-radius: 14px;
   background: #ffffffde;
   padding: 14px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .cp-card-head {
@@ -105,11 +114,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .cp-filter input {
   height: 36px;
   width: 250px;
+  max-width: 100%;
+  min-width: 0;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   padding: 0 10px;
@@ -150,7 +162,11 @@
   border: 1px solid #dbe3ee;
   border-radius: 12px;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   background: #fff;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .cp-table {
@@ -210,20 +226,168 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1100px) {
+  .cp-page {
+    gap: 12px;
+  }
+
+  .cp-hero,
+  .cp-card {
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .cp-hero h2 {
+    font-size: 20px;
+    line-height: 1.15;
+  }
+
+  .cp-hero p {
+    overflow-wrap: anywhere;
+  }
+
+  .cp-kpi {
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .cp-kpi span {
+    min-height: 30px;
+  }
+
   .cp-filter {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+    width: 100%;
   }
 
   .cp-filter input {
-    grid-column: span 2;
     width: 100%;
+    min-width: 0;
   }
 
   .cp-filter button,
   .cp-filter a,
   .cp-btn-back {
     justify-content: center;
+    width: 100%;
+  }
+
+  .cp-table-wrap {
+    border: 0;
+    overflow: visible;
+    background: transparent;
+  }
+
+  .cp-table {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .cp-table thead {
+    display: none;
+  }
+
+  .cp-table tbody,
+  .cp-table tr,
+  .cp-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .cp-table tbody {
+    display: grid;
+    gap: 10px;
+  }
+
+  .cp-table tr {
+    border: 1px solid #dbe3ee;
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .cp-table th,
+  .cp-table td {
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .cp-table td {
+    display: grid;
+    grid-template-columns: minmax(92px, 38%) minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  .cp-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .cp-table td::before {
+    content: attr(data-label);
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .cp-table .right {
+    text-align: right;
+  }
+
+  .cp-img {
+    width: 48px;
+    height: 48px;
+    justify-self: end;
+  }
+
+  .cp-empty {
+    display: block !important;
+    text-align: center !important;
+    padding: 14px !important;
+  }
+
+  .cp-empty::before {
+    content: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .cp-hero h2 {
+    font-size: 18px;
+  }
+
+  .cp-kpis {
+    gap: 8px;
+  }
+
+  .cp-kpi {
+    padding: 10px;
+  }
+
+  .cp-kpi span {
+    font-size: 11px;
+  }
+
+  .cp-kpi strong {
+    font-size: 23px;
+  }
+
+  .cp-table td {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    text-align: left;
+  }
+
+  .cp-table .right,
+  .cp-img {
+    justify-self: start;
+    text-align: left;
   }
 }

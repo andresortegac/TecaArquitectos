@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/reportes-movimientos.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/reportes-movimientos.css') }}?v={{ filemtime(public_path('css/reportes-movimientos.css')) }}">
 @endpush
 
 @section('title', 'Reporte de movimientos')
@@ -117,15 +117,15 @@
                     <tbody>
                         @forelse($movimientos as $movimiento)
                             <tr>
-                                <td>{{ \Illuminate\Support\Carbon::parse($movimiento->fecha)->format('d/m/Y') }}</td>
-                                <td>{{ $movimiento->producto->nombre ?? 'Producto no disponible' }}</td>
-                                <td>
+                                <td data-label="Fecha">{{ \Illuminate\Support\Carbon::parse($movimiento->fecha)->format('d/m/Y') }}</td>
+                                <td data-label="Producto">{{ $movimiento->producto->nombre ?? 'Producto no disponible' }}</td>
+                                <td data-label="Tipo">
                                     <span class="{{ $tipoClasses[$movimiento->tipo] ?? 'tipo' }}">
                                         {{ $tipoLabels[$movimiento->tipo] ?? ucfirst(str_replace('_', ' ', $movimiento->tipo)) }}
                                     </span>
                                 </td>
-                                <td class="right">{{ number_format($movimiento->cantidad) }}</td>
-                                <td>{{ $movimiento->observaciones ?: '-' }}</td>
+                                <td data-label="Cantidad" class="right">{{ number_format($movimiento->cantidad) }}</td>
+                                <td data-label="Observaciones">{{ $movimiento->observaciones ?: '-' }}</td>
                             </tr>
                         @empty
                             <tr>

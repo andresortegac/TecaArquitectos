@@ -558,6 +558,16 @@ body {
     border-radius: 10px;
   }
 
+  .principal-topbar {
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+
+  .principal-topbar h1 {
+    font-size: 20px;
+    line-height: 1.15;
+  }
+
   .principal-page {
     padding: 12px;
     overflow-x: hidden;
@@ -570,12 +580,8 @@ body {
     padding-right: 10px;
   }
 
-  .principal-topbar {
-    padding: 12px;
-  }
-
   .principal-topbar h1 {
-    font-size: 24px;
+    font-size: 18px;
   }
 
   .principal-page {

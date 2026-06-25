@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/reportes-generalrep.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/reportes-generalrep.css') }}?v={{ filemtime(public_path('css/reportes-generalrep.css')) }}">
 @endpush
 
 @section('title', 'Resumen general')

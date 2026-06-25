@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/reportes-cliente-detallado.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/reportes-cliente-detallado.css') }}?v={{ filemtime(public_path('css/reportes-cliente-detallado.css')) }}">
 @endpush
 
 @section('title', 'Reporte detallado por cliente')
@@ -103,18 +103,18 @@
                     <tbody>
                         @forelse($filas as $fila)
                             <tr>
-                                <td>{{ $fila->cliente }}</td>
-                                <td>{{ $fila->obra }}</td>
-                                <td>{{ $fila->herramienta }}</td>
-                                <td>{{ $fila->fecha_alquiler }} - {{ $fila->fecha_devolucion }}</td>
-                                <td class="center">{{ $fila->dias_cobrados }}</td>
-                                <td class="center">{{ $fila->dias_no_cobrados }}</td>
-                                <td class="right">${{ number_format($fila->costo_alquiler, 0) }}</td>
-                                <td class="right">${{ number_format($fila->costo_transporte, 0) }}</td>
-                                <td class="right">${{ number_format($fila->descuentos_aplicados, 0) }}</td>
-                                <td class="right">${{ number_format($fila->costos_perdidas_mantenimiento, 0) }}</td>
-                                <td class="right">${{ number_format($fila->pagos_abonos, 0) }}</td>
-                                <td class="right">${{ number_format($fila->saldo_final, 0) }}</td>
+                                <td data-label="Cliente">{{ $fila->cliente }}</td>
+                                <td data-label="Obra">{{ $fila->obra }}</td>
+                                <td data-label="Herramienta">{{ $fila->herramienta }}</td>
+                                <td data-label="Fechas">{{ $fila->fecha_alquiler }} - {{ $fila->fecha_devolucion }}</td>
+                                <td data-label="Días cobrados" class="center">{{ $fila->dias_cobrados }}</td>
+                                <td data-label="Días no cobrados" class="center">{{ $fila->dias_no_cobrados }}</td>
+                                <td data-label="Costo alquiler" class="right">${{ number_format($fila->costo_alquiler, 0) }}</td>
+                                <td data-label="Costo transporte" class="right">${{ number_format($fila->costo_transporte, 0) }}</td>
+                                <td data-label="Descuentos" class="right">${{ number_format($fila->descuentos_aplicados, 0) }}</td>
+                                <td data-label="Pérdidas" class="right">${{ number_format($fila->costos_perdidas_mantenimiento, 0) }}</td>
+                                <td data-label="Pagos" class="right">${{ number_format($fila->pagos_abonos, 0) }}</td>
+                                <td data-label="Saldo final" class="right">${{ number_format($fila->saldo_final, 0) }}</td>
                             </tr>
                         @empty
                             <tr>

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/reportes-incidencias.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/reportes-incidencias.css') }}?v={{ filemtime(public_path('css/reportes-incidencias.css')) }}">
 @endpush
 
 @section('title', 'Reporte de incidencias y dias no cobrados')
@@ -65,12 +65,12 @@
                                 $obra = $registro->arriendo?->obra;
                             @endphp
                             <tr>
-                                <td>{{ $registro->arriendo?->cliente?->nombre ?? '-' }}</td>
-                                <td>{{ $obra?->direccion ?: ($obra?->detalle ?: '-') }}</td>
-                                <td>{{ optional($registro->created_at)->format('d/m/Y H:i') ?? '-' }}</td>
-                                <td>{{ strtoupper($registro->tipo ?? '-') }}</td>
-                                <td class="center">{{ (int) ($registro->dias ?? 0) }}</td>
-                                <td>NO REGISTRADO</td>
+                                <td data-label="Cliente">{{ $registro->arriendo?->cliente?->nombre ?? '-' }}</td>
+                                <td data-label="Obra">{{ $obra?->direccion ?: ($obra?->detalle ?: '-') }}</td>
+                                <td data-label="Fecha">{{ optional($registro->created_at)->format('d/m/Y H:i') ?? '-' }}</td>
+                                <td data-label="Tipo">{{ strtoupper($registro->tipo ?? '-') }}</td>
+                                <td data-label="Días descontados" class="center">{{ (int) ($registro->dias ?? 0) }}</td>
+                                <td data-label="Usuario">NO REGISTRADO</td>
                             </tr>
                         @empty
                             <tr>

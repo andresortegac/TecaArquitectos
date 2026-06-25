@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/reportes-productos-alquilados.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/reportes-productos-alquilados.css') }}?v={{ filemtime(public_path('css/reportes-productos-alquilados.css')) }}">
 @endpush
 
 @section('title', 'Reporte detallado de productos alquilados')
@@ -50,20 +50,20 @@
                                 $obra = $item->arriendo?->obra;
                             @endphp
                             <tr>
-                                <td>{{ $item->arriendo?->cliente?->nombre ?? '-' }}</td>
-                                <td>
+                                <td data-label="Cliente">{{ $item->arriendo?->cliente?->nombre ?? '-' }}</td>
+                                <td data-label="Obra">
                                     {{ $obra->direccion ?? $obra->detalle ?? '-' }}
                                 </td>
-                                <td>{{ $item->producto?->nombre ?? 'Producto no disponible' }}</td>
-                                <td>
+                                <td data-label="Producto">{{ $item->producto?->nombre ?? 'Producto no disponible' }}</td>
+                                <td data-label="Imagen">
                                     @if(!empty($item->producto?->imagen))
                                         <img src="{{ $item->producto->imagen_url }}" class="rpa-img" alt="Producto">
                                     @else
                                         <span class="rpa-muted">Sin imagen</span>
                                     @endif
                                 </td>
-                                <td class="right">{{ number_format((int) $item->cantidad_actual) }}</td>
-                                <td>
+                                <td data-label="Cantidad alquilada" class="right">{{ number_format((int) $item->cantidad_actual) }}</td>
+                                <td data-label="Fecha registrada">
                                     {{ optional($item->fecha_inicio_item)->format('d/m/Y H:i') ?? optional($item->arriendo?->fecha_inicio)->format('d/m/Y H:i') ?? '-' }}
                                 </td>
                             </tr>
