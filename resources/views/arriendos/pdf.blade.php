@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
- <style>
+    <meta charset="UTF-8">
+    <style>
         body {
             font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
             color: #000;
         }
 
-        /* =========================
-           MARCA DE AGUA
-        ========================== */
         .watermark {
             position: fixed;
             top: 35%;
@@ -21,18 +18,13 @@
             z-index: -1;
         }
 
-        h1, h2, h3 {
-            margin: 0;
+        h1, h2, h3, h4 {
+            margin: 0 0 8px;
             padding: 0;
         }
 
-        .header {
-            margin-bottom: 15px;
-        }
-
-        .line {
-            border-bottom: 1px solid #000;
-            margin: 10px 0;
+        p {
+            margin: 4px 0;
         }
 
         table {
@@ -41,7 +33,8 @@
             margin-top: 10px;
         }
 
-        table th, table td {
+        table th,
+        table td {
             border: 1px solid #000;
             padding: 6px;
             text-align: left;
@@ -51,46 +44,38 @@
             background: #f2f2f2;
         }
 
-        .footer {
-            margin-top: 40px;
-        }
-
-        .firma {
-            margin-top: 50px;
-            width: 45%;
-            display: inline-block;
+        .no-border td {
+            border: none;
+            padding-top: 35px;
             text-align: center;
-        }
-
-        .firma-linea {
-            margin-top: 40px;
-            border-top: 1px solid #000;
         }
     </style>
 </head>
 <body>
+@php
+    $logoPath = public_path('img/LOGIN/logo_factura.jpeg');
+    $obraTexto = $arriendo->obra
+        ? trim(($arriendo->obra->direccion ?? '') . ' ' . ($arriendo->obra->detalle ?? ''))
+        : '';
+@endphp
 
-{{-- =========================
-     MARCA DE AGUA
-========================== --}}
-<img src="{{ public_path('img/LOGIN/logo_factura.jpeg') }}" class="watermark">
-</head>
-
-<body>
+@if(is_file($logoPath))
+    <img src="{{ $logoPath }}" class="watermark" alt="TECA Arquitectos">
+@endif
 
 <h2>TECA ARQUITECTOS</h2>
-<p><strong>Dirección:</strong> B/ JARDIN</p>
-<p><strong>Teléfono:</strong> 3138501801</p>
+<p><strong>Direccion:</strong> B/ JARDIN</p>
+<p><strong>Telefono:</strong> 3138501801</p>
 <p><strong>Email:</strong> tecaarquitectos@gmail.com</p>
 <p><strong>NIT:</strong> 12345678-1</p>
 
 <hr>
 
-<h4>Información del Cliente</h4>
-<p><strong>Nombre:</strong> {{ $arriendo->cliente->nombre }}</p>
-<p><strong>Dirección Obra:</strong> {{ $arriendo->obra->direccion }}</p>
+<h4>Informacion del Cliente</h4>
+<p><strong>Nombre:</strong> {{ $arriendo->cliente->nombre ?? 'Cliente no registrado' }}</p>
+<p><strong>Direccion Obra:</strong> {{ $obraTexto !== '' ? $obraTexto : 'Sin obra registrada' }}</p>
 <p><strong>Fecha:</strong> {{ now()->format('Y-m-d') }}</p>
-<p><strong>N° Factura:</strong> AR-{{ str_pad($arriendo->id, 5, '0', STR_PAD_LEFT) }}</p>
+<p><strong>No. Factura:</strong> AR-{{ str_pad($arriendo->id, 5, '0', STR_PAD_LEFT) }}</p>
 
 <hr>
 
@@ -105,13 +90,17 @@
         </tr>
     </thead>
     <tbody>
-        @foreach($arriendo->items as $item)
+        @forelse($arriendo->items as $item)
             <tr>
-                <td>{{ $item->producto->nombre }}</td>
-                <td>{{ $item->cantidad_inicial }}</td>
-                <td>SÍ</td>
+                <td>{{ $item->producto->nombre ?? 'Producto no registrado' }}</td>
+                <td>{{ $item->cantidad_inicial ?? $item->cantidad_actual ?? 0 }}</td>
+                <td>SI</td>
             </tr>
-        @endforeach
+        @empty
+            <tr>
+                <td colspan="3">Sin herramientas registradas.</td>
+            </tr>
+        @endforelse
     </tbody>
 </table>
 
@@ -120,17 +109,17 @@
 <p><strong>Observaciones:</strong></p>
 <p>
 El alquiler inicia en la fecha acordada, con las herramientas en condiciones
-excelentes. Cualquier daño ocasionado durante el período de alquiler será
+excelentes. Cualquier dano ocasionado durante el periodo de alquiler sera
 responsabilidad del cliente.
 </p>
 
 <br><br>
 
 <table class="no-border">
-<tr>
-    <td>Firma Responsable Bodega:<br><br>__________________________</td>
-    <td>Firma Cliente:<br><br>__________________________</td>
-</tr>
+    <tr>
+        <td>Firma Responsable Bodega:<br><br>__________________________</td>
+        <td>Firma Cliente:<br><br>__________________________</td>
+    </tr>
 </table>
 
 <br>
