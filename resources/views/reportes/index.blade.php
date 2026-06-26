@@ -68,8 +68,8 @@
             ],
             [
                 'chip' => 'Costos',
-                'title' => 'Reporte de perdidas y mantenimiento',
-                'description' => 'Consolida costos por dano, perdida y mantenimiento para control y recuperacion financiera.',
+                'title' => 'Reporte de pérdidas y mantenimiento',
+                'description' => 'Consolida costos por daño, pérdida y mantenimiento para control y recuperación financiera.',
                 'route' => 'reportes.perdidas-mantenimiento',
                 'button' => 'primary',
             ],

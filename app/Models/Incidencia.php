@@ -11,7 +11,8 @@ class Incidencia extends Model
 
     protected $guarded = [];
 
-    public $timestamps = false; // porque tu tabla solo tiene created_at (no updated_at)
+    public $timestamps = true;
+    const UPDATED_AT = null;
 
     protected $casts = [
         'costo' => 'decimal:2',

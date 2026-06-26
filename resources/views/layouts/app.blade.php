@@ -61,6 +61,11 @@
                                 Registro de Producto
                             </a>
 
+                            <a href="{{ route('productos.create') }}"
+                            class="nav-item {{ request()->routeIs('producion.index') ? 'active' : '' }}">
+                                Registro de Producción
+                            </a>
+
                             <a href="{{ route('solicitudes.solicitudes') }}"
                             class="nav-item {{ request()->routeIs('solicitudes.*') ? 'active' : '' }}">
                                 Solicitudes de Inventario

@@ -56,21 +56,26 @@
                             <th>Fecha de la incidencia</th>
                             <th>Tipo de incidencia</th>
                             <th class="center">Dias descontados</th>
-                            <th>Usuario que registró la incidencia</th>
+                            <th>Herramienta</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($registros as $registro)
                             @php
                                 $obra = $registro->arriendo?->obra;
+                                $tipos = collect([
+                                    ((int) ($registro->dias_lluvia_desc ?? 0) > 0) ? 'LLUVIA' : null,
+                                    ((int) ($registro->domingos_desc ?? 0) > 0) ? 'DOMINGO / NO LABORABLE' : null,
+                                ])->filter()->implode(', ');
+                                $diasDescontados = (int) ($registro->dias_lluvia_desc ?? 0) + (int) ($registro->domingos_desc ?? 0);
                             @endphp
                             <tr>
                                 <td data-label="Cliente">{{ $registro->arriendo?->cliente?->nombre ?? '-' }}</td>
                                 <td data-label="Obra">{{ $obra?->direccion ?: ($obra?->detalle ?: '-') }}</td>
-                                <td data-label="Fecha">{{ optional($registro->created_at)->format('d/m/Y H:i') ?? '-' }}</td>
-                                <td data-label="Tipo">{{ strtoupper($registro->tipo ?? '-') }}</td>
-                                <td data-label="Días descontados" class="center">{{ (int) ($registro->dias ?? 0) }}</td>
-                                <td data-label="Usuario">NO REGISTRADO</td>
+                                <td data-label="Fecha">{{ optional($registro->fecha_devolucion)->format('d/m/Y') ?? '-' }}</td>
+                                <td data-label="Tipo">{{ $tipos ?: '-' }}</td>
+                                <td data-label="Dias descontados" class="center">{{ $diasDescontados }}</td>
+                                <td data-label="Herramienta">{{ $registro->arriendoItem?->producto?->nombre ?? '-' }}</td>
                             </tr>
                         @empty
                             <tr>
