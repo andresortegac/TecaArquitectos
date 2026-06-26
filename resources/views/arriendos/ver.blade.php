@@ -344,7 +344,7 @@
     <div class="pro-head">
       <div class="pro-title">
         <h2>
-          Arriendo #{{ $arriendo->id }}
+          ALQUILER #{{ $arriendo->id }}
           <span class="badge off">Contrato</span>
         </h2>
 
@@ -399,7 +399,7 @@
 
         <div>
           <h3>Resumen financiero</h3>
-          <div class="hint">Totales del contrato e histÃ³rico del cliente (incluye transportes para que queden cobrados).</div>
+          <div class="hint">Totales del contrato e histórico del cliente (incluye transportes para que queden cobrados).</div>
           <div class="divider"></div>
 
           <div class="kpis">
@@ -431,17 +431,17 @@
               <div class="value">${{ number_format($saldoGeneral, 2) }}</div>
             </div>
 
-            {{-- HistÃ³rico --}}
+            {{-- Histórico --}}
             <div class="kpi">
-              <div class="label">Total histÃ³rico cliente</div>
+              <div class="label">Total histórico cliente</div>
               <div class="value">${{ number_format((float)($totalHistorico['precio_total'] ?? 0), 2) }}</div>
             </div>
             <div class="kpi">
-              <div class="label">Pagado histÃ³rico</div>
+              <div class="label">Pagado histórico</div>
               <div class="value">${{ number_format((float)($totalHistorico['total_pagado'] ?? 0), 2) }}</div>
             </div>
             <div class="kpi">
-              <div class="label">Saldo histÃ³rico</div>
+              <div class="label">Saldo histórico</div>
               <div class="value">${{ number_format((float)($totalHistorico['saldo'] ?? 0), 2) }}</div>
             </div>
           </div>

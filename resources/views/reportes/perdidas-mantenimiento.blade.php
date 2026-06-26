@@ -1,4 +1,4 @@
-@extends('layouts.app')
+.@extends('layouts.app')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/reportes-perdidas-mantenimiento.css') }}?v={{ filemtime(public_path('css/reportes-perdidas-mantenimiento.css')) }}">
@@ -75,7 +75,7 @@
                             <th>Herramienta</th>
                             <th>Cliente responsable</th>
                             <th>Tipo de evento</th>
-                            <th class="right">Costo aplicado</th>
+                            <th class="right">Unidad/Daños</th>
                             <th>Fecha</th>
                             <th>Estado del cobro</th>
                         </tr>
