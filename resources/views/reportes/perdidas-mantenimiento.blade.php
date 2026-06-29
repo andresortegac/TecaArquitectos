@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/reportes-perdidas-mantenimiento.css') }}?v={{ filemtime(public_path('css/reportes-perdidas-mantenimiento.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/reportes-perdidas-mantenimiento.css') }}">
 @endpush
 
-@section('title', 'Reporte de pérdidas y mantenimiento')
-@section('header', 'Reporte de pérdidas y mantenimiento (RF-25 / RF-26)')
+@section('title', 'Reporte de perdidas y mantenimiento')
+@section('header', 'Reporte de perdidas y mantenimiento (RF-25 / RF-26)')
 
 @section('content')
     @php
         $eventoLabel = [
-            'dano' => 'Daño',
-            'perdida' => 'Pérdida',
+            'daño' => 'Daño',
+            'perdida' => 'Perdida',
             'mantenimiento' => 'Mantenimiento',
         ];
     @endphp
@@ -19,8 +19,8 @@
     <div class="rpm-page">
         <section class="rpm-hero">
             <div>
-                <h2>Reporte de pérdidas y mantenimiento</h2>
-                <p>Consolidado de costos asociados a herramientas dañadas, en mantenimiento o pérdidas por el cliente.</p>
+                <h2>Reporte de perdidas y mantenimiento</h2>
+                <p>Consolidado de costos asociados a herramientas dañadas, en mantenimiento o perdidas por el cliente.</p>
             </div>
             <a href="{{ route('reportes.index') }}" class="rpm-btn-back">Volver</a>
         </section>
@@ -41,8 +41,8 @@
                     <label for="evento">Tipo de evento</label>
                     <select id="evento" name="evento">
                         <option value="">Todos</option>
-                        <option value="dano" {{ $filters['evento'] === 'dano' ? 'selected' : '' }}>Daño</option>
-                        <option value="perdida" {{ $filters['evento'] === 'perdida' ? 'selected' : '' }}>Pérdida</option>
+                        <option value="daño" {{ $filters['evento'] === 'daño' ? 'selected' : '' }}>Daño</option>
+                        <option value="perdida" {{ $filters['evento'] === 'perdida' ? 'selected' : '' }}>Perdida</option>
                         <option value="mantenimiento" {{ $filters['evento'] === 'mantenimiento' ? 'selected' : '' }}>Mantenimiento</option>
                     </select>
                 </div>
@@ -77,7 +77,7 @@
                             <th>Tipo de Incidencias</th>
                             <th class="right">Costo Unitario</th>
                             <th>Fecha</th>
-                            <th>Estado del Cobro</th>
+                            <th>Estado del cobro</th>
                         </tr>
                     </thead>
                     <tbody>

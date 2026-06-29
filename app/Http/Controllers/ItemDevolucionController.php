@@ -151,7 +151,7 @@ class ItemDevolucionController extends Controller
                 // ========= ACUMULADOS ITEM =========
                 $nuevoTotalAlquiler = (float)($item->total_alquiler ?? 0) + $totalAlquilerParcial;
 
-                // El transporte se conserva en total_merma para mantener compatibilidad con la estructura actual.
+                // ✅ Recomendación rápida: por ahora sumamos transporte a total_merma para no tocar estructura del item
                 $nuevoTotalMerma    = (float)($item->total_merma ?? 0) + $totalMermaParcial + $costoTransporte;
 
                 $nuevoTotalPagado   = (float)($item->total_pagado ?? 0) + $pago;
@@ -168,7 +168,7 @@ class ItemDevolucionController extends Controller
                         'tipo' => 'LLUVIA',
                         'dias' => $diasLluvia,
                         'costo' => 0,
-                        'descripcion' => ($desc ? $desc . ' ' : '') . "(Devolución producto #{$item->id})",
+                        'descripcion' => ($desc ? $desc . ' ' : '') . "(Devolución item #{$item->id})",
                     ]);
                 }
 
@@ -178,7 +178,7 @@ class ItemDevolucionController extends Controller
                         'tipo' => 'DANO',
                         'dias' => 0,
                         'costo' => $totalMermaParcial,
-                        'descripcion' => ($desc ? $desc . ' ' : '') . "(Devolución producto #{$item->id})",
+                        'descripcion' => ($desc ? $desc . ' ' : '') . "(Devolución item #{$item->id})",
                     ]);
                 }
 
@@ -189,7 +189,7 @@ class ItemDevolucionController extends Controller
                         'tipo' => 'TRANSPORTE',
                         'dias' => 0,
                         'costo' => $costoTransporte,
-                        'descripcion' => trim(($detalleTransporte ?: 'Transporte') . " (Devolución producto #{$item->id})"),
+                        'descripcion' => trim(($detalleTransporte ?: 'Transporte') . " (Devolución item #{$item->id})"),
                     ]);
                 }
 
@@ -264,8 +264,8 @@ class ItemDevolucionController extends Controller
                         'source_type' => \App\Models\DevolucionArriendo::class,
                         'source_id'   => $devol->id,
 
-                        'note' => 'Pago devolución producto | arriendo #' . $item->arriendo_id
-                            . ' | producto #' . $item->id
+                        'note' => 'Pago devolución ITEM | arriendo #' . $item->arriendo_id
+                            . ' | item #' . $item->id
                             . ' | devol #' . $devol->id,
                     ], [
                         ['method' => $method, 'amount' => (int)round($pago)],
@@ -279,25 +279,18 @@ class ItemDevolucionController extends Controller
         }
 
         return redirect()->route('items.devolucion.create', $item)
-            ->with('success', 'Devolución registrada. Stock actualizado correctamente.');
+            ->with('success', 'Devolución registrada. ✅ Stock actualizado correctamente.');
     }
 
     private function recalcularTotalesPadre(Arriendo $arriendo): void
     {
-        $arriendo->load(['items', 'transportes']);
+        $arriendo->load('items');
 
         $totalAlquiler = (float)$arriendo->items->sum('total_alquiler');
         $totalMerma    = (float)$arriendo->items->sum('total_merma');
         $totalPagado   = (float)$arriendo->items->sum('total_pagado');
 
-        $totalTransportes = (float)($arriendo->transportes?->sum('valor') ?? 0);
-        $subtotal = $totalAlquiler + $totalMerma + $totalTransportes;
-
-        $ivaAplica = (int)($arriendo->iva_aplica ?? 0) === 1;
-        $ivaRate   = (float)($arriendo->iva_rate ?? 0.19);
-        $ivaValor  = $ivaAplica ? ($subtotal * $ivaRate) : 0;
-
-        $precioTotal = $subtotal + $ivaValor;
+        $precioTotal = $totalAlquiler + $totalMerma;
         $saldo       = max(0, $precioTotal - $totalPagado);
 
         $todosDevueltos = $arriendo->items->count() > 0

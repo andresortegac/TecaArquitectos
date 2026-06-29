@@ -115,7 +115,7 @@
   color: var(--muted);
 }
 
-/* Vista compacta para transportes */
+/* ✅ COMPACTO SOLO EN TRANSPORTES */
 .card.transport-card{
   padding: 12px;
 }
@@ -222,6 +222,176 @@
 .kpi .label{ font-size:12px; color: var(--muted); }
 .kpi .value{ margin-top:6px; font-weight:900; letter-spacing:.2px; }
 
+/* Resumen financiero */
+.finance-panel{
+  display:grid;
+  gap:12px;
+}
+.finance-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.finance-title{
+  margin:0;
+  font-size:16px;
+  font-weight:900;
+}
+.finance-subtitle{
+  margin-top:4px;
+  max-width:520px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+}
+.finance-status{
+  border:1px solid #bbf7d0;
+  background:#f0fdf4;
+  color:#166534;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.finance-status.due{
+  border-color:#fed7aa;
+  background:#fff7ed;
+  color:#9a3412;
+}
+.finance-total{
+  display:grid;
+  grid-template-columns: 1fr auto;
+  gap:12px;
+  align-items:end;
+  border:1px solid #bfdbfe;
+  border-radius:16px;
+  padding:14px;
+  background:linear-gradient(135deg, #eff6ff 0%, #ffffff 68%);
+}
+.finance-total .label{
+  margin:0 0 6px;
+  color:#1d4ed8;
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.35px;
+}
+.finance-total .amount{
+  font-size:26px;
+  line-height:1.05;
+  font-weight:950;
+  color:#0f172a;
+}
+.finance-total .note{
+  margin-top:6px;
+  color:#64748b;
+  font-size:12px;
+}
+.finance-total .balance{
+  text-align:right;
+  min-width:150px;
+}
+.finance-total .balance span{
+  display:block;
+  color:#64748b;
+  font-size:12px;
+  font-weight:800;
+}
+.finance-total .balance strong{
+  display:block;
+  margin-top:6px;
+  color:#9a3412;
+  font-size:18px;
+  line-height:1.1;
+}
+.finance-breakdown{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:10px;
+}
+.finance-metric{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  background:#fff;
+  min-width:0;
+}
+.finance-metric .label{
+  margin:0;
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+}
+.finance-metric .value{
+  margin-top:6px;
+  color:#0f172a;
+  font-size:17px;
+  font-weight:950;
+  line-height:1.15;
+  overflow-wrap:anywhere;
+}
+.finance-metric.paid .value{ color:#047857; }
+.finance-metric.due .value{ color:#b45309; }
+.finance-history{
+  border-top:1px solid var(--line);
+  padding-top:12px;
+}
+.finance-history-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-end;
+  margin-bottom:10px;
+}
+.finance-history-head h3{
+  margin:0;
+}
+.finance-history-head span{
+  color:var(--muted);
+  font-size:12px;
+}
+.finance-history-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:10px;
+}
+.finance-history-item{
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  padding:11px 12px;
+  background:#f8fafc;
+}
+.finance-history-item .label{
+  margin:0;
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+}
+.finance-history-item .value{
+  margin-top:6px;
+  color:#0f172a;
+  font-size:16px;
+  font-weight:950;
+  line-height:1.15;
+  overflow-wrap:anywhere;
+}
+@media(max-width:720px){
+  .finance-total{
+    grid-template-columns:1fr;
+  }
+  .finance-total .balance{
+    text-align:left;
+    min-width:0;
+  }
+  .finance-breakdown,
+  .finance-history-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 /* Rows */
 .row{
   display:flex;
@@ -320,14 +490,14 @@
   $totalTransportes = (float) $transportes->sum('valor');
 
   // Totales base (contrato)
+  $valorAlquiler = (float)($totContrato['total_alquiler'] ?? 0) + (float)($totContrato['total_merma'] ?? 0);
   $totalContratoBase = (float)($totContrato['precio_total'] ?? 0);
   $pagadoContratoBase = (float)($totContrato['total_pagado'] ?? 0);
   $saldoContratoBase  = (float)($totContrato['saldo'] ?? 0);
 
-  // El backend ya incluye transportes en el total y saldo del contrato.
-  $totalGeneral = $totalContratoBase;
-  // Si el transporte no tiene pagos asociados, se asume pendiente:
-  $saldoGeneral = $saldoContratoBase;
+  // El backend ya incluye transportes (e IVA si aplica) en el total y saldo del contrato.
+  $totalACobrar = $totalContratoBase;
+  $saldoPendiente = $saldoContratoBase;
 
   // Helpers de tipo (mostrar bien claro)
   $labelTipo = function($tipo){
@@ -344,8 +514,8 @@
     <div class="pro-head">
       <div class="pro-title">
         <h2>
-          ALQUILER #{{ $arriendo->id }}
-          <span class="badge off">Contrato</span>
+          Arriendo #{{ $arriendo->id }}
+          <span class="badge off">PADRE / Contrato</span>
         </h2>
 
         <div class="pro-meta">
@@ -363,7 +533,7 @@
       </div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <a class="btn" href="{{ route('arriendos.index') }}">Volver</a>
+        <a class="btn" href="{{ route('arriendos.index') }}">← Volver</a>
         @if((int)($arriendo->cerrado ?? 0) === 0 && $arriendo->estado === 'activo')
           <a class="btn primary" href="{{ route('arriendos.items.create', $arriendo) }}">+ Agregar producto</a>
         @endif
@@ -378,7 +548,7 @@
 
           <div class="kv">
             <b>Cliente</b>
-            <span>{{ $arriendo->cliente->nombre ?? 'â€”' }}</span>
+            <span>{{ $arriendo->cliente->nombre ?? '—' }}</span>
           </div>
 
           <div class="kv">
@@ -397,52 +567,62 @@
           </div>
         </div>
 
-        <div>
-          <h3>Resumen financiero</h3>
-          <div class="hint">Totales del contrato e histórico del cliente (incluye transportes para que queden cobrados).</div>
-          <div class="divider"></div>
+        <div class="finance-panel">
+          <div class="finance-head">
+            <div>
+              <h3 class="finance-title">Resumen financiero</h3>
+              <div class="finance-subtitle">Contrato actual separado del historial del cliente. El valor principal es el monto operativo para cobrar.</div>
+            </div>
+            <div class="finance-status {{ $saldoPendiente > 0 ? 'due' : '' }}">
+              {{ $saldoPendiente > 0 ? 'Saldo pendiente' : 'Al dia' }}
+            </div>
+          </div>
 
-          <div class="kpis">
-            {{-- Base contrato --}}
-            <div class="kpi">
-              <div class="label">Total contrato</div>
-              <div class="value">${{ number_format($totalContratoBase, 2) }}</div>
+          <div class="finance-total">
+            <div>
+              <div class="label">Total a cobrar</div>
+              <div class="amount">${{ number_format($totalACobrar, 2) }}</div>
+              <div class="note">Incluye alquiler, transporte{{ (int)($arriendo->iva_aplica ?? 0) === 1 ? ' e IVA' : '' }}.</div>
             </div>
-            <div class="kpi">
-              <div class="label">Pagado contrato</div>
-              <div class="value">${{ number_format($pagadoContratoBase, 2) }}</div>
+            <div class="balance">
+              <span>Saldo actual</span>
+              <strong>${{ number_format($saldoPendiente, 2) }}</strong>
             </div>
-            <div class="kpi">
-              <div class="label">Saldo contrato</div>
-              <div class="value">${{ number_format($saldoContratoBase, 2) }}</div>
-            </div>
+          </div>
 
-            {{-- Transportes y totales generales --}}
-            <div class="kpi">
-              <div class="label">Total transportes</div>
+          <div class="finance-breakdown">
+            <div class="finance-metric">
+              <div class="label">Valor del alquiler</div>
+              <div class="value">${{ number_format($valorAlquiler, 2) }}</div>
+            </div>
+            <div class="finance-metric">
+              <div class="label">Transporte</div>
               <div class="value">${{ number_format($totalTransportes, 2) }}</div>
             </div>
-            <div class="kpi">
-              <div class="label">Total general</div>
-              <div class="value">${{ number_format($totalGeneral, 2) }}</div>
+            <div class="finance-metric paid">
+              <div class="label">Pagado</div>
+              <div class="value">${{ number_format($pagadoContratoBase, 2) }}</div>
             </div>
-            <div class="kpi">
-              <div class="label">Saldo general (incluye transportes)</div>
-              <div class="value">${{ number_format($saldoGeneral, 2) }}</div>
-            </div>
+          </div>
 
-            {{-- Histórico --}}
-            <div class="kpi">
-              <div class="label">Total histórico cliente</div>
-              <div class="value">${{ number_format((float)($totalHistorico['precio_total'] ?? 0), 2) }}</div>
+          <div class="finance-history">
+            <div class="finance-history-head">
+              <h3>Historial del cliente</h3>
+              <span>Contexto acumulado</span>
             </div>
-            <div class="kpi">
-              <div class="label">Pagado histórico</div>
-              <div class="value">${{ number_format((float)($totalHistorico['total_pagado'] ?? 0), 2) }}</div>
-            </div>
-            <div class="kpi">
-              <div class="label">Saldo histórico</div>
-              <div class="value">${{ number_format((float)($totalHistorico['saldo'] ?? 0), 2) }}</div>
+            <div class="finance-history-grid">
+              <div class="finance-history-item">
+                <div class="label">Total historico</div>
+                <div class="value">${{ number_format((float)($totalHistorico['precio_total'] ?? 0), 2) }}</div>
+              </div>
+              <div class="finance-history-item">
+                <div class="label">Pagado historico</div>
+                <div class="value">${{ number_format((float)($totalHistorico['total_pagado'] ?? 0), 2) }}</div>
+              </div>
+              <div class="finance-history-item">
+                <div class="label">Saldo pendiente historico</div>
+                <div class="value">${{ number_format((float)($totalHistorico['saldo'] ?? 0), 2) }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -455,7 +635,7 @@
         <div>
           <h3 style="margin:0;">Transportes / Entregas</h3>
           <div class="hint">
-            Registra los costos de entrega asociados al contrato. Estos valores se suman al total.
+            Registra <b>Entrega de herramienta</b> o <b>Recogida de herramienta</b>. Ambas suman al total.
           </div>
         </div>
         <div>
@@ -471,13 +651,13 @@
             <label class="label">Tipo (muy importante)</label>
             <select class="input" name="tipo" required>
               <option value="NO" {{ old('tipo', 'NO') === 'NO' ? 'selected' : '' }}>
-                No registrar transporte
+                NO - Sin transporte
               </option>
               <option value="ENTREGA" {{ old('tipo', 'ENTREGA') === 'ENTREGA' ? 'selected' : '' }}>
-                Entrega de herramienta
+                ENTREGA - Entrega de herramienta
               </option>
             </select>
-            <div class="help">Selecciona si este contrato incluye costo de transporte.</div>
+            <div class="help">Solo permitido: No o Entrega de herramienta.</div>
           </div>
 
           <div class="form-grid">
@@ -491,23 +671,23 @@
               <label class="label">Valor transporte</label>
               <input class="input" type="number" min="0" step="0.01" name="valor"
                      value="{{ old('valor', 0) }}" required>
-              <div class="help">Ejemplo: 15000 o 25000.</div>
+              <div class="help">Ej: 15000 / 25000 / etc.</div>
             </div>
           </div>
 
           <div style="margin-top:8px;">
             <label class="label">Nota (opcional)</label>
             <input class="input" type="text" name="nota"
-                   value="{{ old('nota') }}" placeholder="Ej: entrega en obra o domicilio">
+                   value="{{ old('nota') }}" placeholder="Ej: Entrega 1 / retiro / domicilio...">
           </div>
 
           <div style="display:flex; justify-content:flex-end; margin-top:10px;">
-            <button type="submit" class="btn warning">Agregar transporte</button>
+            <button type="submit" class="btn warning">+ Agregar transporte</button>
           </div>
         </form>
       @else
         <div class="hint" style="margin-top:10px;">
-          Este arriendo no esta activo o ya esta cerrado. No se pueden agregar transportes.
+          Este arriendo no está activo o ya está cerrado. No se pueden agregar transportes.
         </div>
       @endif
 
@@ -536,7 +716,7 @@
                   <tr>
                     <td>{{ !empty($t->fecha) ? \Carbon\Carbon::parse($t->fecha)->format('d/m/Y') : '—' }}</td>
 
-                    {{-- Tipo de transporte --}}
+                    {{-- ✅ BIEN CLARO --}}
                     <td>
                       <span class="badge {{ $tipoBadgeClass }}">
                         {{ $tipoTexto }}
@@ -551,8 +731,8 @@
                           @csrf
                           @method('DELETE')
                           <button class="btn danger"
-                                  onclick="return confirm('¿Seguro que deseas eliminar este transporte?')">
-                            Eliminar
+                                  onclick="return confirm('¿Seguro que deseas borrar este transporte?')">
+                            Borrar
                           </button>
                         </form>
                       @else
@@ -573,12 +753,12 @@
       <div class="row">
         <div>
           <h3 style="margin:0;">Productos alquilados (Items)</h3>
-          <div class="hint">Listado de productos, cantidades, di­as, totales y acciones.</div>
+          <div class="hint">Listado de productos, cantidades, días, totales y acciones.</div>
         </div>
       </div>
 
       @if($arriendo->items->isEmpty())
-        <div class="hint">No hay productos alquilados. Agrega el primero.</div>
+        <div class="hint">No hay productos aún. Agrega el primero.</div>
       @else
         <div class="table-wrap">
           <table class="table">
@@ -590,8 +770,8 @@
                 <th>Inicio item</th>
                 <th class="right">Tarifa/día</th>
                 <th class="right">Valor día</th>
-                <th class="center">Di­as alquilados</th>
-                <th class="center">Di­as cobrables</th>
+                <th class="center">Días alquilados</th>
+                <th class="center">Días cobrables</th>
                 <th class="right">Total</th>
                 <th class="right">Pagado</th>
                 <th class="right">Saldo</th>
@@ -660,7 +840,7 @@
 
                   <td class="right actions">
                     <div class="actions-box">
-                      {{--… SOLUCION: aunque estÃ© cerrado, igual deja ENTRAR A VER lo ocurrido (historial). --}}
+                      {{-- ✅ SOLUCIÓN: aunque esté cerrado, igual deja ENTRAR A VER lo ocurrido (historial). --}}
                       @if((int)($it->cerrado ?? 0) === 0 && $it->estado === 'activo')
                         <a class="btn warning" href="{{ route('items.devolucion.create', $it) }}">Devolución</a>
                       @else
@@ -673,7 +853,7 @@
                         @csrf
                         @method('DELETE')
                         <button class="btn danger"
-                                onclick="return confirm('Â¿Seguro que deseas borrar este alquiler (item)?')">
+                                onclick="return confirm('¿Seguro que deseas borrar este alquiler (item)?')">
                           Borrar
                         </button>
                       </form>

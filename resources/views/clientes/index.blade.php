@@ -18,18 +18,6 @@
     <a class="btn" href="{{ route('clientes.create') }}">+ Nuevo</a>
 </div>
 
-<form method="GET" class="clientes-filters" data-live-filter>
-    <label for="q">Buscar cliente</label>
-    <input
-        id="q"
-        type="search"
-        name="q"
-        value="{{ $filters['q'] ?? '' }}"
-        placeholder="Nombre, documento, celular o correo"
-        autocomplete="off">
-    <a href="{{ route('clientes.index') }}">Limpiar</a>
-</form>
-
 <table class="table table-shadow">
     <thead>
         <tr>
@@ -60,7 +48,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="5">No hay clientes para la búsqueda ingresada.</td>
+                <td colspan="3">No hay clientes</td>
             </tr>
         @endforelse
     </tbody>

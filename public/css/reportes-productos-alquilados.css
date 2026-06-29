@@ -1,9 +1,6 @@
 .rpa-page {
   display: grid;
   gap: 18px;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
 }
 
 .rpa-hero {
@@ -46,9 +43,6 @@
   border-radius: 14px;
   background: #ffffffde;
   padding: 14px;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
 }
 
 .rpa-filter {
@@ -110,10 +104,6 @@
   border-radius: 12px;
   overflow: auto;
   background: #fff;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
 }
 
 .rpa-table {
@@ -203,140 +193,5 @@
   .rpa-filter input {
     width: 100%;
     grid-column: span 2;
-  }
-}
-
-@media (max-width: 1100px) {
-  .rpa-page {
-    gap: 12px;
-  }
-
-  .rpa-hero,
-  .rpa-card {
-    border-radius: 10px;
-    padding: 12px;
-  }
-
-  .rpa-hero h2 {
-    font-size: 20px;
-    line-height: 1.15;
-    overflow-wrap: anywhere;
-  }
-
-  .rpa-hero p {
-    overflow-wrap: anywhere;
-  }
-
-  .rpa-filter {
-    grid-template-columns: 1fr;
-    width: 100%;
-  }
-
-  .rpa-filter input {
-    grid-column: auto;
-  }
-
-  .rpa-filter button,
-  .rpa-filter a,
-  .rpa-btn-back {
-    justify-content: center;
-    width: 100%;
-  }
-
-  .rpa-table-wrap {
-    border: 0;
-    overflow: visible;
-    background: transparent;
-  }
-
-  .rpa-table {
-    display: block;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .rpa-table thead {
-    display: none;
-  }
-
-  .rpa-table tbody,
-  .rpa-table tr,
-  .rpa-table td {
-    display: block;
-    width: 100%;
-  }
-
-  .rpa-table tbody {
-    display: grid;
-    gap: 10px;
-  }
-
-  .rpa-table tr {
-    border: 1px solid #dbe3ee;
-    border-radius: 10px;
-    background: #fff;
-    overflow: hidden;
-  }
-
-  .rpa-table td {
-    display: grid;
-    grid-template-columns: minmax(92px, 38%) minmax(0, 1fr);
-    gap: 10px;
-    align-items: center;
-    padding: 10px 12px;
-    border-bottom: 1px solid #f1f5f9;
-    text-align: right;
-    overflow-wrap: anywhere;
-  }
-
-  .rpa-table td:last-child {
-    border-bottom: 0;
-  }
-
-  .rpa-table td::before {
-    content: attr(data-label);
-    color: #475569;
-    font-size: 12px;
-    font-weight: 700;
-    text-align: left;
-  }
-
-  .rpa-table .right {
-    text-align: right;
-  }
-
-  .rpa-img {
-    width: 48px;
-    height: 48px;
-    justify-self: end;
-  }
-
-  .rpa-empty {
-    display: block !important;
-    text-align: center !important;
-    padding: 14px !important;
-  }
-
-  .rpa-empty::before {
-    content: none !important;
-  }
-
-  .rpa-pagination {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 380px) {
-  .rpa-table td {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    text-align: left;
-  }
-
-  .rpa-table .right,
-  .rpa-img {
-    justify-self: start;
-    text-align: left;
   }
 }

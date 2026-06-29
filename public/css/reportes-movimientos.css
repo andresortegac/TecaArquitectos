@@ -1,9 +1,6 @@
 .rep-mov-page {
   display: grid;
   gap: 18px;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
 }
 
 .rep-mov-hero {
@@ -101,9 +98,6 @@
   border: 1px solid #dbe3ee;
   border-radius: 14px;
   padding: 16px;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
 }
 
 .rep-mov-filters {
@@ -191,10 +185,6 @@
   border-radius: 12px;
   overflow: auto;
   background: #fff;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
 }
 
 .rep-table {
@@ -320,128 +310,5 @@
     flex: 1;
     justify-content: center;
     display: inline-flex;
-  }
-}
-
-@media (max-width: 1100px) {
-  .rep-mov-page {
-    gap: 12px;
-  }
-
-  .rep-mov-hero,
-  .rep-mov-panel {
-    border-radius: 10px;
-    padding: 12px;
-  }
-
-  .rep-mov-hero h2 {
-    font-size: 20px;
-    line-height: 1.15;
-    overflow-wrap: anywhere;
-  }
-
-  .rep-mov-hero p {
-    overflow-wrap: anywhere;
-  }
-
-  .hero-actions,
-  .actions {
-    flex-direction: column;
-  }
-
-  .btn-volver,
-  .btn-exportar,
-  .btn-filtrar,
-  .btn-limpiar {
-    width: 100%;
-  }
-
-  .table-wrap {
-    border: 0;
-    overflow: visible;
-    background: transparent;
-  }
-
-  .rep-table {
-    display: block;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .rep-table thead {
-    display: none;
-  }
-
-  .rep-table tbody,
-  .rep-table tr,
-  .rep-table td {
-    display: block;
-    width: 100%;
-  }
-
-  .rep-table tbody {
-    display: grid;
-    gap: 10px;
-  }
-
-  .rep-table tr {
-    border: 1px solid #dbe3ee;
-    border-radius: 10px;
-    background: #fff;
-    overflow: hidden;
-  }
-
-  .rep-table tbody td {
-    display: grid;
-    grid-template-columns: minmax(92px, 38%) minmax(0, 1fr);
-    gap: 10px;
-    align-items: center;
-    padding: 10px 12px;
-    border-bottom: 1px solid #f1f5f9;
-    text-align: right;
-    overflow-wrap: anywhere;
-  }
-
-  .rep-table td:last-child {
-    border-bottom: 0;
-  }
-
-  .rep-table td::before {
-    content: attr(data-label);
-    color: #475569;
-    font-size: 12px;
-    font-weight: 700;
-    text-align: left;
-  }
-
-  .rep-table .right {
-    text-align: right;
-  }
-
-  .empty {
-    display: block !important;
-    text-align: center !important;
-    padding: 14px !important;
-  }
-
-  .empty::before {
-    content: none !important;
-  }
-
-  .pagination-row {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 380px) {
-  .rep-table tbody td {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    text-align: left;
-  }
-
-  .rep-table .right {
-    text-align: left;
   }
 }

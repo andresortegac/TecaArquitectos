@@ -1,9 +1,6 @@
 .rid-page {
   display: grid;
   gap: 18px;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
 }
 
 .rid-hero {
@@ -44,7 +41,7 @@
 
 .rid-kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
 }
 
@@ -73,9 +70,6 @@
   border-radius: 14px;
   background: #ffffffde;
   padding: 14px;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
 }
 
 .rid-filters {
@@ -164,10 +158,6 @@
   border-radius: 12px;
   overflow: auto;
   background: #fff;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
 }
 
 .rid-table {
@@ -252,128 +242,5 @@
   .rid-btn-back {
     justify-content: center;
     flex: 1;
-  }
-}
-
-@media (max-width: 1100px) {
-  .rid-page {
-    gap: 12px;
-  }
-
-  .rid-hero,
-  .rid-card {
-    border-radius: 10px;
-    padding: 12px;
-  }
-
-  .rid-hero h2 {
-    font-size: 20px;
-    line-height: 1.15;
-    overflow-wrap: anywhere;
-  }
-
-  .rid-hero p {
-    overflow-wrap: anywhere;
-  }
-
-  .actions {
-    flex-direction: column;
-  }
-
-  .field input,
-  .field select,
-  .actions button,
-  .actions a {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .rid-table-wrap {
-    border: 0;
-    overflow: visible;
-    background: transparent;
-  }
-
-  .rid-table {
-    display: block;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .rid-table thead {
-    display: none;
-  }
-
-  .rid-table tbody,
-  .rid-table tr,
-  .rid-table td {
-    display: block;
-    width: 100%;
-  }
-
-  .rid-table tbody {
-    display: grid;
-    gap: 10px;
-  }
-
-  .rid-table tr {
-    border: 1px solid #dbe3ee;
-    border-radius: 10px;
-    background: #fff;
-    overflow: hidden;
-  }
-
-  .rid-table td {
-    display: grid;
-    grid-template-columns: minmax(92px, 38%) minmax(0, 1fr);
-    gap: 10px;
-    align-items: center;
-    padding: 10px 12px;
-    border-bottom: 1px solid #f1f5f9;
-    text-align: right;
-    overflow-wrap: anywhere;
-  }
-
-  .rid-table td:last-child {
-    border-bottom: 0;
-  }
-
-  .rid-table td::before {
-    content: attr(data-label);
-    color: #475569;
-    font-size: 12px;
-    font-weight: 700;
-    text-align: left;
-  }
-
-  .rid-table .right {
-    text-align: right;
-  }
-
-  .rid-empty {
-    display: block !important;
-    text-align: center !important;
-    padding: 14px !important;
-  }
-
-  .rid-empty::before {
-    content: none !important;
-  }
-
-  .rid-pagination {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 380px) {
-  .rid-table td {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    text-align: left;
-  }
-
-  .rid-table .right {
-    text-align: left;
   }
 }

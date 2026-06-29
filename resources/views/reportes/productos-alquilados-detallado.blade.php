@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/reportes-productos-alquilados.css') }}?v={{ filemtime(public_path('css/reportes-productos-alquilados.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/reportes-productos-alquilados.css') }}">
 @endpush
 
 @section('title', 'Reporte detallado de productos alquilados')
@@ -50,20 +50,20 @@
                                 $obra = $item->arriendo?->obra;
                             @endphp
                             <tr>
-                                <td data-label="Cliente">{{ $item->arriendo?->cliente?->nombre ?? '-' }}</td>
-                                <td data-label="Obra">
+                                <td>{{ $item->arriendo?->cliente?->nombre ?? '-' }}</td>
+                                <td>
                                     {{ $obra->direccion ?? $obra->detalle ?? '-' }}
                                 </td>
-                                <td data-label="Producto">{{ $item->producto?->nombre ?? 'Producto no disponible' }}</td>
-                                <td data-label="Imagen">
+                                <td>{{ $item->producto?->nombre ?? 'Producto no disponible' }}</td>
+                                <td>
                                     @if(!empty($item->producto?->imagen))
-                                        <img src="{{ $item->producto->imagen_url }}" class="rpa-img" alt="Producto">
+                                        <img src="{{ asset('storage/' . $item->producto->imagen) }}" class="rpa-img" alt="Producto">
                                     @else
                                         <span class="rpa-muted">Sin imagen</span>
                                     @endif
                                 </td>
-                                <td data-label="Cantidad alquilada" class="right">{{ number_format((int) $item->cantidad_actual) }}</td>
-                                <td data-label="Fecha registrada">
+                                <td class="right">{{ number_format((int) $item->cantidad_actual) }}</td>
+                                <td>
                                     {{ optional($item->fecha_inicio_item)->format('d/m/Y H:i') ?? optional($item->arriendo?->fecha_inicio)->format('d/m/Y H:i') ?? '-' }}
                                 </td>
                             </tr>

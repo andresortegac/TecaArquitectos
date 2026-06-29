@@ -1,9 +1,6 @@
 .gr-page {
   display: grid;
   gap: 18px;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
 }
 
 .gr-hero {
@@ -15,13 +12,11 @@
   padding: 20px;
   background: linear-gradient(120deg, #0b1324 0%, #1e293b 100%);
   color: #f8fafc;
-  min-width: 0;
 }
 
 .gr-hero h2 {
   margin: 0 0 8px;
   font-size: 24px;
-  overflow-wrap: anywhere;
 }
 
 .gr-hero p {
@@ -49,9 +44,6 @@
   border-radius: 14px;
   background: #ffffffde;
   padding: 14px;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
 }
 
 .gr-section h3 {
@@ -62,7 +54,7 @@
 
 .gr-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
 }
 
@@ -71,7 +63,6 @@
   background: #fff;
   border-radius: 12px;
   padding: 14px;
-  min-width: 0;
 }
 
 .gr-card span {
@@ -86,7 +77,6 @@
   color: #0f172a;
   font-size: 22px;
   line-height: 1.2;
-  overflow-wrap: anywhere;
 }
 
 .gr-card small {
@@ -104,35 +94,5 @@
   .gr-btn-back {
     width: 100%;
     text-align: center;
-  }
-}
-
-@media (max-width: 1100px) {
-  .gr-page {
-    gap: 12px;
-  }
-
-  .gr-hero,
-  .gr-section {
-    border-radius: 10px;
-    padding: 12px;
-  }
-
-  .gr-hero h2 {
-    font-size: 20px;
-    line-height: 1.15;
-  }
-
-  .gr-hero p {
-    overflow-wrap: anywhere;
-  }
-
-  .gr-card {
-    border-radius: 10px;
-    padding: 12px;
-  }
-
-  .gr-card strong {
-    font-size: 20px;
   }
 }

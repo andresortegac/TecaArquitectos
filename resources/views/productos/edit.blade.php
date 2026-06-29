@@ -12,7 +12,7 @@
         <section class="pe-hero">
             <div>
                 <h2>Editar producto</h2>
-                <p>Actualiza la informaciÃ³n del producto y su estado en inventario.</p>
+                <p>Actualiza la información del producto y su estado en inventario.</p>
             </div>
             <a href="{{ route('productos.index') }}" class="pe-btn-secondary">Volver</a>
         </section>
@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="field">
-                    <label for="categorias">CategorÃ­a</label>
+                    <label for="categorias">Categoría</label>
                     <input id="categorias" name="categorias" value="{{ old('categorias', $producto->categorias) }}">
                 </div>
 
@@ -51,14 +51,14 @@
                 </div>
 
                 <div class="field">
-                    <label for="ubicacion">UbicaciÃ³n</label>
+                    <label for="ubicacion">Ubicación</label>
                     <input id="ubicacion" name="ubicacion" value="{{ old('ubicacion', $producto->ubicacion) }}">
                 </div>
 
                 <div class="field">
                     <label for="estado">Estado</label>
                     <select id="estado" name="estado" required>
-                        @foreach(['disponible', 'daÃ±ado', 'reservado'] as $estado)
+                        @foreach(['disponible', 'dañado', 'reservado'] as $estado)
                             <option value="{{ $estado }}" @selected(old('estado', $producto->estado) === $estado)>
                                 {{ ucfirst($estado) }}
                             </option>
@@ -71,12 +71,12 @@
                     <div class="pe-image-row">
                         <img
                             id="preview"
-                            src="{{ $producto->imagen_url }}"
+                            src="{{ $producto->imagen ? asset('storage/' . $producto->imagen) : asset('img/product-icon.svg') }}"
                             alt="{{ $producto->nombre }}"
                             class="pe-image-preview">
                         <label for="imagen" class="pe-upload-box">
                             <span class="pe-upload-title">Subir imagen del producto</span>
-                            <span class="pe-upload-subtitle">Formatos permitidos: JPG, PNG, WEBP (mÃ¡x. 5 MB)</span>
+                            <span class="pe-upload-subtitle">Formatos permitidos: JPG, PNG, WEBP (máx. 5 MB)</span>
                             <span id="pe-upload-name" class="pe-upload-name">{{ $producto->imagen ? basename($producto->imagen) : 'Ningún archivo seleccionado' }}</span>
                         </label>
                         <input id="imagen" type="file" name="imagen" accept="image/*">
@@ -102,7 +102,7 @@
                 const file = input.files && input.files[0];
                 if (!file) {
                     fileName.textContent = '{{ $producto->imagen ? basename($producto->imagen) : 'Ningún archivo seleccionado' }}';
-                    preview.src = '{{ $producto->imagen_url }}';
+                    preview.src = '{{ $producto->imagen ? asset('storage/' . $producto->imagen) : asset('img/product-icon.svg') }}';
                     return;
                 }
                 preview.src = URL.createObjectURL(file);

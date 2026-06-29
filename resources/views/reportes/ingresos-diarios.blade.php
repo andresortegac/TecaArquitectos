@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/reportes-ingresos-diarios.css') }}?v={{ filemtime(public_path('css/reportes-ingresos-diarios.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/reportes-ingresos-diarios.css') }}">
 @endpush
 
 @section('title', 'Reporte diario de ingresos')
@@ -108,13 +108,13 @@
                                 $obra = $registro->obra_direccion ?: $registro->obra_detalle ?: '-';
                             @endphp
                             <tr>
-                                <td data-label="Fecha">{{ optional(\Illuminate\Support\Carbon::parse($registro->occurred_at))->format('d/m/Y H:i') }}</td>
-                                <td data-label="Cliente">{{ $registro->cliente ?: '-' }}</td>
-                                <td data-label="Obra">{{ $obra }}</td>
-                                <td data-label="Tipo de pago">{{ $metodoLabel[$registro->tipo_pago] ?? ucfirst($registro->tipo_pago) }}</td>
-                                <td data-label="Concepto">{{ $concepto }}</td>
-                                <td data-label="Valor recibido" class="right">${{ number_format((float) $registro->valor_recibido, 0) }}</td>
-                                <td data-label="Usuario">{{ $registro->usuario ?: 'Usuario no identificado' }}</td>
+                                <td>{{ optional(\Illuminate\Support\Carbon::parse($registro->occurred_at))->format('d/m/Y H:i') }}</td>
+                                <td>{{ $registro->cliente ?: '-' }}</td>
+                                <td>{{ $obra }}</td>
+                                <td>{{ $metodoLabel[$registro->tipo_pago] ?? ucfirst($registro->tipo_pago) }}</td>
+                                <td>{{ $concepto }}</td>
+                                <td class="right">${{ number_format((float) $registro->valor_recibido, 0) }}</td>
+                                <td>{{ $registro->usuario ?: 'Usuario no identificado' }}</td>
                             </tr>
                         @empty
                             <tr>

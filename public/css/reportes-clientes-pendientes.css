@@ -1,9 +1,6 @@
 .rcp-page {
   display: grid;
   gap: 18px;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
 }
 
 .rcp-hero {
@@ -15,7 +12,6 @@
   padding: 20px;
   background: linear-gradient(120deg, #0b1324 0%, #1e293b 100%);
   color: #f8fafc;
-  min-width: 0;
 }
 
 .rcp-hero h2 {
@@ -45,9 +41,8 @@
 
 .rcp-kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
-  min-width: 0;
 }
 
 .rcp-kpi {
@@ -79,9 +74,6 @@
   border-radius: 14px;
   background: #ffffffde;
   padding: 14px;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
 }
 
 .rcp-filters {
@@ -169,11 +161,7 @@
   border: 1px solid #dbe3ee;
   border-radius: 12px;
   overflow: auto;
-  -webkit-overflow-scrolling: touch;
   background: #fff;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
 }
 
 .rcp-table {
@@ -281,140 +269,5 @@
   .rcp-btn-back {
     justify-content: center;
     flex: 1;
-  }
-}
-
-@media (max-width: 1100px) {
-  .rcp-page {
-    gap: 12px;
-  }
-
-  .rcp-hero,
-  .rcp-card {
-    border-radius: 10px;
-    padding: 12px;
-  }
-
-  .rcp-hero h2 {
-    font-size: 20px;
-    overflow-wrap: anywhere;
-  }
-
-  .rcp-hero p,
-  .rcp-section-head p {
-    overflow-wrap: anywhere;
-  }
-
-  .rcp-kpi {
-    border-radius: 10px;
-    padding: 12px;
-  }
-
-  .rcp-filters {
-    gap: 10px;
-  }
-
-  .field input,
-  .field select,
-  .actions button,
-  .actions a {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .actions {
-    flex-direction: column;
-  }
-
-  .rcp-table-wrap {
-    border: 0;
-    overflow: visible;
-    background: transparent;
-  }
-
-  .rcp-table {
-    display: block;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .rcp-table thead {
-    display: none;
-  }
-
-  .rcp-table tbody,
-  .rcp-table tr,
-  .rcp-table td {
-    display: block;
-    width: 100%;
-  }
-
-  .rcp-table tbody {
-    display: grid;
-    gap: 10px;
-  }
-
-  .rcp-table tr {
-    border: 1px solid #dbe3ee;
-    border-radius: 10px;
-    background: #fff;
-    overflow: hidden;
-  }
-
-  .rcp-table th,
-  .rcp-table td {
-    padding: 0;
-    border-bottom: 0;
-  }
-
-  .rcp-table td {
-    display: grid;
-    grid-template-columns: minmax(92px, 38%) minmax(0, 1fr);
-    gap: 10px;
-    align-items: center;
-    padding: 10px 12px;
-    border-bottom: 1px solid #f1f5f9;
-    text-align: right;
-    overflow-wrap: anywhere;
-  }
-
-  .rcp-table td:last-child {
-    border-bottom: 0;
-  }
-
-  .rcp-table td::before {
-    content: attr(data-label);
-    color: #475569;
-    font-size: 12px;
-    font-weight: 700;
-    text-align: left;
-  }
-
-  .rcp-table .right,
-  .rcp-table .center {
-    text-align: right;
-  }
-
-  .rcp-empty {
-    display: block !important;
-    text-align: center !important;
-    padding: 14px !important;
-  }
-
-  .rcp-empty::before {
-    content: none !important;
-  }
-}
-
-@media (max-width: 380px) {
-  .rcp-table td {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    text-align: left;
-  }
-
-  .rcp-table .right,
-  .rcp-table .center {
-    text-align: left;
   }
 }

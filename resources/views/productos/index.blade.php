@@ -42,10 +42,10 @@
         </section>
 
         <section class="pro-card">
-            <form method="GET" class="pro-filters" data-live-filter>
+            <form method="GET" class="pro-filters">
                 <div class="field field-grow">
-                    <label for="q">Buscar producto o categoría</label>
-                    <input id="q" type="search" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nombre o categoría" autocomplete="off">
+                    <label for="q">Buscar producto</label>
+                    <input id="q" type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nombre de producto">
                 </div>
                 <div class="field">
                     <label for="categoria">Categoría</label>
@@ -68,7 +68,7 @@
                 @forelse($productos as $producto)
                     <article class="producto-card">
                         <img
-                            src="{{ $producto->imagen_url }}"
+                            src="{{ $producto->imagen ? asset('storage/' . $producto->imagen) : asset('img/product-icon.svg') }}"
                             alt="{{ $producto->nombre }}">
 
                         <h3>{{ $producto->nombre }}</h3>

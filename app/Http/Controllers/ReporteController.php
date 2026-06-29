@@ -5,13 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Arriendo;
 use App\Models\ArriendoItem;
 use App\Models\Cliente;
-use App\Models\DevolucionArriendo;
 use App\Models\Incidencia;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class ReporteController extends Controller
 {
@@ -266,15 +264,15 @@ class ReporteController extends Controller
         $fechaDesde = $filters['fecha_desde'] ?? now()->startOfMonth()->toDateString();
         $fechaHasta = $filters['fecha_hasta'] ?? now()->toDateString();
 
-        $query = DevolucionArriendo::query()
-            ->with(['arriendo.cliente', 'arriendo.obra', 'arriendoItem.producto'])
+        $query = Incidencia::query()
+            ->with(['arriendo.cliente', 'arriendo.obra'])
             ->where(function ($q) {
-                $q->where('domingos_desc', '>', 0)
-                    ->orWhere('dias_lluvia_desc', '>', 0);
+                $q->where('dias', '>', 0)
+                    ->orWhere('tipo', 'LLUVIA');
             })
-            ->whereDate('fecha_devolucion', '>=', $fechaDesde)
-            ->whereDate('fecha_devolucion', '<=', $fechaHasta)
-            ->orderByDesc('fecha_devolucion')
+            ->whereDate('created_at', '>=', $fechaDesde)
+            ->whereDate('created_at', '<=', $fechaHasta)
+            ->orderByDesc('created_at')
             ->orderByDesc('id');
 
         if (!empty($filters['cliente'])) {
@@ -284,33 +282,15 @@ class ReporteController extends Controller
         }
 
         if (!empty($filters['tipo'])) {
-            $tipo = mb_strtolower($filters['tipo']);
-
-            $query->where(function ($tipoQuery) use ($tipo) {
-                $tipoQuery
-                    ->where('descripcion_incidencia', 'like', '%' . $tipo . '%')
-                    ->orWhere('nota', 'like', '%' . $tipo . '%');
-
-                if (str_contains($tipo, 'lluvia')) {
-                    $tipoQuery->orWhere('dias_lluvia_desc', '>', 0);
-                }
-
-                if (str_contains($tipo, 'domingo') || str_contains($tipo, 'no labor')) {
-                    $tipoQuery->orWhere('domingos_desc', '>', 0);
-                }
-            });
+            $query->where('tipo', 'like', '%' . $filters['tipo'] . '%');
         }
-
-        $resumenRegistros = (clone $query)->get();
 
         $registros = $query->paginate(25)->withQueryString();
 
         $resumen = [
-            'total_incidencias' => $resumenRegistros->count(),
-            'dias_descontados' => (int) $resumenRegistros->sum(function ($registro) {
-                return (int) ($registro->domingos_desc ?? 0) + (int) ($registro->dias_lluvia_desc ?? 0);
-            }),
-            'clientes_afectados' => $resumenRegistros
+            'total_incidencias' => (clone $query)->count(),
+            'dias_descontados' => (clone $query)->sum('dias'),
+            'clientes_afectados' => (clone $query)->get()
                 ->pluck('arriendo.cliente_id')
                 ->filter()
                 ->unique()
@@ -333,12 +313,11 @@ class ReporteController extends Controller
     {
         $filters = $request->validate([
             'cliente' => 'nullable|string|max:120',
-            'evento' => 'nullable|in:dano,daño,perdida,mantenimiento',
+            'evento' => 'nullable|in:daño,perdida,mantenimiento',
             'estado_cobro' => 'nullable|in:cobrado,pendiente',
             'fecha_desde' => 'nullable|date',
             'fecha_hasta' => 'nullable|date|after_or_equal:fecha_desde',
         ]);
-        $filters['evento'] = ($filters['evento'] ?? '') === 'daño' ? 'dano' : ($filters['evento'] ?? '');
 
         $fechaDesde = $filters['fecha_desde'] ?? now()->startOfMonth()->toDateString();
         $fechaHasta = $filters['fecha_hasta'] ?? now()->toDateString();
@@ -348,16 +327,6 @@ class ReporteController extends Controller
             ->whereDate('created_at', '>=', $fechaDesde)
             ->whereDate('created_at', '<=', $fechaHasta)
             ->where('costo', '>', 0)
-            ->where(function ($eventQuery) {
-                $eventQuery
-                    ->whereIn(DB::raw('UPPER(tipo)'), ['DANO', 'MERMA', 'PERDIDA', 'MANTENIMIENTO'])
-                    ->orWhere('descripcion', 'like', '%daño%')
-                    ->orWhere('descripcion', 'like', '%dano%')
-                    ->orWhere('descripcion', 'like', '%merma%')
-                    ->orWhere('descripcion', 'like', '%perdida%')
-                    ->orWhere('descripcion', 'like', '%pérdida%')
-                    ->orWhere('descripcion', 'like', '%mantenimiento%');
-            })
             ->orderByDesc('created_at')
             ->orderByDesc('id');
 
@@ -368,17 +337,17 @@ class ReporteController extends Controller
         }
 
         $incidencias = $query->get()->map(function ($incidencia) {
-            $tipoRaw = Str::upper(Str::ascii((string) ($incidencia->tipo ?? '')));
-            $descripcion = Str::lower(Str::ascii((string) ($incidencia->descripcion ?? '')));
+            $tipoRaw = strtoupper((string) ($incidencia->tipo ?? ''));
+            $descripcion = strtolower((string) ($incidencia->descripcion ?? ''));
 
-            if ($tipoRaw === 'MANTENIMIENTO' || str_contains($descripcion, 'mantenimiento')) {
+            if ($tipoRaw === 'DANO' || str_contains($descripcion, 'daño') || str_contains($descripcion, 'dano')) {
+                $evento = 'daño';
+            } elseif ($tipoRaw === 'MANTENIMIENTO' || str_contains($descripcion, 'mantenimiento')) {
                 $evento = 'mantenimiento';
-            } elseif ($tipoRaw === 'PERDIDA' || str_contains($descripcion, 'perdida')) {
+            } elseif ($tipoRaw === 'PERDIDA' || str_contains($descripcion, 'perdida') || str_contains($descripcion, 'pérdida')) {
                 $evento = 'perdida';
-            } elseif (in_array($tipoRaw, ['DANO', 'MERMA'], true) || str_contains($descripcion, 'dano') || str_contains($descripcion, 'merma')) {
-                $evento = 'dano';
             } else {
-                return null;
+                $evento = 'daño';
             }
 
             $arriendo = $incidencia->arriendo;
@@ -395,7 +364,7 @@ class ReporteController extends Controller
                 $herramienta = $arriendo->producto->nombre;
             }
 
-            $estadoCobro = ((float) ($arriendo?->saldo ?? 0) > 0) ? 'pendiente' : 'cobrado';
+            $estadoCobro = ((float) ($arriendo->saldo ?? 0) > 0) ? 'pendiente' : 'cobrado';
 
             return (object) [
                 'herramienta' => $herramienta,
@@ -405,7 +374,7 @@ class ReporteController extends Controller
                 'fecha' => optional($incidencia->created_at)?->format('d/m/Y H:i') ?? '-',
                 'estado_cobro' => $estadoCobro,
             ];
-        })->filter()->values();
+        });
 
         if (!empty($filters['evento'])) {
             $incidencias = $incidencias->where('evento', $filters['evento'])->values();

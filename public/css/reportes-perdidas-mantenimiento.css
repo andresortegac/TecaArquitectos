@@ -1,9 +1,6 @@
 .rpm-page {
   display: grid;
   gap: 16px;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
 }
 
 .rpm-hero {
@@ -37,7 +34,7 @@
 
 .rpm-kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 10px;
 }
 
@@ -64,9 +61,6 @@
   border-radius: 12px;
   background: #ffffffde;
   padding: 14px;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
 }
 
 .rpm-filters {
@@ -128,10 +122,6 @@
   border-radius: 10px;
   overflow: auto;
   background: #fff;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
 }
 
 .rpm-table {
@@ -197,126 +187,5 @@
   .field,
   .actions {
     grid-column: span 12;
-  }
-}
-
-@media (max-width: 1100px) {
-  .rpm-page {
-    gap: 12px;
-  }
-
-  .rpm-hero,
-  .rpm-card,
-  .rpm-utility {
-    border-radius: 10px;
-    padding: 12px;
-  }
-
-  .rpm-hero h2 {
-    font-size: 20px;
-    line-height: 1.15;
-    overflow-wrap: anywhere;
-  }
-
-  .rpm-hero p {
-    overflow-wrap: anywhere;
-  }
-
-  .actions {
-    flex-direction: column;
-  }
-
-  .field input,
-  .field select,
-  .actions button,
-  .actions a,
-  .rpm-btn-back {
-    justify-content: center;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .rpm-table-wrap {
-    border: 0;
-    overflow: visible;
-    background: transparent;
-  }
-
-  .rpm-table {
-    display: block;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .rpm-table thead {
-    display: none;
-  }
-
-  .rpm-table tbody,
-  .rpm-table tr,
-  .rpm-table td {
-    display: block;
-    width: 100%;
-  }
-
-  .rpm-table tbody {
-    display: grid;
-    gap: 10px;
-  }
-
-  .rpm-table tr {
-    border: 1px solid #dbe3ee;
-    border-radius: 10px;
-    background: #fff;
-    overflow: hidden;
-  }
-
-  .rpm-table td {
-    display: grid;
-    grid-template-columns: minmax(92px, 38%) minmax(0, 1fr);
-    gap: 10px;
-    align-items: center;
-    padding: 10px 12px;
-    border-bottom: 1px solid #f1f5f9;
-    text-align: right;
-    overflow-wrap: anywhere;
-  }
-
-  .rpm-table td:last-child {
-    border-bottom: 0;
-  }
-
-  .rpm-table td::before {
-    content: attr(data-label);
-    color: #475569;
-    font-size: 12px;
-    font-weight: 700;
-    text-align: left;
-  }
-
-  .rpm-table .right {
-    text-align: right;
-  }
-
-  .empty {
-    display: block !important;
-    text-align: center !important;
-    padding: 14px !important;
-  }
-
-  .empty::before {
-    content: none !important;
-  }
-}
-
-@media (max-width: 380px) {
-  .rpm-table td {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    text-align: left;
-  }
-
-  .rpm-table .right {
-    text-align: left;
   }
 }

@@ -206,9 +206,6 @@ Route::middleware(['auth', 'role:admin|bodega|asistente'])->group(function () {
     Route::get('/metricas/reporte/mensual/{year}/{month}', [MetricasController::class, 'reporteMensual'])
         ->name('metricas.reporte.mensual');
 
-    Route::get('/metricas/reporte/semanal/{year}/{week}', [MetricasController::class, 'reporteSemanal'])
-        ->name('metricas.reporte.semanal');
-
     Route::get('/metricas/detalle/dia/{date}', [MetricasController::class, 'detalleDia'])
         ->name('metricas.detalle.dia');
 });

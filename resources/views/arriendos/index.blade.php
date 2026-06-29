@@ -8,105 +8,49 @@
 
   {{-- ✅ ESTILOS SOLO PARA ESTA VISTA (ENCAPSULADO) --}}
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@500;700;800&display=swap');
-
     .pro-ui{
-      --primary: #2563eb;
-      --success: #16a34a;
-      --surface: linear-gradient(150deg, rgba(255,255,255,.94), rgba(241,245,255,.9));
-      --card: rgba(255,255,255,.86);
-      --text: #081225;
-      --muted: #54627a;
-      --line: rgba(158,171,196,.34);
-      --line-strong: rgba(120,140,170,.44);
-      --soft: #f4f8ff;
-      --brand: #1f67f3;
-      --brand-2: #00a9b6;
-      --brand-3: #0e2f77;
-      --shadow: 0 24px 60px rgba(8,24,55,.2);
-      --shadow2: 0 14px 34px rgba(8,24,55,.14);
-      --shadow3: inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(116,137,171,.12);
-      --r: 20px;
+      --surface: rgba(255,255,255,.92);
+      --card: #fff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e5e7eb;
+      --soft: #f8fafc;
+      --shadow: 0 18px 45px rgba(15,23,42,.12);
+      --shadow2: 0 10px 24px rgba(15,23,42,.08);
+      --r: 18px;
 
       width: 100%;
       color: var(--text);
-      font-family: "Manrope", "Space Grotesk", "Segoe UI", sans-serif;
-      position: relative;
-      isolation: isolate;
+      font-family: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    .pro-ui::before,
-    .pro-ui::after{
-      content: "";
-      position: absolute;
-      pointer-events: none;
-      border-radius: 999px;
-      filter: blur(28px);
-      z-index: -1;
-    }
-    .pro-ui::before{
-      width: 360px;
-      height: 360px;
-      top: -90px;
-      left: -70px;
-      background: radial-gradient(circle at 30% 35%, rgba(31,103,243,.32), rgba(31,103,243,0));
-    }
-    .pro-ui::after{
-      width: 280px;
-      height: 280px;
-      top: -50px;
-      right: -40px;
-      background: radial-gradient(circle at 50% 50%, rgba(0,169,182,.22), rgba(0,169,182,0));
-    }
-
-    /* ✅ Contenedor principal */
+    /* ✅ Contenedor: ocupa el ancho del content (no centra raro) */
     .pro-container{
       width: 100%;
       max-width: 100%;
-      padding: 18px;
-      border-radius: 24px;
-      border: 1px solid var(--line);
+      padding: 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(226,232,240,.92);
       background: var(--surface);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(8px);
       box-shadow: var(--shadow);
-      overflow: visible; /* ✅ IMPORTANTE para dropdown */
-      position: relative;
-      transform-style: preserve-3d;
-    }
-    .pro-container::before{
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      border-radius: 24px;
-      background: linear-gradient(115deg, rgba(255,255,255,.45), rgba(255,255,255,0) 38%);
-      mix-blend-mode: screen;
+      overflow: hidden; /* evita "bordes" raros */
     }
 
-    /* Topbar */
+    /* Header superior */
     .pro-topbar{
       display:flex;
       justify-content:space-between;
       align-items:flex-start;
       gap:12px;
       flex-wrap:wrap;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 16px;
-      position: relative;
-    }
-    .pro-topbar::after{
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: -1px;
-      width: 170px;
-      height: 2px;
-      background: linear-gradient(90deg, var(--brand), transparent);
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(226,232,240,.95);
+      margin-bottom: 14px;
     }
     .pro-subtitle{
       margin: 6px 0 0;
-      color: var(--muted);
+      color: rgba(71,85,105,.95);
       font-size: 13px;
       line-height: 1.35;
       max-width: 760px;
@@ -118,67 +62,36 @@
       align-items:center;
     }
 
-    /* Botones */
+    /* Pulimos botones que ya existen */
     .pro-ui .btn-primary,
     .pro-ui .btn-ghost,
     .pro-ui .btn-sm{
       border-radius: 12px !important;
-      font-weight: 800;
-      transition: transform .18s ease, box-shadow .24s ease, filter .24s ease, border-color .24s ease;
-      border: 1px solid rgba(145,167,204,.34);
-      box-shadow: 0 8px 18px rgba(10,24,52,.1);
-      transform: translateZ(0);
+      font-weight: 700;
+      transition: .15s ease;
     }
     .pro-ui .btn-primary:hover,
     .pro-ui .btn-ghost:hover,
     .pro-ui .btn-sm:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 14px 28px rgba(10,24,52,.16);
-      filter: saturate(1.04);
-    }
-    .pro-ui .btn-primary{
-      border-color: rgba(82,133,230,.4);
-      background: linear-gradient(140deg, #0f3ea8, #1f67f3 60%, #2ca9ff) !important;
-      box-shadow: 0 14px 30px rgba(20,72,193,.28), inset 0 1px 0 rgba(255,255,255,.25);
-    }
-    .pro-ui .btn-ghost,
-    .pro-ui .btn-sm{
-      background: linear-gradient(170deg, rgba(255,255,255,.95), rgba(241,246,255,.9)) !important;
-      color: var(--text) !important;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow2);
     }
 
-    /* Cards base (por defecto pueden tener hidden, NO la tabla) */
+    /* Cards */
     .pro-ui .card{
       border-radius: var(--r) !important;
-      border: 1px solid var(--line) !important;
-      background: var(--card) !important;
+      border: 1px solid rgba(226,232,240,.95) !important;
+      background: rgba(255,255,255,.98) !important;
       box-shadow: var(--shadow2) !important;
-      backdrop-filter: blur(9px);
-      transform-style: preserve-3d;
-      position: relative;
-      overflow: hidden; /* ✅ base */
-    }
-    .pro-ui .card::before{
-      content:"";
-      position:absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(130deg, rgba(255,255,255,.5), rgba(255,255,255,0) 45%);
     }
     .pro-ui .card-header{
       padding-bottom: 10px;
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid rgba(226,232,240,.95);
     }
     .pro-ui .card-title{
       font-size: 14px !important;
-      font-weight: 800 !important;
-      letter-spacing: .3px;
-      font-family: "Space Grotesk", "Manrope", sans-serif;
-    }
-
-    /* ✅ FIX: el card de la tabla NO debe recortar el dropdown */
-    .pro-ui .card.card-table{
-      overflow: visible !important;
+      font-weight: 900 !important;
+      letter-spacing: .2px;
     }
 
     /* KPI */
@@ -186,35 +99,23 @@
     .pro-ui .card.kpi{
       min-height: 132px;
       border-radius: 18px !important;
-      background: linear-gradient(155deg, rgba(255,255,255,.95), rgba(236,244,255,.88)) !important;
-      box-shadow: 0 16px 35px rgba(9,32,74,.16), inset 0 1px 0 rgba(255,255,255,.9) !important;
-      transition: transform .2s ease, box-shadow .24s ease;
-    }
-    .pro-ui .card.kpi:hover{
-      transform: translateY(-4px) rotateX(.8deg);
-      box-shadow: 0 22px 44px rgba(9,32,74,.2), inset 0 1px 0 rgba(255,255,255,.92) !important;
+      background: rgba(255,255,255,.96) !important;
     }
     .pro-ui .card.kpi .meta .label{
       font-size: 12px !important;
-      color: var(--muted) !important;
+      color: rgba(100,116,139,.95) !important;
       text-transform: uppercase;
-      letter-spacing: .62px;
+      letter-spacing: .45px;
       font-weight: 800 !important;
     }
     .pro-ui .card.kpi .meta .value{
       font-size: 22px !important;
-      font-weight: 800 !important;
+      font-weight: 900 !important;
       letter-spacing:.2px;
-      font-family: "Space Grotesk", "Manrope", sans-serif;
     }
     .pro-ui .card.kpi .meta .hint{
       font-size: 12px !important;
-      color: var(--muted) !important;
-    }
-    .pro-ui .ring{
-      width: 62px;
-      height: 62px;
-      box-shadow: 0 14px 24px rgba(10,41,93,.2), inset 0 1px 0 rgba(255,255,255,.55) !important;
+      color: rgba(100,116,139,.95) !important;
     }
 
     /* Filtros */
@@ -222,34 +123,30 @@
     .pro-ui .input{
       border-radius: 999px !important;
       height: 44px !important;
-      border: 1px solid var(--line-strong) !important;
-      background: linear-gradient(180deg, #fff, #f7faff) !important;
+      border: 1px solid rgba(203,213,225,.95) !important;
+      background:#fff !important;
       padding: 0 14px !important;
       outline:none !important;
-      transition: border-color .16s ease, box-shadow .18s ease, transform .16s ease;
-      box-shadow: var(--shadow3);
+      transition: .12s ease;
     }
     .pro-ui .input:focus{
-      border-color: rgba(31,103,243,.75) !important;
-      box-shadow: 0 0 0 5px rgba(31,103,243,.14), 0 10px 20px rgba(9,32,74,.1) !important;
-      transform: translateY(-1px);
+      border-color: rgba(59,130,246,.75) !important;
+      box-shadow: 0 0 0 5px rgba(59,130,246,.12) !important;
     }
 
-    /* Tabla */
+    /* ✅ Tabla pro (sin romper layout). En móvil hace scroll, en desktop no */
     .table-wrap-pro{
       width: 100%;
-      overflow: visible !important; /* ✅ FIX: no recortar menú */
+      overflow-x: auto;
       border-radius: 16px;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(244,248,255,.92));
+      border: 1px solid rgba(226,232,240,.95);
+      background: #fff;
       margin-top: 10px;
-      position: relative;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.86), 0 12px 26px rgba(10,32,70,.1);
+      position: relative; /* ✅ necesario para layering del dropdown */
     }
     .pro-ui .table-pro{
       width: 100%;
-      min-width: 0;
-      table-layout: fixed;
+      min-width: 980px; /* móvil/tablet: scroll horizontal controlado */
       border-collapse: separate !important;
       border-spacing: 0 !important;
     }
@@ -257,172 +154,134 @@
       position: sticky;
       top: 0;
       z-index: 2;
-      background: linear-gradient(180deg, #fdfefe, #edf4ff) !important;
-      color: var(--muted) !important;
+      background: #f8fafc !important;
+      color: rgba(71,85,105,.95) !important;
       text-transform: uppercase;
       letter-spacing: .45px;
       font-size: 12px !important;
-      font-weight: 800 !important;
-      border-bottom: 1px solid var(--line) !important;
+      font-weight: 900 !important;
+      border-bottom: 1px solid rgba(226,232,240,.95) !important;
       padding: 12px !important;
-      white-space: normal;
-      word-break: break-word;
-      backdrop-filter: blur(6px);
-      text-align: center !important;
+      white-space: nowrap;
     }
     .pro-ui .table-pro tbody td{
       padding: 12px !important;
-      border-bottom: 1px solid rgba(167,181,205,.28) !important;
+      border-bottom: 1px solid rgba(226,232,240,.85) !important;
       font-size: 13px !important;
       vertical-align: middle !important;
-      color: rgba(8,18,37,.95);
-      white-space: normal;
-      word-break: break-word;
-      text-align: center !important;
+      color: rgba(15,23,42,.95);
+      white-space: nowrap;
     }
     .pro-ui .table-pro tbody tr{
-      position: relative;
-      transition: transform .16s ease, box-shadow .18s ease;
-    }
-    .pro-ui .table-pro tbody tr:hover{
-      filter: none !important;
-      transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(8,24,55,.08);
+      position: relative; /* ✅ para z-index cuando dropdown abre */
     }
 
-    .td-right{ text-align:center !important; }
+    /* ✅ Hover sin cambiar colores de semáforo */
+    .pro-ui .table-pro tbody tr:hover{
+      filter: none !important;
+      background: inherit !important;
+    }
+
+    .td-right{ text-align:right; }
     .small{
       display:block;
       margin-top: 6px;
-      color: var(--muted) !important;
+      color: rgba(100,116,139,.95) !important;
       font-size: 12px !important;
       line-height: 1.2;
       white-space: normal;
-      text-align: center;
     }
 
-    /* Chips */
+    /* Chips más serios (sin cambiar colores de tu ui.css) */
     .pro-ui .chip{
       border-radius: 999px !important;
       padding: 7px 12px !important;
-      font-weight: 800 !important;
+      font-weight: 900 !important;
       letter-spacing: .35px;
-      border: 1px solid rgba(140,160,191,.36);
+      border: 1px solid rgba(226,232,240,.85);
       display:inline-flex;
       align-items:center;
       gap:8px;
       white-space: nowrap;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.82), 0 5px 12px rgba(8,24,55,.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
     }
 
     /* Dropdown */
-    .pro-ui .actions{ display:flex; justify-content:center; }
+    .pro-ui .actions{ display:flex; justify-content:flex-end; }
     .pro-ui .dropdown{ position: relative; z-index: 60; }
-    .pro-ui [data-dd].open{ z-index: 99998; }
+    .pro-ui [data-dd].open{ z-index: 60; }
     .pro-ui [data-dd].open .dropdown-menu{ display:block; }
 
     .pro-ui .btn-kebab{
       width: 40px !important;
       height: 40px !important;
       border-radius: 999px !important;
-      border: 1px solid rgba(142,165,201,.34) !important;
-      background: linear-gradient(180deg, #fff, #eef4ff) !important;
-      box-shadow: 0 12px 20px rgba(8,24,55,.12), inset 0 1px 0 rgba(255,255,255,.75);
-      transition: transform .16s ease, box-shadow .2s ease;
-      font-size: 18px;
-      line-height: 1;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      user-select: none;
+      border: 1px solid rgba(226,232,240,.95) !important;
+      background: #fff !important;
+      box-shadow: 0 10px 18px rgba(15,23,42,.08);
+      transition: .15s ease;
     }
-    .pro-ui .btn-kebab:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 14px 24px rgba(8,24,55,.16), inset 0 1px 0 rgba(255,255,255,.9);
-    }
+    .pro-ui .btn-kebab:hover{ transform: translateY(-1px); }
     .pro-ui .btn-kebab:active{ transform: translateY(0); }
 
-    .pro-ui .dropdown-menu,
-    body > .dropdown-menu{
+    .pro-ui .dropdown-menu{
       display:none;
-      position:fixed;
-      right:auto;
-      top:auto;
+      position:absolute;
+      right:0;
+      top: calc(100% + 8px);
       min-width: 220px;
-      background: linear-gradient(180deg, #f9fbff, #f2f6fc);
-      border:1px solid rgba(166,183,209,.45);
+      background:#fff;
+      border:1px solid rgba(226,232,240,.95);
       border-radius: 14px;
-      box-shadow: 0 18px 34px rgba(8,24,55,.18);
+      box-shadow: 0 18px 40px rgba(15,23,42,.16);
       overflow:hidden;
-      z-index: 99999 !important;
-      will-change: transform;
-      transform: translateZ(0);
-      padding: 8px 0;
-      max-width: calc(100vw - 24px); /* ✅ evita que se salga del viewport */
+      z-index: 9999 !important; /* ✅ arriba de todo */
+      will-change: transform;   /* ✅ evita flicker */
+      transform: translateZ(0); /* ✅ evita flicker */
     }
-    .pro-ui .menu-item,
-    body > .dropdown-menu .menu-item{
+    .pro-ui .menu-item{
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:10px;
       width:100%;
-      padding: 9px 14px;
+      padding: 11px 12px;
       border:0;
-      background: transparent;
+      background:#fff;
       text-decoration:none;
-      color: rgba(8,18,37,.95);
-      font-weight: 800;
+      color: rgba(15,23,42,.95);
+      font-weight: 700;
       cursor:pointer;
       transition:.12s ease;
-      font-size: 15px;
     }
-    .pro-ui .menu-item:hover,
-    body > .dropdown-menu .menu-item:hover{ background: rgba(31,103,243,.08); }
-    .pro-ui .menu-left,
-    body > .dropdown-menu .menu-left{ display:flex; align-items:center; gap:10px; }
-    .pro-ui .dot,
-    body > .dropdown-menu .dot{
-      width: 10px; height: 10px;
+    .pro-ui .menu-item:hover{ background:#f8fafc; }
+    .pro-ui .menu-left{ display:flex; align-items:center; gap:10px; }
+    .pro-ui .dot{
+      width: 8px; height: 8px;
       border-radius: 999px;
       background: rgba(148,163,184,.9);
-      box-shadow: 0 0 0 3px rgba(110,131,164,.14);
     }
-    .pro-ui .menu-arrow,
-    body > .dropdown-menu .menu-arrow{
-      font-size: 16px;
-      line-height: 1;
-      color: rgba(30,41,59,.9);
-      font-weight: 800;
-    }
-    .pro-ui .item-delete .dot,
-    body > .dropdown-menu .item-delete .dot{ background: #ef4444; }
-    .pro-ui .item-close .dot,
-    body > .dropdown-menu .item-close .dot{ background: #f59e0b; }
-    .pro-ui .item-return .dot,
-    body > .dropdown-menu .item-return .dot{ background: #3b82f6; }
-    .pro-ui .item-details .dot,
-    body > .dropdown-menu .item-details .dot{ background: #10b981; }
+    .pro-ui .item-delete .dot{ background: #ef4444; }
+    .pro-ui .item-close .dot{ background: #f59e0b; }
+    .pro-ui .item-return .dot{ background: #3b82f6; }
+    .pro-ui .item-details .dot{ background: #10b981; }
 
-    .pro-ui .table-pro tbody tr.row-open{ z-index: 99998; }
+    /* ✅ Fix parpadeo: cuando dropdown esté abierto, la fila sube de nivel */
+    .pro-ui .table-pro tbody tr.row-open{ z-index: 60; }
     .pro-ui .table-pro tbody tr.row-open:hover{ filter: none !important; }
 
-    /* Modal */
+    /* Modal (solo estética; si tu ui.css ya lo maneja, no rompe) */
     .pro-ui .modal-backdrop{
       position: fixed !important;
       inset: 0 !important;
-      background: radial-gradient(circle at 15% 0%, rgba(31,103,243,.28), rgba(2,6,23,.64)) !important;
-      backdrop-filter: blur(8px);
-      z-index: 20000 !important;
+      background: rgba(2,6,23,.55) !important;
+      backdrop-filter: blur(6px);
+      z-index: 80 !important;
       padding: 18px;
-      display: none;
-      align-items: center;
-      justify-content: center;
     }
     .pro-ui .modal-dialog{
-      width: 100%;
       max-width: 760px;
-      margin: 0 auto;
+      margin: auto;
     }
     .pro-ui .modal-grid{
       display:grid;
@@ -443,8 +302,8 @@
       margin-top: 12px;
       padding: 12px;
       border-radius: 14px;
-      border: 1px solid rgba(71,122,216,.3);
-      background: linear-gradient(170deg, rgba(31,103,243,.1), rgba(255,255,255,.8));
+      border: 1px solid rgba(59,130,246,.24);
+      background: rgba(59,130,246,.06);
     }
     .pro-ui .close-summary-grid{
       display:grid;
@@ -457,11 +316,10 @@
       }
     }
     .pro-ui .sum-box{
-      background:linear-gradient(180deg, rgba(255,255,255,.97), rgba(238,245,255,.92));
-      border: 1px solid rgba(148,168,201,.3);
+      background:#fff;
+      border: 1px solid rgba(226,232,240,.95);
       border-radius: 12px;
       padding: 9px 10px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
     }
     .pro-ui .sum-k{
       display:block;
@@ -482,354 +340,22 @@
     .pro-ui .sum-v-danger{ color:#b91c1c; }
     .pro-ui .sum-v-ok{ color:#166534; }
 
-    /* Semaforización filas */
-    .tr-flag-blue td{
-      background: linear-gradient(180deg, rgba(46,124,244,.28), rgba(46,124,244,.24)) !important;
-      color: #072a5f !important;
-    }
-    .tr-flag-green td{
-      background: linear-gradient(180deg, rgba(20,184,96,.30), rgba(20,184,96,.24)) !important;
-      color: #0a4a2a !important;
-    }
-    .tr-flag-amber td{
-      background: linear-gradient(180deg, rgba(245,158,11,.34), rgba(245,158,11,.27)) !important;
-      color: #6a3a00 !important;
-    }
-    .tr-flag-red td{
-      background: linear-gradient(180deg, rgba(239,68,68,.32), rgba(239,68,68,.26)) !important;
-      color: #6b1010 !important;
-    }
+    /* ==============================
+       ✅ SEMAFORIZACION POR FILA
+       AZUL: activo
+       VERDE: cerrado/devuelto y saldo=0
+       NARANJA: cerrado/devuelto y saldo>0 y dias<=7
+       ROJO: cerrado/devuelto y saldo>0 y dias>=8 (hasta que pague)
+       ============================== */
+    .tr-flag-blue   { background: rgba(59,130,246,.12) !important; }
+    .tr-flag-green  { background: rgba(34,197,94,.14) !important; }
+    .tr-flag-amber  { background: rgba(245,158,11,.16) !important; }
+    .tr-flag-red    { background: rgba(239,68,68,.14) !important; }
 
-    .tr-flag-blue  td:first-child  { box-shadow: inset 6px 0 0 #1d66e8, inset 0 0 0 1px rgba(29,102,232,.18); }
-    .tr-flag-green td:first-child  { box-shadow: inset 6px 0 0 #0f9a56, inset 0 0 0 1px rgba(15,154,86,.18); }
-    .tr-flag-amber td:first-child  { box-shadow: inset 6px 0 0 #e08a00, inset 0 0 0 1px rgba(224,138,0,.20); }
-    .tr-flag-red   td:first-child  { box-shadow: inset 6px 0 0 #d62828, inset 0 0 0 1px rgba(214,40,40,.20); }
-
-    @media(max-width: 780px){
-      .pro-container{
-        padding: 14px;
-        border-radius: 18px;
-      }
-      .pro-ui .table-pro thead th,
-      .pro-ui .table-pro tbody td{
-        font-size: 12px !important;
-        padding: 9px 6px !important;
-      }
-      .pro-topbar{
-        gap: 10px;
-      }
-      .pro-actions{
-        width: 100%;
-      }
-      .pro-ui .btn-primary,
-      .pro-ui .btn-ghost{
-        min-height: 42px;
-      }
-    }
-
-    /* Senior polish: operational, dense, and professional */
-    .pro-ui{
-      --surface: #f6f8fb;
-      --card: #ffffff;
-      --text: #111827;
-      --muted: #64748b;
-      --line: #dbe3ef;
-      --line-strong: #c8d3e3;
-      --brand: #1d4ed8;
-      --brand-2: #0f766e;
-      --brand-3: #111827;
-      --shadow: 0 16px 38px rgba(15,23,42,.08);
-      --shadow2: 0 10px 24px rgba(15,23,42,.06);
-      --r: 12px;
-      font-family: "Manrope", "Segoe UI", system-ui, sans-serif;
-    }
-
-    .pro-ui::before,
-    .pro-ui::after{
-      display:none !important;
-    }
-
-    .pro-container{
-      border-radius: 14px !important;
-      background: var(--surface) !important;
-      border: 1px solid var(--line) !important;
-      box-shadow: var(--shadow) !important;
-      padding: 16px !important;
-    }
-    .pro-container::before{ display:none !important; }
-
-    .pro-topbar{
-      align-items:center !important;
-      padding: 4px 2px 16px !important;
-      margin-bottom: 14px !important;
-      border-bottom: 1px solid var(--line) !important;
-    }
-    .pro-topbar::after{ display:none !important; }
-    .pro-heading{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width: min(100%, 520px);
-    }
-    .pro-title-main{
-      margin:0;
-      font-family:"Space Grotesk", "Manrope", sans-serif;
-      font-size: clamp(22px, 2.4vw, 30px);
-      line-height:1.05;
-      font-weight:800;
-      color:#0f172a;
-      letter-spacing:0;
-    }
-    .pro-subtitle{
-      margin:0 !important;
-      max-width: 820px !important;
-      color:#64748b !important;
-      font-size:13px !important;
-    }
-    .pro-actions{
-      margin-left:auto;
-    }
-
-    .pro-ui .btn-primary,
-    .pro-ui .btn-ghost,
-    .pro-ui .btn-sm{
-      min-height: 38px;
-      border-radius: 8px !important;
-      box-shadow:none !important;
-      font-weight:800;
-    }
-    .pro-ui .btn-primary{
-      background:#1d4ed8 !important;
-      border-color:#1d4ed8 !important;
-      color:#fff !important;
-    }
-    .pro-ui .btn-ghost,
-    .pro-ui .btn-sm{
-      background:#fff !important;
-      border-color:var(--line-strong) !important;
-      color:#1e293b !important;
-    }
-    .pro-ui .btn-primary:hover,
-    .pro-ui .btn-ghost:hover,
-    .pro-ui .btn-sm:hover{
-      transform: translateY(-1px) !important;
-      box-shadow:0 8px 18px rgba(15,23,42,.08) !important;
-    }
-
-    .pro-ui .card{
-      border-radius: 10px !important;
-      background:#fff !important;
-      border:1px solid var(--line) !important;
-      box-shadow:var(--shadow2) !important;
-    }
-    .pro-ui .card::before{ display:none !important; }
-    .pro-ui .card-header{
-      min-height: 48px;
-      padding: 12px 14px !important;
-      border-bottom: 1px solid var(--line) !important;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .pro-ui .card-title{
-      font-size: 13px !important;
-      text-transform: uppercase;
-      color:#334155;
-      letter-spacing:.06em !important;
-    }
-
-    .pro-ui .kpi-grid{
-      display:grid !important;
-      grid-template-columns: repeat(5, minmax(160px, 1fr));
-      gap:10px !important;
-      margin-bottom: 12px !important;
-    }
-    .pro-ui .card.kpi{
-      min-height: 112px !important;
-      border-radius: 10px !important;
-      background:#fff !important;
-      box-shadow:var(--shadow2) !important;
-      border-left: 4px solid #cbd5e1 !important;
-    }
-    .pro-ui .card.kpi:nth-child(1){ border-left-color:#2563eb !important; }
-    .pro-ui .card.kpi:nth-child(2){ border-left-color:#16a34a !important; }
-    .pro-ui .card.kpi:nth-child(3){ border-left-color:#64748b !important; }
-    .pro-ui .card.kpi:nth-child(4){ border-left-color:#0f766e !important; }
-    .pro-ui .card.kpi:nth-child(5){ border-left-color:#0891b2 !important; }
-    .pro-ui .card.kpi:hover{
-      transform: translateY(-2px) !important;
-      box-shadow:0 14px 28px rgba(15,23,42,.09) !important;
-    }
-    .pro-ui .card.kpi .meta .label{
-      color:#64748b !important;
-      font-size:11px !important;
-      letter-spacing:.08em !important;
-    }
-    .pro-ui .card.kpi .meta .value{
-      font-size:24px !important;
-      color:#0f172a !important;
-    }
-    .pro-ui .ring{
-      width:54px !important;
-      height:54px !important;
-      box-shadow:none !important;
-      border:1px solid #e2e8f0;
-    }
-
-    .report-strip{
-      margin: 4px 0 12px;
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .report-strip::before{
-      content:"Reportes";
-      color:#64748b;
-      font-size:12px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      margin-right:2px;
-    }
-
-    .pro-ui .input{
-      height:40px !important;
-      border-radius: 8px !important;
-      background:#fff !important;
-      box-shadow:none !important;
-      font-size:13px !important;
-    }
-
-    .table-wrap-pro{
-      border-radius: 10px !important;
-      box-shadow:none !important;
-      background:#fff !important;
-      overflow-x:auto !important;
-      overflow-y:visible !important;
-    }
-    .pro-ui .table-pro{
-      min-width: 1040px;
-    }
-    .pro-ui .table-pro thead th{
-      background:#f8fafc !important;
-      color:#475569 !important;
-      font-size:11px !important;
-      letter-spacing:.08em !important;
-      padding: 11px 10px !important;
-      text-align:left !important;
-    }
-    .pro-ui .table-pro tbody td{
-      padding: 12px 10px !important;
-      font-size:13px !important;
-      color:#1f2937 !important;
-      text-align:left !important;
-      background:#fff;
-    }
-    .pro-ui .table-pro tbody tr:hover{
-      transform:none !important;
-      box-shadow:none !important;
-    }
-    .pro-ui .table-pro tbody tr:hover td{
-      background:#f8fbff !important;
-    }
-    .td-right{ text-align:right !important; }
-    .pro-ui .table-pro thead th.td-right,
-    .pro-ui .table-pro tbody td.td-right{
-      text-align:right !important;
-    }
-    .small{
-      text-align:left !important;
-      color:#64748b !important;
-      font-size:11px !important;
-    }
-    .pro-ui .chip{
-      border-radius: 999px !important;
-      padding: 5px 10px !important;
-      box-shadow:none !important;
-      font-size:12px !important;
-      border-color:#dbe3ef;
-    }
-    .pro-ui .chip.blue{
-      background:#eff6ff !important;
-      color:#1d4ed8 !important;
-      border-color:#bfdbfe !important;
-    }
-    .pro-ui .chip.gray{
-      background:#f1f5f9 !important;
-      color:#475569 !important;
-      border-color:#cbd5e1 !important;
-    }
-
-    .pro-ui .btn-kebab{
-      width:34px !important;
-      height:34px !important;
-      border-radius:8px !important;
-      box-shadow:none !important;
-      background:#fff !important;
-    }
-    .pro-ui .dropdown-menu{
-      border-radius:10px !important;
-      box-shadow:0 18px 38px rgba(15,23,42,.16) !important;
-      background:#fff !important;
-      border-color:#dbe3ef !important;
-      min-width: 210px !important;
-    }
-    .pro-ui .menu-item{
-      font-size:13px !important;
-      padding:10px 12px !important;
-    }
-    .pro-ui .dot{
-      width:8px !important;
-      height:8px !important;
-      box-shadow:none !important;
-    }
-
-    .tr-flag-blue td,
-    .tr-flag-green td,
-    .tr-flag-amber td,
-    .tr-flag-red td{
-      color:#1f2937 !important;
-    }
-    .tr-flag-blue td{ background:#f7fbff !important; }
-    .tr-flag-green td{ background:#f7fdf9 !important; }
-    .tr-flag-amber td{ background:#fffaf0 !important; }
-    .tr-flag-red td{ background:#fff7f7 !important; }
-    .tr-flag-blue  td:first-child{ box-shadow: inset 4px 0 0 #2563eb !important; }
-    .tr-flag-green td:first-child{ box-shadow: inset 4px 0 0 #16a34a !important; }
-    .tr-flag-amber td:first-child{ box-shadow: inset 4px 0 0 #f59e0b !important; }
-    .tr-flag-red   td:first-child{ box-shadow: inset 4px 0 0 #dc2626 !important; }
-
-    .pro-ui .modal-dialog{
-      max-width: 860px !important;
-      border-radius:12px !important;
-    }
-    .pro-ui .close-summary{
-      border-radius:10px !important;
-      background:#f8fafc !important;
-      border-color:#dbe3ef !important;
-    }
-    .pro-ui .sum-box{
-      border-radius:8px !important;
-      background:#fff !important;
-      box-shadow:none !important;
-    }
-
-    @media(max-width: 1180px){
-      .pro-ui .kpi-grid{
-        grid-template-columns: repeat(2, minmax(180px, 1fr));
-      }
-    }
-    @media(max-width: 700px){
-      .pro-ui .kpi-grid{
-        grid-template-columns: 1fr;
-      }
-      .pro-actions{
-        margin-left:0;
-        width:100%;
-      }
-    }
+    .tr-flag-blue  td:first-child  { box-shadow: inset 4px 0 0 rgba(59,130,246,.55); }
+    .tr-flag-green td:first-child  { box-shadow: inset 4px 0 0 rgba(34,197,94,.55); }
+    .tr-flag-amber td:first-child  { box-shadow: inset 4px 0 0 rgba(245,158,11,.60); }
+    .tr-flag-red   td:first-child  { box-shadow: inset 4px 0 0 rgba(239,68,68,.60); }
   </style>
 @endpush
 
@@ -842,7 +368,7 @@
     @endif
 
     @php
-      // ✅ KPIs con datos visibles (paginación)
+      // ✅ KPIs calculados con los datos visibles (paginación)
       $col = $arriendos->getCollection();
 
       $total = $col->count();
@@ -853,9 +379,13 @@
       $amarillo = $col->where('semaforo_pago','AMARILLO')->count();
       $verde = $total - $rojo - $amarillo;
 
+      $saldoTotal = $col->sum(fn($x)=>(float)($x->saldo ?? 0));
+      $moraTotal = $col->sum(fn($x)=>(int)($x->dias_mora ?? 0));
+
       $pctPagos = $total ? round(($verde / $total) * 100) : 0;
       $pctActivos = $total ? round(($activos / $total) * 100) : 0;
       $pctDev = $total ? round(($devueltos / $total) * 100) : 0;
+      $pctMora = $total ? round((($rojo + $amarillo) / $total) * 100) : 0;
 
       $pctRecaudoMes = ((float)($recaudadoMes ?? 0)) > 0 ? 67 : 0;
       $pctRecaudoHoy = ((float)($recaudadoHoy ?? 0)) > 0 ? 85 : 15;
@@ -866,12 +396,9 @@
 
         {{-- TOPBAR --}}
         <div class="pro-topbar">
-          <div class="pro-heading">
-            <h1 class="pro-title-main">Contratos de arriendo</h1>
-            <p class="pro-subtitle">
-              Control operativo de contratos, saldos, estados de pago y productos asociados.
-            </p>
-          </div>
+          <p class="pro-subtitle">
+            Lista de arriendos (Contratos PADRE), estados de pago y gestión por productos (items).
+          </p>
 
           <div class="pro-actions">
             <a class="btn-ghost" href="{{ route('arriendos.index') }}">Refrescar</a>
@@ -888,7 +415,10 @@
               <div class="value">{{ $total }}</div>
               <div class="hint">En esta página</div>
             </div>
-            <div class="ring" style="--p: {{ $pctPagos }}%; --ring: var(--primary);" data-t="{{ $pctPagos }}%"></div>
+            <div class="ring"
+                 style="--p: {{ $pctPagos }}%; --ring: var(--primary);"
+                 data-t="{{ $pctPagos }}%">
+            </div>
           </div>
 
           <div class="card kpi">
@@ -897,7 +427,10 @@
               <div class="value">{{ $activos }}</div>
               <div class="hint">En curso</div>
             </div>
-            <div class="ring" style="--p: {{ $pctActivos }}%; --ring: var(--success);" data-t="{{ $pctActivos }}%"></div>
+            <div class="ring"
+                 style="--p: {{ $pctActivos }}%; --ring: var(--success);"
+                 data-t="{{ $pctActivos }}%">
+            </div>
           </div>
 
           <div class="card kpi">
@@ -906,7 +439,10 @@
               <div class="value">{{ $devueltos }}</div>
               <div class="hint">Cerrados</div>
             </div>
-            <div class="ring" style="--p: {{ $pctDev }}%; --ring: rgba(100,116,139,.8);" data-t="{{ $pctDev }}%"></div>
+            <div class="ring"
+                 style="--p: {{ $pctDev }}%; --ring: rgba(100,116,139,.8);"
+                 data-t="{{ $pctDev }}%">
+            </div>
           </div>
 
           <div class="card kpi" id="kpiRecaudoMes">
@@ -915,24 +451,27 @@
               <div class="value">${{ number_format((float)($recaudadoMes ?? 0), 0) }}</div>
               <div class="hint">{{ now()->format('m/Y') }} (confirmado)</div>
 
-              @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.mensual'))
+              @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual') || \Illuminate\Support\Facades\Route::has('metricas.reporte.mensual'))
                 <div style="margin-top:8px;">
-                  <a class="btn-sm"
-                     href="{{ route('metricas.reporte.mensual', ['year' => request('year', now()->year), 'month' => request('month', now()->month)]) }}">
-                    Ver detalle del mes
-                  </a>
-                </div>
-              @elseif(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual'))
-                <div style="margin-top:8px;">
-                  <a class="btn-sm"
-                     href="{{ route('metricas.reporte.anual', ['year' => request('year', now()->year)]) }}">
-                    Ver detalle anual
-                  </a>
+                  @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.mensual'))
+                    <a class="btn-sm"
+                       href="{{ route('metricas.reporte.mensual', ['year' => request('year', now()->year), 'month' => request('month', now()->month)]) }}">
+                      Ver detalle del mes
+                    </a>
+                  @elseif(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual'))
+                    <a class="btn-sm"
+                       href="{{ route('metricas.reporte.anual', ['year' => request('year', now()->year)]) }}">
+                      Ver detalle anual
+                    </a>
+                  @endif
                 </div>
               @endif
             </div>
 
-            <div class="ring" style="--p: {{ $pctRecaudoMes }}%; --ring: var(--primary);" data-t="%"></div>
+            <div class="ring"
+                 style="--p: {{ $pctRecaudoMes }}%; --ring: var(--primary);"
+                 data-t="%">
+            </div>
           </div>
 
           <div class="card kpi" id="kpiRecaudoHoy">
@@ -945,34 +484,41 @@
 
               @if(\Illuminate\Support\Facades\Route::has('metricas.detalle.dia'))
                 <div style="margin-top:8px;">
-                  <a class="btn-sm" href="{{ route('metricas.detalle.dia', ['date' => now()->toDateString()]) }}">
+                  <a class="btn-sm"
+                     href="{{ route('metricas.detalle.dia', ['date' => now()->toDateString()]) }}">
                     Ver detalle de hoy
                   </a>
                 </div>
               @endif
             </div>
 
-            <div class="ring" style="--p: {{ $pctRecaudoHoy }}%; --ring: var(--success);" data-t="$"></div>
+            <div class="ring"
+                 style="--p: {{ $pctRecaudoHoy }}%; --ring: var(--success);"
+                 data-t="$">
+            </div>
           </div>
 
         </div>
 
         {{-- MINI REPORTES --}}
-        <div class="report-strip">
+        <div style="margin:10px 0 0; display:flex; gap:8px; flex-wrap:wrap;">
           @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual'))
-            <a class="btn-sm" href="{{ route('metricas.reporte.anual', ['year' => request('year', now()->year)]) }}">
+            <a class="btn-sm"
+               href="{{ route('metricas.reporte.anual', ['year' => request('year', now()->year)]) }}">
               Reporte anual
             </a>
           @endif
 
           @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.mensual'))
-            <a class="btn-sm" href="{{ route('metricas.reporte.mensual', ['year' => request('year', now()->year), 'month' => request('month', now()->month)]) }}">
+            <a class="btn-sm"
+               href="{{ route('metricas.reporte.mensual', ['year' => request('year', now()->year), 'month' => request('month', now()->month)]) }}">
               Reporte mensual
             </a>
           @endif
 
           @if(\Illuminate\Support\Facades\Route::has('metricas.detalle.dia'))
-            <a class="btn-sm" href="{{ route('metricas.detalle.dia', ['date' => now()->toDateString()]) }}">
+            <a class="btn-sm"
+               href="{{ route('metricas.detalle.dia', ['date' => now()->toDateString()]) }}">
               Detalle día (hoy)
             </a>
           @endif
@@ -1026,10 +572,9 @@
         </div>
 
         {{-- TABLA --}}
-        {{-- ✅ OJO: class="card card-table" para que el dropdown no se recorte --}}
-        <div class="card card-table" style="margin-top:12px;">
+        <div class="card" style="margin-top:12px;">
           <div class="card-header">
-            <h3 class="card-title">Contratos de arriendo</h3>
+            <h3 class="card-title">Lista de arriendos (Contratos PADRE)</h3>
           </div>
 
           <div class="table-wrap-pro">
@@ -1037,16 +582,17 @@
               <thead>
                 <tr>
                   <th>Cliente</th>
-                  <th>Productos</th>
+                  <th>Items</th>
                   <th>Unidades</th>
                   <th>Inicio</th>
                   <th>Fin</th>
                   <th class="td-right">Total</th>
                   <th class="td-right">Saldo</th>
                   <th>Mora</th>
+                  {{-- ✅ OCULTAMOS EL TITULO "SEMAFORO" --}}
                   <th></th>
                   <th>Estado</th>
-                  <th>Acciones</th>
+                  <th style="width:260px;">Acciones</th>
                 </tr>
               </thead>
 
@@ -1057,12 +603,19 @@
                     $itemsCount = $a->items_count ?? (isset($a->items) ? $a->items->count() : null);
                     $unidades = isset($a->items) ? (int)$a->items->sum('cantidad_actual') : null;
 
-                    // Semaforización por fila
+                    // ==============================
+                    // ✅ LOGICA SEMAFORIZACION POR FILA (NO MUESTRA TEXTO)
+                    // AZUL: activo
+                    // VERDE: cerrado/devuelto y saldo=0
+                    // NARANJA: cerrado/devuelto y saldo>0 y dias<=7
+                    // ROJO: cerrado/devuelto y saldo>0 y dias>=8 (hasta que pague)
+                    // ==============================
                     $saldo = (float)($a->saldo ?? 0);
 
                     $estaActivo  = (strtolower($a->estado ?? '') === 'activo') && ((int)($a->cerrado ?? 0) === 0);
                     $estaCerrado = ((int)($a->cerrado ?? 0) === 1) || (strtolower($a->estado ?? '') === 'devuelto');
 
+                    // Fecha desde que cerró (usa el mejor dato disponible; no rompe si falta)
                     $fechaCierreRaw = $a->fecha_devolucion_real ?? ($a->fecha_fin ?? null) ?? ($a->updated_at ?? null);
                     $fechaCierre = $fechaCierreRaw ? \Carbon\Carbon::parse($fechaCierreRaw)->startOfDay() : null;
                     $diasDesdeCierre = $fechaCierre ? $fechaCierre->diffInDays(\Carbon\Carbon::today()) : 0;
@@ -1079,7 +632,6 @@
                       $rowClass = '';
                     }
 
-                    // Bases para el modal
                     $devAlquiler = (float)($a->dev_total_alquiler ?? 0);
                     $devMerma = (float)($a->dev_total_merma ?? 0);
                     $devPagado = (float)($a->dev_total_pagado ?? 0);
@@ -1096,19 +648,16 @@
                     $baseTransportePadre = (float)(isset($a->transportes) ? $a->transportes->sum('valor') : 0);
                     $baseTransporte = $baseTransportePadre + $devTransporte;
                     $baseIvaRate    = (float)($a->iva_rate ?? 0.19);
-                    $itemsPendientes = isset($a->items)
-                      ? (int)$a->items->filter(fn($it) => ((int)($it->cerrado ?? 0) === 0) && (($it->estado ?? 'activo') === 'activo') && ((int)($it->cantidad_actual ?? 0) > 0))->count()
-                      : 0;
-                    $unidadesPendientes = isset($a->items)
-                      ? (int)$a->items->filter(fn($it) => ((int)($it->cerrado ?? 0) === 0) && (($it->estado ?? 'activo') === 'activo'))->sum('cantidad_actual')
-                      : 0;
-
-                    $puedeCerrar = (int)($a->cerrado ?? 0) === 0;
+                    $baseSubtotal   = $baseAlquiler + $baseMerma + $baseTransporte;
+                    $baseIvaValor   = (int)($a->iva_aplica ?? 0) === 1 ? ($baseSubtotal * $baseIvaRate) : 0;
+                    $baseTotalFinal = $baseSubtotal + $baseIvaValor;
+                    $baseSaldoFinal = max(0, $baseTotalFinal - $basePagado);
                   @endphp
 
                   <tr class="{{ $rowClass }}">
                     <td>
                       {{ $a->cliente->nombre ?? '—' }}
+
                       @if(!empty($a->obra_id ?? null))
                         <span class="small">Obra: {{ $a->obra_id }}</span>
                       @endif
@@ -1132,6 +681,7 @@
 
                     <td>{{ (int)($a->dias_mora ?? 0) }}</td>
 
+                    {{-- ✅ columna vacía (semaforización solo por color de fila) --}}
                     <td></td>
 
                     <td>
@@ -1145,65 +695,205 @@
                     <td>
                       <div class="actions">
                         <div class="dropdown" data-dd>
-                          <button type="button" class="btn-kebab" aria-label="Acciones">⋮</button>
+                          <button type="button" class="btn-kebab" aria-label="Acciones">⋯</button>
 
                           <div class="dropdown-menu">
+
                             <a class="menu-item item-return" href="{{ route('arriendos.ver', $a) }}">
-                              <span class="menu-left"><span class="dot"></span>Ver y gestionar</span>
-                              <span class="menu-arrow">›</span>
+                              <span class="menu-left"><span class="dot"></span>Ver / Gestionar</span>
+                              <span>›</span>
                             </a>
 
                             <a class="menu-item item-edit" href="{{ route('arriendos.edit',$a) }}">
                               <span class="menu-left"><span class="dot"></span>Editar</span>
-                              <span class="menu-arrow">›</span>
+                              <span>›</span>
                             </a>
 
                             @if((int)($a->cerrado ?? 0) === 1 || $a->estado === 'devuelto')
                               <a class="menu-item item-details" href="{{ route('arriendos.detalles', $a) }}">
                                 <span class="menu-left"><span class="dot"></span>Detalles</span>
-                                <span class="menu-arrow">›</span>
+                                <span>›</span>
                               </a>
                             @endif
 
-                            @if($puedeCerrar)
-                              <button
-                                type="button"
-                                class="menu-item item-close js-open-cerrar"
-                                data-arriendo-id="{{ $a->id }}"
-                                data-action="{{ route('arriendos.cerrar', $a) }}"
-                                data-base-alquiler="{{ $baseAlquiler }}"
-                                data-base-merma="{{ $baseMerma }}"
-                                data-base-pagado="{{ $basePagado }}"
-                                data-base-transporte="{{ $baseTransporte }}"
-                                data-iva-rate="{{ $baseIvaRate }}"
-                                data-iva-aplica="{{ (int)($a->iva_aplica ?? 0) }}"
-                                data-items-pendientes="{{ $itemsPendientes }}"
-                                data-unidades-pendientes="{{ $unidadesPendientes }}"
-                                data-fecha-default="{{ now()->format('Y-m-d') }}"
-                              >
+                            @if((int)($a->cerrado ?? 0) === 0)
+                              <button type="button"
+                                      class="menu-item item-close"
+                                      onclick="document.getElementById('modalCerrar{{ $a->id }}').style.display='flex'">
                                 <span class="menu-left"><span class="dot"></span>Cerrar</span>
-                                <span class="menu-arrow">›</span>
+                                <span>›</span>
                               </button>
                             @endif
 
                             <form action="{{ route('arriendos.destroy',$a) }}" method="POST">
                               @csrf
                               @method('DELETE')
-                              <button class="menu-item item-delete" onclick="return confirm('¿Seguro que deseas eliminar este arriendo?')">
-                                <span class="menu-left"><span class="dot"></span>Eliminar</span>
-                                <span class="menu-arrow">›</span>
+
+                              <button class="menu-item item-delete" onclick="return confirm('¿Eliminar arriendo?')">
+                                <span class="menu-left"><span class="dot"></span>Borrar</span>
+                                <span>›</span>
                               </button>
                             </form>
-                          </div>
 
+                          </div>
                         </div>
                       </div>
                     </td>
                   </tr>
 
+                  {{-- MODAL CERRAR --}}
+                  @if((int)($a->cerrado ?? 0) === 0)
+                    <div id="modalCerrar{{ $a->id }}" class="modal-backdrop" style="display:none;">
+                      <div class="card modal-dialog">
+                        <div class="card-header modal-header">
+                          <h3 class="card-title">Cerrar arriendo #{{ $a->id }}</h3>
+                          <button type="button"
+                                  class="btn-ghost"
+                                  onclick="document.getElementById('modalCerrar{{ $a->id }}').style.display='none'">
+                            Cerrar
+                          </button>
+                        </div>
+
+                        <form method="POST"
+                              action="{{ route('arriendos.cerrar', $a) }}"
+                              class="js-cerrar-form"
+                              data-arriendo-id="{{ $a->id }}"
+                              data-base-alquiler="{{ $baseAlquiler }}"
+                              data-base-merma="{{ $baseMerma }}"
+                              data-base-pagado="{{ $basePagado }}"
+                              data-base-transporte="{{ $baseTransporte }}"
+                              data-iva-rate="{{ $baseIvaRate }}">
+                          @csrf
+
+                          <div class="modal-grid">
+                            <div class="modal-field">
+                              <label class="small modal-label">Fecha devolución real</label>
+                              <input class="input"
+                                     type="date"
+                                     name="fecha_devolucion_real"
+                                     required
+                                     value="{{ date('Y-m-d') }}">
+                            </div>
+
+                            <div class="modal-field">
+                              <label class="small modal-label">Pago recibido (opcional)</label>
+                              <input class="input"
+                                     type="number"
+                                     min="0"
+                                     step="0.01"
+                                     name="pago"
+                                     value="0">
+                              <div style="margin-top:8px;">
+                                <button type="button" class="btn-sm js-pagar-todo">Pagar saldo completo</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="modal-grid">
+                            <div class="modal-field">
+                              <label class="small modal-label">Días de lluvia (se descuentan)</label>
+                              <input class="input"
+                                     type="number"
+                                     min="0"
+                                     name="dias_lluvia"
+                                     value="0">
+                            </div>
+
+                            <div class="modal-field">
+                              <label class="small modal-label">Costo daño/merma</label>
+                              <input class="input"
+                                     type="number"
+                                     min="0"
+                                     step="0.01"
+                                     name="costo_merma"
+                                     value="0">
+                            </div>
+                          </div>
+
+                          <div class="modal-grid">
+                            <div class="modal-field">
+                              <label class="small modal-label">Factura con IVA</label>
+                              <select class="input" name="iva_aplica">
+                                <option value="0" {{ (int)($a->iva_aplica ?? 0) === 0 ? 'selected' : '' }}>Sin IVA</option>
+                                <option value="1" {{ (int)($a->iva_aplica ?? 0) === 1 ? 'selected' : '' }}>Con IVA (19%)</option>
+                              </select>
+                              <div class="small modal-help" style="margin-top:6px;">
+                                El IVA se calcula sobre (alquiler + merma + transportes).
+                              </div>
+                            </div>
+                            <div class="modal-field"></div>
+                          </div>
+
+                          <div class="close-summary">
+                            <div class="close-summary-grid">
+                              <div class="sum-box">
+                                <span class="sum-k">Alquiler generado</span>
+                                <span class="sum-v js-sum-alquiler">${{ number_format($baseAlquiler, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Merma total</span>
+                                <span class="sum-v js-sum-merma">${{ number_format($baseMerma, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Transportes</span>
+                                <span class="sum-v js-sum-transporte">${{ number_format($baseTransporte, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">IVA</span>
+                                <span class="sum-v js-sum-iva">${{ number_format($baseIvaValor, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Total generado</span>
+                                <span class="sum-v js-sum-total">${{ number_format($baseTotalFinal, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Total pagado</span>
+                                <span class="sum-v js-sum-pagado">${{ number_format($basePagado, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Saldo final</span>
+                                <span class="sum-v js-sum-saldo {{ $baseSaldoFinal > 0 ? 'sum-v-danger' : 'sum-v-ok' }}">${{ number_format($baseSaldoFinal, 2) }}</span>
+                              </div>
+                              <div class="sum-box">
+                                <span class="sum-k">Estado de cierre</span>
+                                <span class="sum-v js-sum-estado {{ $baseSaldoFinal > 0 ? 'sum-v-danger' : 'sum-v-ok' }}">
+                                  {{ $baseSaldoFinal > 0 ? 'Queda saldo pendiente' : 'Cierra sin deuda' }}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="modal-field">
+                            <label class="small modal-label">Descripción (opcional)</label>
+                            <input class="input"
+                                   type="text"
+                                   name="descripcion_incidencia"
+                                   placeholder="Ej: lluvia fuerte / mango roto">
+                          </div>
+
+                          <div class="small modal-help">
+                            Domingos se descuentan automáticamente. Si queda saldo pendiente al cerrar, se activa semáforo (AMARILLO 0–9 / ROJO 10+).
+                          </div>
+
+                          <div class="modal-actions">
+                            <button type="button"
+                                    class="btn-ghost"
+                                    onclick="document.getElementById('modalCerrar{{ $a->id }}').style.display='none'">
+                              Cancelar
+                            </button>
+
+                            <button type="submit" class="btn-primary" style="padding:8px 12px;">
+                              Cerrar y calcular
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  @endif
+
                 @empty
                   <tr>
-                    <td colspan="11">No hay arriendos todavía.</td>
+                    <td colspan="10">No hay arriendos todavía.</td>
                   </tr>
                 @endforelse
               </tbody>
@@ -1215,142 +905,11 @@
           </div>
         </div>
 
-        {{-- ✅ MODAL ÚNICO (FUERA DE LA TABLA) --}}
-        <div id="modalCerrarGlobal" class="modal-backdrop">
-          <div class="card modal-dialog">
-            <div class="card-header modal-header">
-              <h3 class="card-title" id="modalCerrarTitulo">Cerrar arriendo</h3>
-              <button type="button" class="btn-ghost" id="btnCerrarModal">Cerrar</button>
-            </div>
-
-            <form
-              id="cerrarFormGlobal"
-              method="POST"
-              action="#"
-              class="js-cerrar-form"
-              data-arriendo-id=""
-              data-base-alquiler="0"
-              data-base-merma="0"
-              data-base-pagado="0"
-              data-base-transporte="0"
-              data-iva-rate="0.19"
-            >
-              @csrf
-
-              <div class="modal-grid">
-                <div class="modal-field">
-                  <label class="small modal-label">Fecha devolución real</label>
-                  <input class="input" type="date" name="fecha_devolucion_real" required value="{{ now()->format('Y-m-d') }}">
-                  <div class="small modal-help js-cierre-auto-help" style="margin-top:6px;">
-                    Los productos pendientes se cerrarán automáticamente con esta fecha.
-                  </div>
-                </div>
-
-                <div class="modal-field">
-                  <label class="small modal-label">Pago recibido (opcional)</label>
-                  <input class="input" type="number" min="0" step="0.01" name="pago" value="0">
-                  <div style="margin-top:8px;">
-                    <button type="button" class="btn-sm js-pagar-todo">Pagar saldo completo</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="modal-grid">
-                <div class="modal-field">
-                  <label class="small modal-label">Días de lluvia (se descuentan)</label>
-                  <input class="input" type="number" min="0" name="dias_lluvia" value="0">
-                </div>
-
-                <div class="modal-field">
-                  <label class="small modal-label">Costo daño/merma</label>
-                  <input class="input" type="number" min="0" step="0.01" name="costo_merma" value="0">
-                </div>
-              </div>
-
-              <div class="modal-grid">
-                <div class="modal-field">
-                  <label class="small modal-label">Factura con IVA</label>
-                  <select class="input" name="iva_aplica" id="ivaAplicaSelect">
-                    <option value="0">Sin IVA</option>
-                    <option value="1">Con IVA (19%)</option>
-                  </select>
-                  <div class="small modal-help" style="margin-top:6px;">
-                    El IVA se calcula sobre (alquiler + merma + transportes).
-                  </div>
-                </div>
-                <div class="modal-field"></div>
-              </div>
-
-              <div class="close-summary">
-                <div class="close-summary-grid">
-                  <div class="sum-box">
-                    <span class="sum-k">Productos pendientes</span>
-                    <span class="sum-v js-sum-items-pendientes">0</span>
-                  </div>
-                  <div class="sum-box">
-                    <span class="sum-k">Unidades por devolver</span>
-                    <span class="sum-v js-sum-unidades-pendientes">0</span>
-                  </div>
-                  <div class="sum-box">
-                    <span class="sum-k">Alquiler generado</span>
-                    <span class="sum-v js-sum-alquiler">$0.00</span>
-                  </div>
-                  <div class="sum-box">
-                    <span class="sum-k">Merma total</span>
-                    <span class="sum-v js-sum-merma">$0.00</span>
-                  </div>
-                  <div class="sum-box">
-                    <span class="sum-k">Transportes</span>
-                    <span class="sum-v js-sum-transporte">$0.00</span>
-                  </div>
-                  <div class="sum-box">
-                    <span class="sum-k">IVA</span>
-                    <span class="sum-v js-sum-iva">$0.00</span>
-                  </div>
-                  <div class="sum-box">
-                    <span class="sum-k">Total generado</span>
-                    <span class="sum-v js-sum-total">$0.00</span>
-                  </div>
-                  <div class="sum-box">
-                    <span class="sum-k">Total pagado</span>
-                    <span class="sum-v js-sum-pagado">$0.00</span>
-                  </div>
-                  <div class="sum-box">
-                    <span class="sum-k">Saldo final</span>
-                    <span class="sum-v js-sum-saldo sum-v-ok">$0.00</span>
-                  </div>
-                  <div class="sum-box">
-                    <span class="sum-k">Estado de cierre</span>
-                    <span class="sum-v js-sum-estado sum-v-ok">Cierra sin deuda</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="modal-field">
-                <label class="small modal-label">Descripción (opcional)</label>
-                <input class="input" type="text" name="descripcion_incidencia" placeholder="Ej: lluvia fuerte o mango roto">
-              </div>
-
-              <div class="small modal-help">
-                Los domingos se descuentan automáticamente. Si queda saldo pendiente al cerrar, se actualiza el semáforo de pago.
-              </div>
-              <div class="small modal-help" style="margin-top:6px;">
-                Si hay herramientas pendientes, el sistema las devuelve y las liquida automáticamente con la fecha elegida al guardar el cierre.
-              </div>
-
-              <div class="modal-actions">
-                <button type="button" class="btn-ghost" id="btnCancelarModal">Cancelar</button>
-                <button type="submit" class="btn-primary" style="padding:8px 12px;">Cerrar y calcular</button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        {{-- JS: filtros + dropdown (no recorta / se ajusta al viewport) + modal + recalculo --}}
+        {{-- JS: filtros + dropdown (FIX parpadeo incluido) --}}
         <script>
           (function () {
-            // filtros
             const form = document.getElementById('filtrosForm');
+
             function submitFormLimpio() {
               Array.from(form.elements).forEach(el => {
                 if (!el.name) return;
@@ -1358,73 +917,17 @@
               });
               form.submit();
             }
+
             document.querySelectorAll('.filtro-auto').forEach(el => {
               el.addEventListener('change', submitFormLimpio);
             });
 
-            // dropdown
-            function closeAllDropdowns() {
+            function closeAll() {
               document.querySelectorAll('[data-dd].open').forEach(dd => {
                 dd.classList.remove('open');
                 const tr = dd.closest('tr');
                 if (tr) tr.classList.remove('row-open');
-                const menu = dd._openMenu || dd.querySelector('.dropdown-menu');
-                if (menu){
-                  dd.appendChild(menu);
-                  dd._openMenu = null;
-                  menu._ownerDropdown = null;
-                  menu.style.display = '';
-                  menu.style.position = '';
-                  menu.style.left = '';
-                  menu.style.right = '';
-                  menu.style.top = '';
-                  menu.style.bottom = '';
-                  menu.style.width = '';
-                }
               });
-            }
-
-            function fitDropdownIntoViewport(dd){
-              const menu = dd.querySelector('.dropdown-menu');
-              const btn = dd.querySelector('.btn-kebab');
-              if (!menu || !btn) return;
-
-              if (menu.parentElement !== document.body) {
-                document.body.appendChild(menu);
-              }
-              dd._openMenu = menu;
-              menu._ownerDropdown = dd;
-
-              // reset base
-              menu.style.display = 'block';
-              menu.style.position = 'fixed';
-              menu.style.left = '';
-              menu.style.right = 'auto';
-              menu.style.top = '';
-              menu.style.bottom = '';
-              menu.style.width = '';
-
-              const pad = 12;
-              const gap = 8;
-              const btnRect = btn.getBoundingClientRect();
-              const menuRect = menu.getBoundingClientRect();
-              const menuWidth = Math.min(menuRect.width, window.innerWidth - (pad * 2));
-              const menuHeight = menuRect.height;
-
-              let left = btnRect.right - menuWidth;
-              left = Math.max(pad, Math.min(left, window.innerWidth - menuWidth - pad));
-
-              let top = btnRect.bottom + gap;
-              if (top + menuHeight > window.innerHeight - pad) {
-                top = btnRect.top - menuHeight - gap;
-              }
-              top = Math.max(pad, Math.min(top, window.innerHeight - menuHeight - pad));
-
-              menu.style.left = left + 'px';
-              menu.style.top = top + 'px';
-              if (menuWidth !== menuRect.width) {
-                menu.style.width = menuWidth + 'px';
-              }
             }
 
             document.addEventListener('click', function (e) {
@@ -1433,44 +936,29 @@
 
               if (btn && dd) {
                 e.preventDefault();
-                e.stopPropagation();
-
                 const wasOpen = dd.classList.contains('open');
-                closeAllDropdowns();
-
+                closeAll();
                 if (!wasOpen) {
                   dd.classList.add('open');
                   const tr = dd.closest('tr');
                   if (tr) tr.classList.add('row-open');
-                  fitDropdownIntoViewport(dd); // ✅ ajuste
                 }
                 return;
               }
 
-              const floatingMenu = e.target.closest('.dropdown-menu');
-              if (floatingMenu && floatingMenu._ownerDropdown) return;
-
-              closeAllDropdowns();
-            }, true);
+              if (e.target.closest('.dropdown-menu')) return;
+              closeAll();
+            });
 
             document.addEventListener('keydown', function (e) {
-              if (e.key === 'Escape') closeAllDropdowns();
+              if (e.key === 'Escape') closeAll();
             });
 
-            window.addEventListener('resize', function(){
-              const dd = document.querySelector('[data-dd].open');
-              if (dd) fitDropdownIntoViewport(dd);
-            });
-            window.addEventListener('scroll', function(){
-              const dd = document.querySelector('[data-dd].open');
-              if (dd) fitDropdownIntoViewport(dd);
-            }, true);
-
-            // helpers
             function parseNum(v) {
               const n = Number(v);
               return Number.isFinite(n) ? n : 0;
             }
+
             function money(v) {
               return '$' + parseNum(v).toLocaleString('es-CO', {
                 minimumFractionDigits: 2,
@@ -1500,8 +988,6 @@
               const totalPagado = basePagado + pagoCierre;
               const saldo = Math.max(0, totalGenerado - totalPagado);
 
-              const $itp = form.querySelector('.js-sum-items-pendientes');
-              const $unp = form.querySelector('.js-sum-unidades-pendientes');
               const $alq = form.querySelector('.js-sum-alquiler');
               const $mer = form.querySelector('.js-sum-merma');
               const $trn = form.querySelector('.js-sum-transporte');
@@ -1511,15 +997,12 @@
               const $sal = form.querySelector('.js-sum-saldo');
               const $est = form.querySelector('.js-sum-estado');
 
-              if ($itp) $itp.textContent = String(parseNum(form.dataset.itemsPendientes));
-              if ($unp) $unp.textContent = String(parseNum(form.dataset.unidadesPendientes));
               if ($alq) $alq.textContent = money(baseAlquiler);
               if ($mer) $mer.textContent = money(totalMerma);
               if ($trn) $trn.textContent = money(baseTransporte);
               if ($iva) $iva.textContent = money(ivaValor);
               if ($tot) $tot.textContent = money(totalGenerado);
               if ($pag) $pag.textContent = money(totalPagado);
-
               if ($sal) {
                 $sal.textContent = money(saldo);
                 $sal.classList.toggle('sum-v-danger', saldo > 0);
@@ -1532,106 +1015,40 @@
               }
             }
 
-            // modal
-            const modal = document.getElementById('modalCerrarGlobal');
-            const cerrarForm = document.getElementById('cerrarFormGlobal');
-            const titulo = document.getElementById('modalCerrarTitulo');
+            document.querySelectorAll('.js-cerrar-form').forEach(form => {
+              const pagoInput = form.querySelector('[name="pago"]');
+              const mermaInput = form.querySelector('[name="costo_merma"]');
+              const ivaInput = form.querySelector('[name="iva_aplica"]');
+              const btnPagarTodo = form.querySelector('.js-pagar-todo');
 
-            function openModal(payload) {
-              cerrarForm.action = payload.action;
-              cerrarForm.dataset.arriendoId = String(payload.id || '');
-              cerrarForm.dataset.baseAlquiler = String(payload.baseAlquiler || 0);
-              cerrarForm.dataset.baseMerma = String(payload.baseMerma || 0);
-              cerrarForm.dataset.basePagado = String(payload.basePagado || 0);
-              cerrarForm.dataset.baseTransporte = String(payload.baseTransporte || 0);
-              cerrarForm.dataset.ivaRate = String(payload.ivaRate || 0.19);
-              cerrarForm.dataset.itemsPendientes = String(payload.itemsPendientes || 0);
-              cerrarForm.dataset.unidadesPendientes = String(payload.unidadesPendientes || 0);
+              [pagoInput, mermaInput, ivaInput].forEach(el => {
+                if (!el) return;
+                el.addEventListener('input', () => recalcCerrarForm(form));
+                el.addEventListener('change', () => recalcCerrarForm(form));
+              });
 
-              const fecha = cerrarForm.querySelector('[name="fecha_devolucion_real"]');
-              const ivaSel = cerrarForm.querySelector('[name="iva_aplica"]');
-              const pago = cerrarForm.querySelector('[name="pago"]');
-              const merma = cerrarForm.querySelector('[name="costo_merma"]');
-              const lluvia = cerrarForm.querySelector('[name="dias_lluvia"]');
-              const desc = cerrarForm.querySelector('[name="descripcion_incidencia"]');
+              if (btnPagarTodo) {
+                btnPagarTodo.addEventListener('click', function () {
+                  const baseAlquiler = parseNum(form.dataset.baseAlquiler);
+                  const baseMerma = parseNum(form.dataset.baseMerma);
+                  const basePagado = parseNum(form.dataset.basePagado);
+                  const baseTransporte = parseNum(form.dataset.baseTransporte);
+                  const ivaRate = parseNum(form.dataset.ivaRate || 0.19);
 
-              if (fecha) fecha.value = payload.fechaDefault || '';
-              if (ivaSel) ivaSel.value = String(payload.ivaAplica || 0);
-              if (pago) pago.value = '0';
-              if (merma) merma.value = '0';
-              if (lluvia) lluvia.value = '0';
-              if (desc) desc.value = '';
+                  const extraMerma = Math.max(0, parseNum(mermaInput?.value));
+                  const ivaAplica = String(ivaInput?.value || '0') === '1';
+                  const subtotal = baseAlquiler + (baseMerma + extraMerma) + baseTransporte;
+                  const ivaValor = ivaAplica ? (subtotal * ivaRate) : 0;
+                  const totalGenerado = subtotal + ivaValor;
+                  const saldoActual = Math.max(0, totalGenerado - basePagado);
 
-              if (titulo) titulo.textContent = 'Cerrar arriendo #' + payload.id;
-
-              recalcCerrarForm(cerrarForm);
-              modal.style.display = 'flex';
-            }
-
-            function closeModal() { modal.style.display = 'none'; }
-
-            document.getElementById('btnCerrarModal')?.addEventListener('click', closeModal);
-            document.getElementById('btnCancelarModal')?.addEventListener('click', closeModal);
-
-            modal.addEventListener('click', function (e) {
-              if (e.target === modal) closeModal();
-            });
-
-            document.addEventListener('keydown', function (e) {
-              if (e.key === 'Escape') closeModal();
-            });
-
-            document.querySelectorAll('.js-open-cerrar').forEach(btn => {
-              btn.addEventListener('click', function () {
-                closeAllDropdowns();
-                openModal({
-                  id: btn.dataset.arriendoId,
-                  action: btn.dataset.action,
-                  baseAlquiler: btn.dataset.baseAlquiler,
-                  baseMerma: btn.dataset.baseMerma,
-                  basePagado: btn.dataset.basePagado,
-                  baseTransporte: btn.dataset.baseTransporte,
-                  ivaRate: btn.dataset.ivaRate,
-                  ivaAplica: btn.dataset.ivaAplica,
-                  itemsPendientes: btn.dataset.itemsPendientes,
-                  unidadesPendientes: btn.dataset.unidadesPendientes,
-                  fechaDefault: btn.dataset.fechaDefault
+                  if (pagoInput) pagoInput.value = saldoActual.toFixed(2);
+                  recalcCerrarForm(form);
                 });
-              });
+              }
+
+              recalcCerrarForm(form);
             });
-
-            const pagoInput = cerrarForm.querySelector('[name="pago"]');
-            const mermaInput = cerrarForm.querySelector('[name="costo_merma"]');
-            const ivaInput = cerrarForm.querySelector('[name="iva_aplica"]');
-            const btnPagarTodo = cerrarForm.querySelector('.js-pagar-todo');
-
-            [pagoInput, mermaInput, ivaInput].forEach(el => {
-              if (!el) return;
-              el.addEventListener('input', () => recalcCerrarForm(cerrarForm));
-              el.addEventListener('change', () => recalcCerrarForm(cerrarForm));
-            });
-
-            if (btnPagarTodo) {
-              btnPagarTodo.addEventListener('click', function () {
-                const baseAlquiler = parseNum(cerrarForm.dataset.baseAlquiler);
-                const baseMerma = parseNum(cerrarForm.dataset.baseMerma);
-                const basePagado = parseNum(cerrarForm.dataset.basePagado);
-                const baseTransporte = parseNum(cerrarForm.dataset.baseTransporte);
-                const ivaRate = parseNum(cerrarForm.dataset.ivaRate || 0.19);
-
-                const extraMerma = Math.max(0, parseNum(mermaInput?.value));
-                const ivaAplica = String(ivaInput?.value || '0') === '1';
-                const subtotal = baseAlquiler + (baseMerma + extraMerma) + baseTransporte;
-                const ivaValor = ivaAplica ? (subtotal * ivaRate) : 0;
-                const totalGenerado = subtotal + ivaValor;
-                const saldoActual = Math.max(0, totalGenerado - basePagado);
-
-                if (pagoInput) pagoInput.value = saldoActual.toFixed(2);
-                recalcCerrarForm(cerrarForm);
-              });
-            }
-
-            recalcCerrarForm(cerrarForm);
           })();
         </script>
 

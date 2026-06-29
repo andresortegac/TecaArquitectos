@@ -29,10 +29,10 @@
         </section>
 
         <section class="stk-card">
-            <form method="GET" class="stk-filters" data-live-filter>
+            <form method="GET" class="stk-filters">
                 <div class="field field-grow">
                     <label for="q">Buscar</label>
-                    <input id="q" type="search" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nombre o categoría" autocomplete="off">
+                    <input id="q" type="text" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Nombre o categoría">
                 </div>
                 <div class="field">
                     <label for="estado">Estado</label>

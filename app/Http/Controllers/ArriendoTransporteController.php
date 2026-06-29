@@ -23,10 +23,10 @@ class ArriendoTransporteController extends Controller
         ]);
 
         // ✅ normalizamos a mayúsculas
-        $data['tipo'] = strtolower($data['tipo']);
+        $data['tipo'] = strtoupper($data['tipo']);
 
         // Si el usuario elige "NO", no registramos transporte.
-        if ($data['tipo'] === 'no') {
+        if ($data['tipo'] === 'NO') {
             return back()->with('success', 'Sin transporte: no se registró ningún cobro.');
         }
 
@@ -45,11 +45,11 @@ class ArriendoTransporteController extends Controller
         $arriendo = $transporte->arriendo;
 
         if (!$arriendo) {
-            return back()->with('success', 'No se encontró el arriendo asociado al transporte.');
+            return back()->with('success', 'No se encontró el arriendo del transporte.');
         }
 
         if ((int)($arriendo->cerrado ?? 0) === 1 || $arriendo->estado !== 'activo') {
-            return back()->with('success', 'No puedes borrar este transporte: el arriendo está cerrado o no está activo.');
+            return back()->with('success', 'No puedes borrar: el arriendo está cerrado o no está activo.');
         }
 
         $transporte->delete();

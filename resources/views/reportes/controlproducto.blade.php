@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/controlproducto.css') }}?v={{ filemtime(public_path('css/controlproducto.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/controlproducto.css') }}">
 @endpush
 
 @section('title', 'Control de producto')
@@ -74,18 +74,18 @@
                     <tbody>
                         @forelse($alquilados as $item)
                             <tr>
-                                <td data-label="Producto" class="cp-product-name">{{ $item->nombre }}</td>
-                                <td data-label="Imagen">
+                                <td class="cp-product-name">{{ $item->nombre }}</td>
+                                <td>
                                     @if(!empty($item->imagen))
-                                        <img src="{{ \App\Models\Producto::imageUrl($item->imagen, $item->nombre) }}" class="cp-img" alt="Producto">
+                                        <img src="{{ asset('storage/' . $item->imagen) }}" class="cp-img" alt="Producto">
                                     @else
                                         <span class="cp-muted">Sin imagen</span>
                                     @endif
                                 </td>
-                                <td data-label="Cantidad total" class="right">{{ number_format((int) $item->cantidad_total) }}</td>
-                                <td data-label="Cantidad stock" class="right">{{ number_format((int) $item->cantidad_stock) }}</td>
-                                <td data-label="Cantidad alquilada" class="right">{{ number_format((int) $item->cantidad_alquilada) }}</td>
-                                <td data-label="Fecha del alquiler">
+                                <td class="right">{{ number_format((int) $item->cantidad_total) }}</td>
+                                <td class="right">{{ number_format((int) $item->cantidad_stock) }}</td>
+                                <td class="right">{{ number_format((int) $item->cantidad_alquilada) }}</td>
+                                <td>
                                     {{ optional($item->fecha_alquiler)->format('d/m/Y') ?? '-' }}
                                 </td>
                             </tr>
@@ -128,17 +128,17 @@
                     <tbody>
                         @forelse($bodega as $producto)
                             <tr>
-                                <td data-label="Producto" class="cp-product-name">{{ $producto->nombre }}</td>
-                                <td data-label="Imagen">
+                                <td class="cp-product-name">{{ $producto->nombre }}</td>
+                                <td>
                                     @if(!empty($producto->imagen))
-                                        <img src="{{ $producto->imagen_url }}" class="cp-img" alt="Producto">
+                                        <img src="{{ asset('storage/' . $producto->imagen) }}" class="cp-img" alt="Producto">
                                     @else
                                         <span class="cp-muted">Sin imagen</span>
                                     @endif
                                 </td>
-                                <td data-label="Cantidad" class="right">{{ number_format((int) $producto->cantidad) }}</td>
-                                <td data-label="Costo" class="right">${{ number_format((float) $producto->costo, 0) }}</td>
-                                <td data-label="Ubicación">{{ $producto->ubicacion ?: '-' }}</td>
+                                <td class="right">{{ number_format((int) $producto->cantidad) }}</td>
+                                <td class="right">${{ number_format((float) $producto->costo, 0) }}</td>
+                                <td>{{ $producto->ubicacion ?: '-' }}</td>
                             </tr>
                         @empty
                             <tr>

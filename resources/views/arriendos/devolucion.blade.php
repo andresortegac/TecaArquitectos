@@ -544,12 +544,12 @@
         <div class="rp-head">
             <div class="rp-head-top">
                 <div>
-                    <h2 class="rp-title">Devolución · Producto #{{ $item->id }} <span style="color:var(--muted); font-weight:900;">(Arriendo #{{ $item->arriendo_id }})</span></h2>
+                    <h2 class="rp-title">Devolución · Item #{{ $item->id }} <span style="color:var(--muted); font-weight:900;">(Arriendo #{{ $item->arriendo_id }})</span></h2>
                     <div class="rp-subtitle">Contexto arriba, acción abajo. Diseño limpio para operación diaria.</div>
 
                     @if($isCerrado)
                         <div class="rp-note" style="margin-top:10px;">
-                            <strong>Modo historial:</strong> este producto ya está cerrado o devuelto; por eso <strong>no se pueden registrar nuevas devoluciones</strong>.
+                            <strong>Modo historial:</strong> este item ya está cerrado/devuelto, por eso <strong>no se pueden registrar nuevas devoluciones</strong>.
                             Los cálculos y el calendario se muestran con corte al <strong>{{ \Carbon\Carbon::parse($fechaCorteUI)->format('d/m/Y') }}</strong>.
                         </div>
                     @endif
@@ -590,7 +590,7 @@
                         <div class="v">{{ (int)$item->cantidad_actual }}</div>
                     </div>
                     <div class="rp-kv">
-                        <div class="k">Inicio del producto</div>
+                        <div class="k">Inicio item</div>
                         <div class="v">{{ $item->fecha_inicio_item?->format('d/m/Y H:i') ?? ($item->arriendo->fecha_inicio?->format('d/m/Y H:i') ?? '—') }}</div>
                     </div>
                     <div class="rp-kv">
@@ -598,7 +598,7 @@
                         <div class="v">${{ number_format($tarifaVista, 2) }}</div>
                     </div>
                     <div class="rp-kv">
-                        <div class="k">Saldo del producto</div>
+                        <div class="k">Saldo del item</div>
                         <div class="v">${{ number_format((float)($item->saldo ?? 0), 2) }}</div>
                     </div>
 
@@ -634,7 +634,7 @@
 
                     @if($isCerrado)
                         <div class="rp-note" style="margin-top:0;">
-                            Este producto está en <strong>modo historial</strong>. El formulario está bloqueado para evitar cambios.
+                            Este item está en <strong>modo historial</strong>. El formulario está bloqueado para evitar cambios.
                         </div>
                     @endif
 
@@ -674,26 +674,28 @@
                         </div>
                     </div>
 
-                  {{-- ✅ Transporte / Recoger herramientas --}}
-<div class="row">
-    <div class="field">
-        <label class="rp-label">Transporte de herramientas</label>
-        @php $tr = old('transporte_herramientas','no'); @endphp
-        <select class="rp-input" name="transporte_herramientas" {{ $isCerrado ? 'disabled' : '' }}>
-            <option value="no" {{ $tr==='no' ? 'selected' : '' }}>No</option>
-            <option value="recoger" {{ $tr==='recoger' ? 'selected' : '' }}>Recoger herramientas</option>
-        </select>
-        <div class="rp-help">Se guarda en el historial de devoluciones.</div>
-    </div>
+                    {{-- ✅ Transporte / Recoger herramientas --}}
+                    <div class="row">
+                        <div class="field">
+                            <label class="rp-label">Transporte de herramientas</label>
+                            @php $tr = old('transporte_herramientas','no'); @endphp
+                            <select class="rp-input" name="transporte_herramientas" {{ $isCerrado ? 'disabled' : '' }}>
+                                <option value="no" {{ $tr==='no' ? 'selected' : '' }}>No</option>
+                                <option value="recoger" {{ $tr==='recoger' ? 'selected' : '' }}>Recoger herramientas</option>
+                                <option value="entregar" {{ $tr==='entregar' ? 'selected' : '' }}>Entregar herramientas</option>
+                                <option value="recoger_y_entregar" {{ $tr==='recoger_y_entregar' ? 'selected' : '' }}>Recoger y entregar</option>
+                            </select>
+                            <div class="rp-help">Se guarda en el historial de devoluciones.</div>
+                        </div>
 
-    <div class="field">
-        <label class="rp-label">Detalle transporte (opcional)</label>
-        <input class="rp-input" type="text" name="detalle_transporte"
-               value="{{ old('detalle_transporte') }}"
-               placeholder="Ej: recoger en obra / dirección / contacto"
-               {{ $isCerrado ? 'disabled' : '' }}>
-    </div>
-</div>
+                        <div class="field">
+                            <label class="rp-label">Detalle transporte (opcional)</label>
+                            <input class="rp-input" type="text" name="detalle_transporte"
+                                   value="{{ old('detalle_transporte') }}"
+                                   placeholder="Ej: recoger en obra / dirección / contacto"
+                                   {{ $isCerrado ? 'disabled' : '' }}>
+                        </div>
+                    </div>
 
                     {{-- ✅ NUEVO: Costo transporte (ESTO SE SUMA AL TOTAL) --}}
                     <div class="row">
@@ -893,7 +895,7 @@
                                             <th class="num">Abono</th>
                                             <th class="num">Saldo devolución</th>
                                             <th class="center">Quedan</th>
-                                            <th class="num">Saldo producto</th>
+                                            <th class="num">Saldo item</th>
                                         </tr>
                                     </thead>
                                     <tbody>

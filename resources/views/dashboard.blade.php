@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/res-dashboard.css') }}?v={{ filemtime(public_path('css/res-dashboard.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/res-dashboard.css') }}">
 @endpush
 
 @section('title', 'Dashboard')

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/reportes.css') }}?v={{ filemtime(public_path('css/reportes.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/reportes.css') }}">
 @endpush
 
 @section('title', 'Reportes')
@@ -68,8 +68,8 @@
             ],
             [
                 'chip' => 'Costos',
-                'title' => 'Reporte de pérdidas y mantenimiento',
-                'description' => 'Consolida costos por daño, pérdida y mantenimiento para control y recuperación financiera.',
+                'title' => 'Reporte de perdidas y mantenimiento',
+                'description' => 'Consolida costos por dano, perdida y mantenimiento para control y recuperacion financiera.',
                 'route' => 'reportes.perdidas-mantenimiento',
                 'button' => 'primary',
             ],
