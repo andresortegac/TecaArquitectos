@@ -151,6 +151,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/cierrecaja', [CierreCajaController::class, 'index'])
         ->name('cierrecaja.cierrecaja');
+    Route::post('/cierrecaja', [CierreCajaController::class, 'store'])
+        ->name('cierrecaja.store');
 });
 
 Route::middleware(['auth', 'role:admin|bodega'])->group(function () {

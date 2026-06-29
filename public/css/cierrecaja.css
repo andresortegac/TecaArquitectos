@@ -60,6 +60,36 @@
   margin-top: 2px;
 }
 
+.caja-alert {
+  display: grid;
+  gap: 4px;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.caja-alert strong {
+  color: #0f172a;
+}
+
+.caja-alert span {
+  color: #475569;
+}
+
+.caja-alert-info {
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+}
+
+.caja-alert-error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+}
+
+.caja-alert-error strong,
+.caja-alert-error span {
+  color: #991b1b;
+}
+
 .caja-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -265,6 +295,10 @@
   flex-wrap: wrap;
 }
 
+.caja-actions form {
+  display: inline-flex;
+}
+
 .caja-actions a,
 .caja-actions button {
   display: inline-flex;
@@ -288,9 +322,64 @@
   cursor: not-allowed;
 }
 
+.caja-history {
+  border: 1px solid #dbe3ee;
+  border-radius: 10px;
+  background: #fff;
+  padding: 16px;
+}
+
+.caja-history-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.caja-history-head h3 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.caja-history-head span,
+.caja-history-list span,
+.caja-history-list p {
+  color: #64748b;
+}
+
+.caja-history-list {
+  display: grid;
+  gap: 8px;
+}
+
+.caja-history-list article {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 12px;
+}
+
+.caja-history-list article > div {
+  display: grid;
+  gap: 4px;
+}
+
+.caja-history-list article > div:last-child {
+  text-align: right;
+}
+
+.caja-history-list strong {
+  color: #0f172a;
+}
+
 @media (max-width: 900px) {
   .caja-head,
-  .caja-panel-head {
+  .caja-panel-head,
+  .caja-history-head,
+  .caja-history-list article {
     flex-direction: column;
   }
 
@@ -316,5 +405,13 @@
   .caja-actions button {
     width: 100%;
     justify-content: center;
+  }
+
+  .caja-actions form {
+    width: 100%;
+  }
+
+  .caja-history-list article > div:last-child {
+    text-align: left;
   }
 }

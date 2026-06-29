@@ -1,4 +1,4 @@
-.@extends('layouts.app')
+@extends('layouts.app')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/reportes-perdidas-mantenimiento.css') }}?v={{ filemtime(public_path('css/reportes-perdidas-mantenimiento.css')) }}">
@@ -75,7 +75,7 @@
                             <th>Herramienta</th>
                             <th>Cliente Responsable</th>
                             <th>Tipo de Incidencias</th>
-                            <th class="right">Unidad/Daños</th>
+                            <th class="right">Costo Unitario</th>
                             <th>Fecha</th>
                             <th>Estado del Cobro</th>
                         </tr>
@@ -86,7 +86,7 @@
                                 <td data-label="Herramienta">{{ $fila->herramienta }}</td>
                                 <td data-label="Cliente">{{ $fila->cliente }}</td>
                                 <td data-label="Evento">{{ $eventoLabel[$fila->evento] ?? ucfirst($fila->evento) }}</td>
-                                <td data-label="Costo" class="right">{{ number_format($fila->costo, 0) }}</td>
+                                <td data-label="Costo" class="right">${{ number_format($fila->costo, 0) }}</td>
                                 <td data-label="Fecha">{{ $fila->fecha }}</td>
                                 <td data-label="Estado">
                                     <span class="badge {{ $fila->estado_cobro === 'pendiente' ? 'badge-risk' : 'badge-ok' }}">

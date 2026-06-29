@@ -12,9 +12,17 @@
         $money = fn ($value) => '$ ' . number_format((float) $value, 0, ',', '.');
         $selected = $tipoSeleccionado;
         $monthLabel = $mes->translatedFormat('F Y');
+        $cierreSeleccionado = $selected === 'parcial' ? $cierreDia : ($selected === 'mensual' ? $cierreMes : null);
     @endphp
 
     <div class="caja-page">
+        @if($errors->any())
+            <div class="caja-alert caja-alert-error">
+                <strong>Revise la informacion</strong>
+                <span>{{ $errors->first() }}</span>
+            </div>
+        @endif
+
         <section class="caja-head">
             <div>
                 <p class="caja-eyebrow">Modulo financiero</p>
@@ -68,6 +76,13 @@
                     </form>
                 </div>
 
+                @if($cierreDia)
+                    <div class="caja-alert caja-alert-info">
+                        <strong>Este dia ya fue cerrado</strong>
+                        <span>Cerrado el {{ $cierreDia->closed_at?->format('d/m/Y H:i') }} por {{ $cierreDia->user?->name ?? 'Sistema' }}.</span>
+                    </div>
+                @endif
+
                 <div class="caja-summary">
                     <div>
                         <span>Ingresos del dia</span>
@@ -115,6 +130,13 @@
                     </form>
                 </div>
 
+                @if($cierreMes)
+                    <div class="caja-alert caja-alert-info">
+                        <strong>Este mes ya fue cerrado</strong>
+                        <span>Cerrado el {{ $cierreMes->closed_at?->format('d/m/Y H:i') }} por {{ $cierreMes->user?->name ?? 'Sistema' }}.</span>
+                    </div>
+                @endif
+
                 <div class="caja-summary">
                     <div>
                         <span>Total ingresos</span>
@@ -151,7 +173,103 @@
         <section class="caja-actions">
             <a href="{{ route('reportes.ingresos-diarios', ['fecha' => $fecha->toDateString()]) }}">Ver ingresos diarios</a>
             <a href="{{ route('gastos.index') }}">Ver gastos</a>
-            <button type="button" disabled>Confirmar cierre</button>
+            @if($selected)
+                <form method="POST" action="{{ route('cierrecaja.store') }}" class="js-cierre-form">
+                    @csrf
+                    <input type="hidden" name="tipo" value="{{ $selected }}">
+                    <input type="hidden" name="fecha" value="{{ $fecha->toDateString() }}">
+                    <input type="hidden" name="mes" value="{{ $mes->format('Y-m') }}">
+                    <input type="hidden" name="observacion" value="">
+                    <button type="submit" {{ $cierreSeleccionado ? 'disabled' : '' }}>
+                        {{ $cierreSeleccionado ? 'Cierre guardado' : 'Confirmar cierre' }}
+                    </button>
+                </form>
+            @else
+                <button type="button" disabled>Confirmar cierre</button>
+            @endif
+        </section>
+
+        <section class="caja-history">
+            <div class="caja-history-head">
+                <h3>Historial reciente</h3>
+                <span>Ultimos cierres guardados</span>
+            </div>
+            <div class="caja-history-list">
+                @forelse($historial as $cierre)
+                    <article>
+                        <div>
+                            <strong>{{ $cierre->tipo }}</strong>
+                            <span>{{ $cierre->periodo }} - {{ $cierre->usuario }}</span>
+                        </div>
+                        <div>
+                            <span>Utilidad</span>
+                            <strong>{{ $money($cierre->utilidad) }}</strong>
+                        </div>
+                    </article>
+                @empty
+                    <p>No hay cierres guardados todavia.</p>
+                @endforelse
+            </div>
         </section>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const successMessage = @json(session('success'));
+            const errorMessage = @json(session('error'));
+
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cierre guardado',
+                    text: successMessage,
+                    confirmButtonColor: '#0f172a'
+                });
+            }
+
+            if (errorMessage) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No se pudo guardar',
+                    text: errorMessage,
+                    confirmButtonColor: '#0f172a'
+                });
+            }
+
+            document.querySelectorAll('.js-cierre-form').forEach((form) => {
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+
+                    const tipo = form.querySelector('[name="tipo"]').value;
+                    const periodo = tipo === 'parcial'
+                        ? form.querySelector('[name="fecha"]').value
+                        : form.querySelector('[name="mes"]').value;
+
+                    const result = await Swal.fire({
+                        icon: 'question',
+                        title: 'Confirmar cierre',
+                        text: `Se guardara el cierre ${tipo} del periodo ${periodo}. Esta accion no se puede duplicar.`,
+                        input: 'textarea',
+                        inputLabel: 'Observacion opcional',
+                        inputPlaceholder: 'Escriba una nota para este cierre',
+                        showCancelButton: true,
+                        confirmButtonText: 'Si, guardar cierre',
+                        cancelButtonText: 'Cancelar',
+                        confirmButtonColor: '#0f172a',
+                        cancelButtonColor: '#64748b'
+                    });
+
+                    if (!result.isConfirmed) {
+                        return;
+                    }
+
+                    form.querySelector('[name="observacion"]').value = result.value || '';
+                    form.submit();
+                });
+            });
+        });
+    </script>
+@endpush
