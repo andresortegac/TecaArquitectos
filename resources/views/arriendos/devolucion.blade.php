@@ -532,6 +532,8 @@
         .return-page-pro .num{ text-align:right; font-variant-numeric: tabular-nums; }
         .return-page-pro .center{ text-align:center; }
         .return-page-pro .money{ font-variant-numeric: tabular-nums; font-weight: 1100; color: rgba(29,78,216,1); }
+        .return-page-pro .money-paid{ font-variant-numeric: tabular-nums; font-weight: 1100; color:#047857; }
+        .return-page-pro .money-due{ font-variant-numeric: tabular-nums; font-weight: 1100; color:#b91c1c; }
         .return-page-pro .row-note td{
             background: rgba(2,6,23,.01);
             color: var(--muted);
@@ -890,12 +892,11 @@
                                             <th class="center">Cobrables</th>
                                             <th class="num">Tarifa</th>
                                             <th class="num">Alquiler</th>
-                                            <th class="num">Merma</th>
-                                            <th class="num">Total</th>
+                                            <th class="num">Daño o Perdida de Herramienta</th>
                                             <th class="num">Abono</th>
-                                            <th class="num">Saldo devolución</th>
+                                            <th class="num">Saldo pendiente</th>
                                             <th class="center">Quedan</th>
-                                            <th class="num">Saldo item</th>
+                                            <th class="num">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -918,17 +919,10 @@
                                             <td class="num">${{ number_format((float)$d->tarifa_diaria, 2) }}</td>
                                             <td class="num money">${{ number_format((float)$d->total_alquiler, 2) }}</td>
                                             <td class="num">${{ number_format((float)$d->total_merma, 2) }}</td>
-                                            <td class="num money">${{ number_format((float)$d->total_cobrado, 2) }}</td>
-                                            <td class="num">${{ number_format((float)$d->pago_recibido, 2) }}</td>
-                                            <td class="num">
-                                                @if(isset($d->saldo_devolucion))
-                                                    ${{ number_format((float)$d->saldo_devolucion, 2) }}
-                                                @else
-                                                    0.00
-                                                @endif
-                                            </td>
+                                            <td class="num money-paid">${{ number_format((float)$d->pago_recibido, 2) }}</td>
+                                            <td class="num money-due">${{ number_format((float)$d->saldo_resultante, 2) }}</td>
                                             <td class="center">{{ (int)$d->cantidad_restante }}</td>
-                                            <td class="num">${{ number_format((float)$d->saldo_resultante, 2) }}</td>
+                                            <td class="num money">${{ number_format((float)$d->total_cobrado, 2) }}</td>
                                         </tr>
 
                                         {{-- ✅ Mostrar detalle transporte/incidencia --}}
@@ -940,7 +934,7 @@
 
                                         @if(!empty($notaExtra))
                                             <tr class="row-note">
-                                                <td colspan="16">
+                                                <td colspan="15">
                                                     {!! implode(' &nbsp; • &nbsp; ', $notaExtra) !!}
                                                 </td>
                                             </tr>
@@ -1114,7 +1108,7 @@
                 const transporte = Math.max(0, parseNum($tra?.value)); // ✅ NUEVO
 
                 // ✅ total incluye transporte
-                const total = subtotal + merma + transporte;
+                const total = subtotal + transporte;
 
                 const abono = Math.max(0, parseNum($pago?.value));
                 const saldo = Math.max(0, total - abono);

@@ -221,6 +221,9 @@ Route::middleware(['auth', 'role:admin|asistente'])->group(function () {
     Route::get('/arriendos/{arriendo}/detalles', [ArriendoController::class, 'detalles'])
         ->name('arriendos.detalles');
 
+    Route::post('/arriendos/{arriendo}/abonar-saldo', [ArriendoController::class, 'abonarSaldo'])
+        ->name('arriendos.abonar-saldo');
+
     // routes/web.php
     Route::get('clientes/{cliente}/obras', function ($clienteId) {
          return \App\Models\Obra::where('cliente_id', $clienteId)->get();

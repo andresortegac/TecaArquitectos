@@ -392,6 +392,56 @@
   }
 }
 
+.debt-origin{
+  border:1px solid #fed7aa;
+  background:#fff7ed;
+  border-radius:16px;
+  padding:14px;
+}
+.debt-origin h3{
+  margin:0;
+}
+.debt-origin .hint{
+  margin-top:4px;
+}
+.debt-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:10px;
+  margin-top:12px;
+}
+.debt-item{
+  border:1px solid #ffedd5;
+  background:#fff;
+  border-radius:12px;
+  padding:10px;
+}
+.debt-item .label{
+  margin:0;
+  color:#9a3412;
+}
+.debt-item .value{
+  margin-top:5px;
+  font-weight:900;
+  overflow-wrap:anywhere;
+}
+.debt-item .value.due{
+  color:#b91c1c;
+}
+.debt-pay-form{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: 1fr 1fr 2fr auto;
+  gap:10px;
+  align-items:end;
+}
+@media(max-width:980px){
+  .debt-grid,
+  .debt-pay-form{
+    grid-template-columns:1fr;
+  }
+}
+
 /* Rows */
 .row{
   display:flex;
@@ -498,6 +548,18 @@
   // El backend ya incluye transportes (e IVA si aplica) en el total y saldo del contrato.
   $totalACobrar = $totalContratoBase;
   $saldoPendiente = $saldoContratoBase;
+  $estaCerrado = (int)($arriendo->cerrado ?? 0) === 1 || strtolower((string)($arriendo->estado ?? '')) === 'devuelto';
+  $fechaCierreDeuda = $arriendo->fecha_devolucion_real ?? $arriendo->fecha_fin;
+  $formatoFecha = function($fecha){
+    return $fecha ? \Carbon\Carbon::parse($fecha)->format('d/m/Y') : '—';
+  };
+  $obraTexto = 'Sin obra registrada';
+  if ($arriendo->obra) {
+    $obraTexto = trim(($arriendo->obra->direccion ?? '') . ' - ' . ($arriendo->obra->detalle ?? ''), ' -');
+    $obraTexto = $obraTexto !== '' ? $obraTexto : 'Obra #' . $arriendo->obra->id;
+  }
+  $semaforoActual = strtoupper((string)($arriendo->semaforo_pago ?? 'VERDE'));
+  $diasMoraActual = (int)($arriendo->dias_mora ?? 0);
 
   // Helpers de tipo (mostrar bien claro)
   $labelTipo = function($tipo){
@@ -628,6 +690,97 @@
         </div>
       </div>
     </div>
+
+    @if($estaCerrado && $saldoPendiente > 0)
+      <div class="card debt-origin">
+        <div class="row">
+          <div>
+            <h3>Saldo pendiente de este arriendo</h3>
+            <div class="hint">
+              Este cobro viene del arriendo #{{ $arriendo->id }}. Al registrar un abono, baja el saldo pendiente y se actualiza la semaforizacion.
+            </div>
+          </div>
+          <span class="badge warn">
+            {{ $semaforoActual }}{{ $diasMoraActual > 0 ? ' - ' . $diasMoraActual . ' dias mora' : '' }}
+          </span>
+        </div>
+
+        <div class="debt-grid">
+          <div class="debt-item">
+            <div class="label">Cliente</div>
+            <div class="value">{{ $arriendo->cliente->nombre ?? '—' }}</div>
+          </div>
+          <div class="debt-item">
+            <div class="label">Obra</div>
+            <div class="value">{{ $obraTexto }}</div>
+          </div>
+          <div class="debt-item">
+            <div class="label">Origen</div>
+            <div class="value">Arriendo #{{ $arriendo->id }}</div>
+          </div>
+          <div class="debt-item">
+            <div class="label">Inicio</div>
+            <div class="value">{{ $formatoFecha($arriendo->fecha_inicio) }}</div>
+          </div>
+          <div class="debt-item">
+            <div class="label">Cierre / devolucion</div>
+            <div class="value">{{ $formatoFecha($fechaCierreDeuda) }}</div>
+          </div>
+          <div class="debt-item">
+            <div class="label">Saldo pendiente</div>
+            <div class="value due">${{ number_format($saldoPendiente, 2) }}</div>
+          </div>
+        </div>
+
+        <form class="debt-pay-form" method="POST" action="{{ route('arriendos.abonar-saldo', $arriendo) }}">
+          @csrf
+          <div>
+            <label class="label">Abono</label>
+            <input
+              class="input"
+              type="number"
+              name="monto"
+              min="1"
+              max="{{ $saldoPendiente }}"
+              step="0.01"
+              value="{{ old('monto') }}"
+              placeholder="Ej: 500000"
+              required
+            >
+            @error('monto')
+              <div class="hint" style="color:#b91c1c;">{{ $message }}</div>
+            @enderror
+          </div>
+
+          <div>
+            <label class="label">Metodo</label>
+            <select class="input" name="payment_method" required>
+              <option value="efectivo" {{ old('payment_method') === 'efectivo' ? 'selected' : '' }}>Efectivo</option>
+              <option value="nequi" {{ old('payment_method') === 'nequi' ? 'selected' : '' }}>Nequi</option>
+              <option value="daviplata" {{ old('payment_method') === 'daviplata' ? 'selected' : '' }}>Daviplata</option>
+              <option value="transferencia" {{ old('payment_method') === 'transferencia' ? 'selected' : '' }}>Transferencia</option>
+            </select>
+            @error('payment_method')
+              <div class="hint" style="color:#b91c1c;">{{ $message }}</div>
+            @enderror
+          </div>
+
+          <div>
+            <label class="label">Nota</label>
+            <input
+              class="input"
+              type="text"
+              name="nota"
+              maxlength="255"
+              value="{{ old('nota') }}"
+              placeholder="Abono deuda arriendo #{{ $arriendo->id }}"
+            >
+          </div>
+
+          <button class="btn primary" type="submit">Registrar abono</button>
+        </form>
+      </div>
+    @endif
 
     {{-- TRANSPORTES --}}
     <div class="card transport-card">

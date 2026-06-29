@@ -9,11 +9,20 @@ use App\Models\Incidencia;
 use App\Models\DevolucionArriendo;
 use App\Models\Payment; // ✅ NUEVO (para recaudado hoy/mes)
 use Illuminate\Http\Request;
+use App\Services\PaymentService;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ArriendoController extends Controller
 {
+    protected PaymentService $payments;
+
+    public function __construct(PaymentService $payments)
+    {
+        $this->payments = $payments;
+    }
+
     /* ============================================================
      * 1) LISTADO (INDEX) + FILTROS + SEMÁFORO ACTUALIZADO
      * ============================================================ */
@@ -163,6 +172,7 @@ class ArriendoController extends Controller
     {
         $arriendo->load([
             'cliente',
+            'obra',
             'items.producto',
             'transportes', // ✅ NUEVO
         ]);
@@ -170,10 +180,13 @@ class ArriendoController extends Controller
         $totalTransportes = (float)($arriendo->transportes?->sum('valor') ?? 0);
 
         // ✅ Totales del PADRE calculados desde los items (siempre correctos)
+        $pagadoItems = (float)$arriendo->items->sum('total_pagado');
+        $pagadoPadre = (float)($arriendo->total_pagado ?? 0);
+
         $totContrato = [
             'total_alquiler' => (float)$arriendo->items->sum('total_alquiler'),
             'total_merma'    => (float)$arriendo->items->sum('total_merma'),
-            'total_pagado'   => (float)$arriendo->items->sum('total_pagado'),
+            'total_pagado'   => max($pagadoItems, $pagadoPadre),
         ];
 
         $subtotal = $totContrato['total_alquiler'] + $totContrato['total_merma'] + $totalTransportes;
@@ -201,7 +214,7 @@ class ArriendoController extends Controller
         foreach ($padresCliente as $p) {
             $al = (float)$p->items->sum('total_alquiler');
             $me = (float)$p->items->sum('total_merma');
-            $pa = (float)$p->items->sum('total_pagado');
+            $pa = max((float)$p->items->sum('total_pagado'), (float)($p->total_pagado ?? 0));
             $tr = (float)($p->transportes?->sum('valor') ?? 0);
 
             $sub = $al + $me + $tr;
@@ -501,6 +514,80 @@ class ArriendoController extends Controller
         return redirect()->route('arriendos.index')
             ->with('success', 'Arriendo cerrado. Cálculos aplicados y semáforo actualizado.');
     }
+    public function abonarSaldo(Request $request, Arriendo $arriendo)
+    {
+        $data = $request->validate([
+            'monto' => 'required|numeric|min:1',
+            'payment_method' => 'required|in:efectivo,nequi,daviplata,transferencia',
+            'nota' => 'nullable|string|max:255',
+        ]);
+
+        $arriendo->load(['cliente', 'obra', 'items', 'transportes']);
+
+        $saldoActual = (float)($arriendo->saldo ?? 0);
+        $monto = (float)$data['monto'];
+        $estaCerrado = (int)($arriendo->cerrado ?? 0) === 1
+            || strtolower((string)($arriendo->estado ?? '')) === 'devuelto';
+
+        if (!$estaCerrado) {
+            return back()->withErrors(['monto' => 'Este abono solo aplica cuando el arriendo ya esta cerrado.']);
+        }
+
+        if ($saldoActual <= 0) {
+            return back()->withErrors(['monto' => 'Este arriendo no tiene saldo pendiente.']);
+        }
+
+        if ($monto > $saldoActual) {
+            return back()
+                ->withErrors(['monto' => 'El abono no puede ser mayor al saldo pendiente del arriendo.'])
+                ->withInput();
+        }
+
+        DB::transaction(function () use ($arriendo, $monto, $data, $saldoActual) {
+            $pagadoActual = max(
+                (float)($arriendo->total_pagado ?? 0),
+                (float)$arriendo->items->sum('total_pagado')
+            );
+            $nuevoTotalPagado = $pagadoActual + $monto;
+            $nuevoSaldo = max(0, $saldoActual - $monto);
+
+            $fechaBase = $arriendo->fecha_devolucion_real
+                ?? $arriendo->fecha_fin
+                ?? now()->toDateString();
+
+            $sem = $this->calcularSemaforoMoroso(
+                Carbon::parse($fechaBase)->toDateString(),
+                $nuevoSaldo
+            );
+
+            $arriendo->update([
+                'total_pagado' => $nuevoTotalPagado,
+                'saldo' => $nuevoSaldo,
+                'dias_mora' => $sem['dias_mora'],
+                'semaforo_pago' => $sem['semaforo'],
+            ]);
+
+            $this->payments->createConfirmedPayment([
+                'user_id' => auth()->id(),
+                'arriendo_id' => $arriendo->id,
+                'client_id' => $arriendo->cliente_id,
+                'obra_id' => $arriendo->obra_id,
+                'source_type' => Arriendo::class,
+                'source_id' => $arriendo->id,
+                'note' => trim(($data['nota'] ?? '') ?: 'Abono a saldo pendiente arriendo #' . $arriendo->id),
+            ], [
+                [
+                    'method' => $data['payment_method'],
+                    'amount' => (int)round($monto),
+                ],
+            ]);
+        });
+
+        return redirect()
+            ->route('arriendos.ver', $arriendo)
+            ->with('success', 'Abono registrado. Saldo pendiente y semaforo actualizados.');
+    }
+
 
     /* ============================================================
      * 9) FUNCIONES INTERNAS
