@@ -73,9 +73,9 @@
                     <thead>
                         <tr>
                             <th>Herramienta</th>
-                            <th>Cliente responsable</th>
-                            <th>Tipo de evento</th>
-                            <th class="right">Costo aplicado</th>
+                            <th>Cliente Responsable</th>
+                            <th>Tipo de Incidencias</th>
+                            <th class="right">Costo Unitario</th>
                             <th>Fecha</th>
                             <th>Estado del cobro</th>
                         </tr>
@@ -83,12 +83,12 @@
                     <tbody>
                         @forelse($registros as $fila)
                             <tr>
-                                <td>{{ $fila->herramienta }}</td>
-                                <td>{{ $fila->cliente }}</td>
-                                <td>{{ $eventoLabel[$fila->evento] ?? ucfirst($fila->evento) }}</td>
-                                <td class="right">${{ number_format($fila->costo, 0) }}</td>
-                                <td>{{ $fila->fecha }}</td>
-                                <td>
+                                <td data-label="Herramienta">{{ $fila->herramienta }}</td>
+                                <td data-label="Cliente">{{ $fila->cliente }}</td>
+                                <td data-label="Evento">{{ $eventoLabel[$fila->evento] ?? ucfirst($fila->evento) }}</td>
+                                <td data-label="Costo" class="right">${{ number_format($fila->costo, 0) }}</td>
+                                <td data-label="Fecha">{{ $fila->fecha }}</td>
+                                <td data-label="Estado">
                                     <span class="badge {{ $fila->estado_cobro === 'pendiente' ? 'badge-risk' : 'badge-ok' }}">
                                         {{ strtoupper($fila->estado_cobro) }}
                                     </span>

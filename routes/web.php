@@ -17,6 +17,7 @@ use App\Http\Controllers\GastoController;
 use App\Http\Controllers\controlproducto;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\ProductoadminController;
+use App\Http\Controllers\CierreCajaController;
 
 
 use Illuminate\Support\Facades\Route;
@@ -145,6 +146,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/perdidas-mantenimiento', [ReporteController::class, 'perdidasMantenimiento'])
             ->name('reportes.perdidas-mantenimiento');
     });
+});
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/cierrecaja', [CierreCajaController::class, 'index'])
+        ->name('cierrecaja.cierrecaja');
+    Route::post('/cierrecaja', [CierreCajaController::class, 'store'])
+        ->name('cierrecaja.store');
 });
 
 Route::middleware(['auth', 'role:admin|bodega'])->group(function () {

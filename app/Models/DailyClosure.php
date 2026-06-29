@@ -6,7 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class DailyClosure extends Model
 {
-    protected $fillable = ['business_date','closed_at','total_amount','method_breakdown','closed_by'];
+    protected $fillable = [
+        'business_date',
+        'closed_at',
+        'total_amount',
+        'total_gastos',
+        'utilidad',
+        'method_breakdown',
+        'closed_by',
+        'observacion',
+    ];
 
     protected $casts = [
         'business_date' => 'date',
@@ -17,5 +26,10 @@ class DailyClosure extends Model
     public function payments()
     {
         return $this->belongsToMany(Payment::class, 'daily_closure_payments');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'closed_by');
     }
 }

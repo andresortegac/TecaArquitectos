@@ -156,6 +156,23 @@
                         </div>
                     </div>
 
+                    {{-- ================= CIERRE DE CAJA ================= --}}
+                    <div class="nav-dropdown {{ request()->routeIs('cierrecaja.*') ? 'open' : '' }}">
+
+                        <a href="javascript:void(0)" class="nav-item dropdown-toggle">
+                            
+                            módulo de Caja y Cierres
+                            <span class="arrow">▾</span>
+                        </a>
+
+                        <div class="dropdown-menu">
+                            <a href="{{ route('cierrecaja.cierrecaja') }}"
+                            class="nav-item {{ request()->routeIs('cierrecaja.*') ? 'active' : '' }}">
+                                Seleccionar cierre
+                            </a>
+                        </div>
+                    </div>
+
                     {{-- Logout --}}
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
