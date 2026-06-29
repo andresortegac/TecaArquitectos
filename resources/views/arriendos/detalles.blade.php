@@ -69,6 +69,58 @@
     text-align:right;
     letter-spacing:.2px;
   }
+  .invoice-total-head {
+    display:grid;
+    grid-template-columns: 1fr auto;
+    gap:14px;
+    align-items:end;
+    border:2px solid #111827;
+    border-radius:14px;
+    padding:14px;
+    background:#f8fafc;
+  }
+  .invoice-total-head .ttl {
+    font-weight:900;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.35px;
+    color:#374151;
+  }
+  .invoice-total-head .amount {
+    margin-top:6px;
+    font-size:24px;
+    line-height:1.05;
+    font-weight:900;
+    color:#111827;
+  }
+  .invoice-total-head .balance {
+    text-align:right;
+    min-width:160px;
+  }
+  .invoice-total-head .balance span {
+    display:block;
+    color:#6b7280;
+    font-size:12px;
+    font-weight:800;
+  }
+  .invoice-total-head .balance strong {
+    display:block;
+    margin-top:6px;
+    font-size:18px;
+    color:#111827;
+  }
+  .invoice-lines {
+    margin-top:10px;
+  }
+  .invoice-note {
+    margin-top:8px;
+    color:#6b7280;
+    font-size:12px;
+  }
+  .section-title:has(+ .final-total),
+  .final-total {
+    display:none;
+  }
 
   /* ====== Item layout ====== */
   .item-card { margin-bottom:12px; }
@@ -142,6 +194,7 @@
     .table th { background:#f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .mov-table th { background:#f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .final-total { border:2px solid #111827 !important; background:#f2f2f2 !important; }
+    .invoice-total-head { border:2px solid #111827 !important; background:#f2f2f2 !important; }
   }
 </style>
 
@@ -268,9 +321,7 @@
         <div class="label">Herramientas (items)</div><div class="value">{{ $g_items_count }}</div>
         <div class="label">Unidades en obra</div><div class="value total-strong">{{ $g_unidades_restantes }}</div>
         <div class="label">Movimientos</div><div class="value">{{ $movs }}</div>
-
-        {{-- ✅ SALDO GENERAL INCLUYENDO TRANSPORTES --}}
-        <div class="label">Saldo general (incluye transportes)</div>
+        <div class="label">Saldo pendiente</div>
         <div class="value saldo-strong">${{ number_format($saldo_general_todo, 2) }}</div>
       </div>
       <div class="muted" style="margin-top:8px;">
@@ -282,31 +333,35 @@
   {{-- ====== RESUMEN EJECUTIVO ====== --}}
   <div class="summary-grid">
     <div class="box">
-      <div class="summary-title">Resumen general (dinero)</div>
-      <div class="kpi-grid">
+      <div class="summary-title">Resumen financiero</div>
 
-        <div class="label">Total alquiler</div>
-        <div class="value">${{ number_format((float)$totales['total_alquiler'], 2) }}</div>
+      <div class="invoice-total-head">
+        <div>
+          <div class="ttl">Total a pagar</div>
+          <div class="amount">${{ number_format($total_general_todo, 2) }}</div>
+        </div>
+        <div class="balance">
+          <span>Saldo pendiente</span>
+          <strong>${{ number_format($saldo_general_todo, 2) }}</strong>
+        </div>
+      </div>
 
-        <div class="label">Total merma</div>
-        <div class="value">${{ number_format((float)$totales['total_merma'], 2) }}</div>
-
-        {{-- ✅ SEPARACIÓN CLARA --}}
-        <div class="label">Total cobrado arriendo (sin transporte)</div>
+      <div class="kpi-grid invoice-lines">
+        <div class="label">Arriendo</div>
         <div class="value">${{ number_format((float)$totales['precio_total'], 2) }}</div>
 
-        <div class="label">Total transportes realizados</div>
+        <div class="label">Transporte</div>
         <div class="value">${{ number_format($total_transportes, 2) }}</div>
-
-        {{-- ✅ TOTAL DE TODO (SÚPER CLARO) --}}
-        <div class="label total-strong">TOTAL GENERAL (Arriendo + Transportes)</div>
-        <div class="value total-strong">${{ number_format($total_general_todo, 2) }}</div>
 
         <div class="label">Total abonado</div>
         <div class="value">${{ number_format($total_abonado_general, 2) }}</div>
 
-        <div class="label saldo-strong">Saldo pendiente (incluye transportes)</div>
+        <div class="label saldo-strong">Saldo pendiente</div>
         <div class="value saldo-strong">${{ number_format($saldo_general_todo, 2) }}</div>
+      </div>
+
+      <div class="invoice-note">
+        El total a pagar suma arriendo y transporte. El saldo pendiente descuenta los abonos registrados.
       </div>
     </div>
 

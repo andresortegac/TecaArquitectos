@@ -30,8 +30,8 @@
             <div class="gr-grid">
                 <article class="gr-card"><span>Total de ventas</span><strong>{{ number_format($rg['total_ventas'] ?? 0) }}</strong></article>
                 <article class="gr-card"><span>Total de alquileres</span><strong>{{ number_format($rg['total_alquileres'] ?? 0) }}</strong></article>
-                <article class="gr-card"><span>Ingresos totales</span><strong>${{ number_format($rg['ingresos_totales'] ?? 0, 0) }}</strong></article>
-                <article class="gr-card"><span>Ganancia estimada</span><strong>${{ number_format($rg['ganancia_estimada'] ?? 0, 0) }}</strong></article>
+                <article class="gr-card"><span>Valor generado total</span><strong>${{ number_format($rg['ingresos_totales'] ?? 0, 0) }}</strong></article>
+                <article class="gr-card"><span>Utilidad estimada</span><strong>${{ number_format($rg['ganancia_estimada'] ?? 0, 0) }}</strong></article>
                 <article class="gr-card"><span>Productos vendidos</span><strong>{{ number_format($rg['productos_vendidos'] ?? 0) }}</strong></article>
                 <article class="gr-card"><span>Productos alquilados</span><strong>{{ number_format($rg['productos_alquilados'] ?? 0) }}</strong></article>
                 <article class="gr-card"><span>Clientes registrados</span><strong>{{ number_format($rg['clientes_registrados'] ?? 0) }}</strong></article>
@@ -46,12 +46,16 @@
         <section class="gr-section">
             <h3>2. Resumen Financiero</h3>
             <div class="gr-grid">
-                <article class="gr-card"><span>Ingresos por ventas</span><strong>${{ number_format($rf['ingresos_ventas'] ?? 0, 0) }}</strong></article>
-                <article class="gr-card"><span>Ingresos por alquileres</span><strong>${{ number_format($rf['ingresos_alquileres'] ?? 0, 0) }}</strong></article>
-                <article class="gr-card"><span>Abonos pendientes</span><strong>{{ number_format($rf['abonos_pendientes'] ?? 0) }}</strong></article>
+                <article class="gr-card"><span>Ventas registradas</span><strong>${{ number_format($rf['ventas_registradas'] ?? 0, 0) }}</strong></article>
+                <article class="gr-card"><span>Alquileres facturados</span><strong>${{ number_format($rf['alquileres_facturados'] ?? 0, 0) }}</strong></article>
+                <article class="gr-card"><span>Recaudo confirmado</span><strong>${{ number_format($rf['recaudo_total'] ?? 0, 0) }}</strong></article>
+                <article class="gr-card"><span>Recaudo por alquileres</span><strong>${{ number_format($rf['recaudo_alquileres'] ?? 0, 0) }}</strong></article>
+                <article class="gr-card"><span>Gastos registrados</span><strong>${{ number_format($rf['gastos_registrados'] ?? 0, 0) }}</strong></article>
+                <article class="gr-card"><span>Utilidad estimada</span><strong>${{ number_format($rf['utilidad_estimada'] ?? 0, 0) }}</strong></article>
+                <article class="gr-card"><span>Cuentas pendientes</span><strong>{{ number_format($rf['cuentas_pendientes'] ?? 0) }}</strong></article>
                 <article class="gr-card"><span>Saldo por cobrar</span><strong>${{ number_format($rf['saldo_por_cobrar'] ?? 0, 0) }}</strong></article>
-                <article class="gr-card"><span>Multas generadas</span><strong>${{ number_format($rf['multas_generadas'] ?? 0, 0) }}</strong></article>
-                <article class="gr-card"><span>Productos más rentables</span><strong>{{ $rf['productos_mas_rentables'] ?? '-' }}</strong></article>
+                <article class="gr-card"><span>Mermas generadas</span><strong>${{ number_format($rf['mermas_generadas'] ?? 0, 0) }}</strong></article>
+                <article class="gr-card"><span>Producto mas rentable</span><strong>{{ $rf['productos_mas_rentables'] ?? '-' }}</strong></article>
             </div>
         </section>
 
@@ -79,10 +83,10 @@
         <section class="gr-section">
             <h3>5. Indicadores (KPIs)</h3>
             <div class="gr-grid">
-                <article class="gr-card"><span>Producto más vendido</span><strong>{{ $kpis['producto_mas_vendido'] ?? '-' }}</strong></article>
-                <article class="gr-card"><span>Producto más alquilado</span><strong>{{ $kpis['producto_mas_alquilado'] ?? '-' }}</strong></article>
+                <article class="gr-card"><span>Producto mas vendido</span><strong>{{ $kpis['producto_mas_vendido'] ?? '-' }}</strong></article>
+                <article class="gr-card"><span>Producto mas alquilado</span><strong>{{ $kpis['producto_mas_alquilado'] ?? '-' }}</strong></article>
                 <article class="gr-card"><span>Mes con mayores ingresos</span><strong>{{ $kpis['mes_mayores_ingresos'] ?? '-' }}</strong></article>
-                <article class="gr-card"><span>Usuario con más ventas</span><strong>{{ $kpis['usuario_mas_ventas'] ?? '-' }}</strong></article>
+                <article class="gr-card"><span>Usuario con mas ventas</span><strong>{{ $kpis['usuario_mas_ventas'] ?? '-' }}</strong></article>
                 <article class="gr-card"><span>Crecimiento mensual (%)</span><strong>{{ number_format((float) ($kpis['crecimiento_mensual'] ?? 0), 2) }}%</strong></article>
             </div>
         </section>

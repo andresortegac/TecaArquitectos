@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Models\Arriendo;
 use App\Models\ArriendoItem;
+use App\Models\Gasto;
 use App\Models\Movimiento;
 use App\Models\Payment;
 use App\Models\Producto;
@@ -99,9 +100,12 @@ class ReportesStockController extends Controller
 
         $totalVentas = Venta::count();
         $totalAlquileres = Arriendo::count();
-        $ingresosVentas = (float) Venta::sum('total');
-        $ingresosAlquileres = (float) ArriendoItem::sum('total_alquiler');
-        $ingresosTotales = $ingresosVentas + $ingresosAlquileres;
+        $ventasRegistradas = (float) Venta::sum('total');
+        $alquileresFacturados = (float) Arriendo::sum('precio_total');
+        $valorGeneradoTotal = $ventasRegistradas + $alquileresFacturados;
+        $recaudoAlquileres = (float) Payment::where('status', 'confirmed')->sum('total_amount');
+        $recaudoTotal = $ventasRegistradas + $recaudoAlquileres;
+        $gastosRegistrados = (float) Gasto::sum('monto');
 
         $costoEstimadoVendido = (float) Movimiento::query()
             ->with('producto:id,costo')
@@ -111,7 +115,7 @@ class ReportesStockController extends Controller
                 return (float) ($movimiento->cantidad ?? 0) * (float) ($movimiento->producto->costo ?? 0);
             });
 
-        $gananciaEstimada = $ingresosTotales - $costoEstimadoVendido;
+        $gananciaEstimada = $recaudoTotal - $gastosRegistrados - $costoEstimadoVendido;
         $productosVendidos = (int) Movimiento::where('tipo', 'salida')->sum('cantidad');
         $productosAlquilados = (int) ArriendoItem::sum('cantidad_inicial');
 
@@ -122,9 +126,9 @@ class ReportesStockController extends Controller
         $usuariosActivosVendedor = $rolVendedorExiste ? User::role('vendedor')->count() : 0;
         $usuariosActivos = $usuariosActivosAdmin + $usuariosActivosVendedor;
 
-        $abonosPendientes = (int) ArriendoItem::where('saldo', '>', 0)->count();
-        $saldoPorCobrar = (float) ArriendoItem::where('saldo', '>', 0)->sum('saldo');
-        $multasGeneradas = (float) ArriendoItem::sum('total_merma');
+        $cuentasPendientes = (int) Arriendo::where('saldo', '>', 0)->count();
+        $saldoPorCobrar = (float) Arriendo::where('saldo', '>', 0)->sum('saldo');
+        $mermasGeneradas = (float) ArriendoItem::sum('total_merma');
 
         $topRentable = ArriendoItem::query()
             ->select('producto_id', DB::raw('SUM(total_alquiler + total_merma) as total_rentable'))
@@ -185,9 +189,12 @@ class ReportesStockController extends Controller
             $ym = Carbon::parse($venta->fecha)->format('Y-m');
             $ingresosPorMes[$ym] = ($ingresosPorMes[$ym] ?? 0) + (float) $venta->total;
         }
-        foreach (ArriendoItem::select('fecha_inicio_item', 'total_alquiler')->whereNotNull('fecha_inicio_item')->get() as $item) {
-            $ym = Carbon::parse($item->fecha_inicio_item)->format('Y-m');
-            $ingresosPorMes[$ym] = ($ingresosPorMes[$ym] ?? 0) + (float) $item->total_alquiler;
+        foreach (Payment::select('business_date', 'total_amount')->where('status', 'confirmed')->get() as $payment) {
+            if (!$payment->business_date) {
+                continue;
+            }
+            $ym = Carbon::parse($payment->business_date)->format('Y-m');
+            $ingresosPorMes[$ym] = ($ingresosPorMes[$ym] ?? 0) + (float) $payment->total_amount;
         }
         arsort($ingresosPorMes);
         $mesMayoresIngresos = !empty($ingresosPorMes)
@@ -213,9 +220,13 @@ class ReportesStockController extends Controller
         }
 
         $ingresosMesActual = (float) Venta::whereBetween('fecha', [$inicioMesActual->toDateString(), $hoy->toDateString()])->sum('total')
-            + (float) ArriendoItem::whereBetween('fecha_inicio_item', [$inicioMesActual, $hoy])->sum('total_alquiler');
+            + (float) Payment::where('status', 'confirmed')
+                ->whereBetween('business_date', [$inicioMesActual->toDateString(), $hoy->toDateString()])
+                ->sum('total_amount');
         $ingresosMesAnterior = (float) Venta::whereBetween('fecha', [$inicioMesAnterior->toDateString(), $finMesAnterior->toDateString()])->sum('total')
-            + (float) ArriendoItem::whereBetween('fecha_inicio_item', [$inicioMesAnterior, $finMesAnterior])->sum('total_alquiler');
+            + (float) Payment::where('status', 'confirmed')
+                ->whereBetween('business_date', [$inicioMesAnterior->toDateString(), $finMesAnterior->toDateString()])
+                ->sum('total_amount');
 
         $crecimientoMensual = 0.0;
         if ($ingresosMesAnterior > 0) {
@@ -228,7 +239,7 @@ class ReportesStockController extends Controller
             'resumen_general' => [
                 'total_ventas' => $totalVentas,
                 'total_alquileres' => $totalAlquileres,
-                'ingresos_totales' => $ingresosTotales,
+                'ingresos_totales' => $valorGeneradoTotal,
                 'ganancia_estimada' => $gananciaEstimada,
                 'productos_vendidos' => $productosVendidos,
                 'productos_alquilados' => $productosAlquilados,
@@ -237,11 +248,15 @@ class ReportesStockController extends Controller
                 'usuarios_activos_detalle' => "Admin: {$usuariosActivosAdmin} / Vendedor: {$usuariosActivosVendedor}",
             ],
             'resumen_financiero' => [
-                'ingresos_ventas' => $ingresosVentas,
-                'ingresos_alquileres' => $ingresosAlquileres,
-                'abonos_pendientes' => $abonosPendientes,
+                'ventas_registradas' => $ventasRegistradas,
+                'alquileres_facturados' => $alquileresFacturados,
+                'recaudo_alquileres' => $recaudoAlquileres,
+                'recaudo_total' => $recaudoTotal,
+                'gastos_registrados' => $gastosRegistrados,
+                'utilidad_estimada' => $gananciaEstimada,
+                'cuentas_pendientes' => $cuentasPendientes,
                 'saldo_por_cobrar' => $saldoPorCobrar,
-                'multas_generadas' => $multasGeneradas,
+                'mermas_generadas' => $mermasGeneradas,
                 'productos_mas_rentables' => $productosRentables,
             ],
             'inventario' => [

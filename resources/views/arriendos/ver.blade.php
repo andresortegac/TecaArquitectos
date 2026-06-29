@@ -222,6 +222,176 @@
 .kpi .label{ font-size:12px; color: var(--muted); }
 .kpi .value{ margin-top:6px; font-weight:900; letter-spacing:.2px; }
 
+/* Resumen financiero */
+.finance-panel{
+  display:grid;
+  gap:12px;
+}
+.finance-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.finance-title{
+  margin:0;
+  font-size:16px;
+  font-weight:900;
+}
+.finance-subtitle{
+  margin-top:4px;
+  max-width:520px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+}
+.finance-status{
+  border:1px solid #bbf7d0;
+  background:#f0fdf4;
+  color:#166534;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.finance-status.due{
+  border-color:#fed7aa;
+  background:#fff7ed;
+  color:#9a3412;
+}
+.finance-total{
+  display:grid;
+  grid-template-columns: 1fr auto;
+  gap:12px;
+  align-items:end;
+  border:1px solid #bfdbfe;
+  border-radius:16px;
+  padding:14px;
+  background:linear-gradient(135deg, #eff6ff 0%, #ffffff 68%);
+}
+.finance-total .label{
+  margin:0 0 6px;
+  color:#1d4ed8;
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.35px;
+}
+.finance-total .amount{
+  font-size:26px;
+  line-height:1.05;
+  font-weight:950;
+  color:#0f172a;
+}
+.finance-total .note{
+  margin-top:6px;
+  color:#64748b;
+  font-size:12px;
+}
+.finance-total .balance{
+  text-align:right;
+  min-width:150px;
+}
+.finance-total .balance span{
+  display:block;
+  color:#64748b;
+  font-size:12px;
+  font-weight:800;
+}
+.finance-total .balance strong{
+  display:block;
+  margin-top:6px;
+  color:#9a3412;
+  font-size:18px;
+  line-height:1.1;
+}
+.finance-breakdown{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:10px;
+}
+.finance-metric{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  background:#fff;
+  min-width:0;
+}
+.finance-metric .label{
+  margin:0;
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+}
+.finance-metric .value{
+  margin-top:6px;
+  color:#0f172a;
+  font-size:17px;
+  font-weight:950;
+  line-height:1.15;
+  overflow-wrap:anywhere;
+}
+.finance-metric.paid .value{ color:#047857; }
+.finance-metric.due .value{ color:#b45309; }
+.finance-history{
+  border-top:1px solid var(--line);
+  padding-top:12px;
+}
+.finance-history-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-end;
+  margin-bottom:10px;
+}
+.finance-history-head h3{
+  margin:0;
+}
+.finance-history-head span{
+  color:var(--muted);
+  font-size:12px;
+}
+.finance-history-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:10px;
+}
+.finance-history-item{
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  padding:11px 12px;
+  background:#f8fafc;
+}
+.finance-history-item .label{
+  margin:0;
+  color:#64748b;
+  font-size:12px;
+  font-weight:900;
+}
+.finance-history-item .value{
+  margin-top:6px;
+  color:#0f172a;
+  font-size:16px;
+  font-weight:950;
+  line-height:1.15;
+  overflow-wrap:anywhere;
+}
+@media(max-width:720px){
+  .finance-total{
+    grid-template-columns:1fr;
+  }
+  .finance-total .balance{
+    text-align:left;
+    min-width:0;
+  }
+  .finance-breakdown,
+  .finance-history-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 /* Rows */
 .row{
   display:flex;
@@ -320,14 +490,14 @@
   $totalTransportes = (float) $transportes->sum('valor');
 
   // Totales base (contrato)
+  $valorAlquiler = (float)($totContrato['total_alquiler'] ?? 0) + (float)($totContrato['total_merma'] ?? 0);
   $totalContratoBase = (float)($totContrato['precio_total'] ?? 0);
   $pagadoContratoBase = (float)($totContrato['total_pagado'] ?? 0);
   $saldoContratoBase  = (float)($totContrato['saldo'] ?? 0);
 
-  // ✅ Totales con transportes (para que el cobro quede reflejado)
-  $totalGeneral = $totalContratoBase + $totalTransportes;
-  // Si el transporte no tiene pagos asociados, se asume pendiente:
-  $saldoGeneral = $saldoContratoBase + $totalTransportes;
+  // El backend ya incluye transportes (e IVA si aplica) en el total y saldo del contrato.
+  $totalACobrar = $totalContratoBase;
+  $saldoPendiente = $saldoContratoBase;
 
   // Helpers de tipo (mostrar bien claro)
   $labelTipo = function($tipo){
@@ -397,52 +567,62 @@
           </div>
         </div>
 
-        <div>
-          <h3>Resumen financiero</h3>
-          <div class="hint">Totales del contrato e histórico del cliente (incluye transportes para que queden cobrados).</div>
-          <div class="divider"></div>
+        <div class="finance-panel">
+          <div class="finance-head">
+            <div>
+              <h3 class="finance-title">Resumen financiero</h3>
+              <div class="finance-subtitle">Contrato actual separado del historial del cliente. El valor principal es el monto operativo para cobrar.</div>
+            </div>
+            <div class="finance-status {{ $saldoPendiente > 0 ? 'due' : '' }}">
+              {{ $saldoPendiente > 0 ? 'Saldo pendiente' : 'Al dia' }}
+            </div>
+          </div>
 
-          <div class="kpis">
-            {{-- Base contrato --}}
-            <div class="kpi">
-              <div class="label">Total contrato</div>
-              <div class="value">${{ number_format($totalContratoBase, 2) }}</div>
+          <div class="finance-total">
+            <div>
+              <div class="label">Total a cobrar</div>
+              <div class="amount">${{ number_format($totalACobrar, 2) }}</div>
+              <div class="note">Incluye alquiler, transporte{{ (int)($arriendo->iva_aplica ?? 0) === 1 ? ' e IVA' : '' }}.</div>
             </div>
-            <div class="kpi">
-              <div class="label">Pagado contrato</div>
-              <div class="value">${{ number_format($pagadoContratoBase, 2) }}</div>
+            <div class="balance">
+              <span>Saldo actual</span>
+              <strong>${{ number_format($saldoPendiente, 2) }}</strong>
             </div>
-            <div class="kpi">
-              <div class="label">Saldo contrato</div>
-              <div class="value">${{ number_format($saldoContratoBase, 2) }}</div>
-            </div>
+          </div>
 
-            {{-- ✅ Transportes + totales generales --}}
-            <div class="kpi">
-              <div class="label">Total transportes</div>
+          <div class="finance-breakdown">
+            <div class="finance-metric">
+              <div class="label">Valor del alquiler</div>
+              <div class="value">${{ number_format($valorAlquiler, 2) }}</div>
+            </div>
+            <div class="finance-metric">
+              <div class="label">Transporte</div>
               <div class="value">${{ number_format($totalTransportes, 2) }}</div>
             </div>
-            <div class="kpi">
-              <div class="label">Total general (Contrato + Transportes)</div>
-              <div class="value">${{ number_format($totalGeneral, 2) }}</div>
+            <div class="finance-metric paid">
+              <div class="label">Pagado</div>
+              <div class="value">${{ number_format($pagadoContratoBase, 2) }}</div>
             </div>
-            <div class="kpi">
-              <div class="label">Saldo general (incluye transportes)</div>
-              <div class="value">${{ number_format($saldoGeneral, 2) }}</div>
-            </div>
+          </div>
 
-            {{-- Histórico --}}
-            <div class="kpi">
-              <div class="label">Total histórico cliente</div>
-              <div class="value">${{ number_format((float)($totalHistorico['precio_total'] ?? 0), 2) }}</div>
+          <div class="finance-history">
+            <div class="finance-history-head">
+              <h3>Historial del cliente</h3>
+              <span>Contexto acumulado</span>
             </div>
-            <div class="kpi">
-              <div class="label">Pagado histórico</div>
-              <div class="value">${{ number_format((float)($totalHistorico['total_pagado'] ?? 0), 2) }}</div>
-            </div>
-            <div class="kpi">
-              <div class="label">Saldo histórico</div>
-              <div class="value">${{ number_format((float)($totalHistorico['saldo'] ?? 0), 2) }}</div>
+            <div class="finance-history-grid">
+              <div class="finance-history-item">
+                <div class="label">Total historico</div>
+                <div class="value">${{ number_format((float)($totalHistorico['precio_total'] ?? 0), 2) }}</div>
+              </div>
+              <div class="finance-history-item">
+                <div class="label">Pagado historico</div>
+                <div class="value">${{ number_format((float)($totalHistorico['total_pagado'] ?? 0), 2) }}</div>
+              </div>
+              <div class="finance-history-item">
+                <div class="label">Saldo pendiente historico</div>
+                <div class="value">${{ number_format((float)($totalHistorico['saldo'] ?? 0), 2) }}</div>
+              </div>
             </div>
           </div>
         </div>
