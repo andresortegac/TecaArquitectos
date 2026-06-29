@@ -13,6 +13,7 @@
         $selected = $tipoSeleccionado;
         $monthLabel = $mes->translatedFormat('F Y');
         $cierreSeleccionado = $selected === 'parcial' ? $cierreDia : ($selected === 'mensual' ? $cierreMes : null);
+        $todayBogota = now('America/Bogota');
     @endphp
 
     <div class="caja-page">
@@ -30,8 +31,8 @@
                 <p>Seleccione si necesita revisar la caja del dia o consolidar el cierre del mes.</p>
             </div>
             <div class="caja-date">
-                <span>{{ now()->format('d/m/Y') }}</span>
-                <strong>{{ now()->translatedFormat('l') }}</strong>
+                <span>{{ $todayBogota->format('d/m/Y') }}</span>
+                <strong>{{ $todayBogota->translatedFormat('l') }}</strong>
             </div>
         </section>
 
