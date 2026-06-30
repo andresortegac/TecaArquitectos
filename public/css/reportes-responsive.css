@@ -1,0 +1,347 @@
+/* Responsive final para reportes. Se carga despues de los CSS particulares. */
+@media (max-width: 767px) {
+  .principal-content {
+    overflow-x: hidden !important;
+  }
+
+  .principal-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .principal-page :is(
+    .rep-mov-page,
+    .rpa-page,
+    .rpm-page,
+    .rin-page,
+    .cp-page,
+    .rcp-page,
+    .rid-page,
+    .rcd-page,
+    .gr-page,
+    .report-container
+  ) {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .principal-page :is(
+    .rep-mov-hero,
+    .rpa-hero,
+    .rpm-hero,
+    .rin-hero,
+    .cp-hero,
+    .rcp-hero,
+    .rid-hero,
+    .rcd-hero,
+    .gr-hero,
+    .report-hero
+  ) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 14px !important;
+    gap: 12px !important;
+  }
+
+  .principal-page :is(
+    .rep-mov-hero h2,
+    .rpa-hero h2,
+    .rpm-hero h2,
+    .rin-hero h2,
+    .cp-hero h2,
+    .rcp-hero h2,
+    .rid-hero h2,
+    .rcd-hero h2,
+    .gr-hero h2,
+    .report-title
+  ) {
+    font-size: 20px !important;
+    line-height: 1.18 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .principal-page :is(
+    .rep-mov-kpis,
+    .rpa-kpis,
+    .rpm-kpis,
+    .rin-kpis,
+    .cp-kpis,
+    .rcp-kpis,
+    .rid-kpis,
+    .rcd-kpis,
+    .report-grid
+  ) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .principal-page :is(
+    .rep-mov-filters,
+    .rpa-filters,
+    .rpm-filters,
+    .rin-filters,
+    .cp-filters,
+    .rcp-filters,
+    .rid-filters,
+    .rcd-filters
+  ) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .principal-page :is(.field, .field-grow, .actions) {
+    grid-column: 1 / -1 !important;
+  }
+
+  .principal-page :is(
+    .actions,
+    .hero-actions,
+    .rpa-filter,
+    .cp-filter
+  ) {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+  }
+
+  .principal-page :is(
+    input,
+    select,
+    .actions button,
+    .actions a,
+    .hero-actions a,
+    .rpa-filter button,
+    .rpa-filter a,
+    .cp-filter button,
+    .cp-filter a,
+    .btn-volver,
+    .btn-exportar,
+    .rpm-btn-back,
+    .rid-btn-back,
+    .rcp-btn-back,
+    .rpa-btn-back,
+    .rin-btn-back,
+    .cp-btn-back,
+    .gr-btn-back
+  ) {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  .principal-page :is(
+    .table-wrap,
+    .rpa-table-wrap,
+    .rpm-table-wrap,
+    .rin-table-wrap,
+    .cp-table-wrap,
+    .rcp-table-wrap,
+    .rid-table-wrap,
+    .table-responsive
+  ) {
+    border: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) thead {
+    display: none !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) :is(tbody, tr, td) {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) tr {
+    margin-bottom: 12px !important;
+    border: 1px solid #dbe3ee !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, .94) !important;
+    overflow: hidden !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) td {
+    display: grid !important;
+    grid-template-columns: minmax(96px, 38%) minmax(0, 1fr) !important;
+    gap: 10px !important;
+    align-items: start !important;
+    padding: 10px 12px !important;
+    border-bottom: 1px solid #eef2f7 !important;
+    color: #0f172a !important;
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) td:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) td::before {
+    content: "Dato";
+    color: #475569;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+
+  .principal-page :is(.tipo, .badge, .badge-risk, .badge-ok, .badge-warning) {
+    width: fit-content !important;
+    max-width: 100% !important;
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+  }
+
+  .principal-page .rep-table td:nth-child(1)::before { content: "Fecha"; }
+  .principal-page .rep-table td:nth-child(2)::before { content: "Producto"; }
+  .principal-page .rep-table td:nth-child(3)::before { content: "Tipo"; }
+  .principal-page .rep-table td:nth-child(4)::before { content: "Cantidad"; }
+  .principal-page .rep-table td:nth-child(5)::before { content: "Observaciones"; }
+
+  .principal-page .rpm-table td:nth-child(1)::before { content: "Fecha"; }
+  .principal-page .rpm-table td:nth-child(2)::before { content: "Producto"; }
+  .principal-page .rpm-table td:nth-child(3)::before { content: "Tipo"; }
+  .principal-page .rpm-table td:nth-child(4)::before { content: "Cantidad"; }
+  .principal-page .rpm-table td:nth-child(5)::before { content: "Costo"; }
+  .principal-page .rpm-table td:nth-child(6)::before { content: "Estado"; }
+  .principal-page .rpm-table td:nth-child(7)::before { content: "Observaciones"; }
+
+  .principal-page .rid-table td:nth-child(1)::before { content: "Fecha"; }
+  .principal-page .rid-table td:nth-child(2)::before { content: "Cliente"; }
+  .principal-page .rid-table td:nth-child(3)::before { content: "Obra"; }
+  .principal-page .rid-table td:nth-child(4)::before { content: "Valor"; }
+  .principal-page .rid-table td:nth-child(5)::before { content: "Metodo"; }
+  .principal-page .rid-table td:nth-child(6)::before { content: "Estado"; }
+
+  .principal-page .rcp-table td:nth-child(1)::before { content: "Cliente"; }
+  .principal-page .rcp-table td:nth-child(2)::before { content: "Obra"; }
+  .principal-page .rcp-table td:nth-child(3)::before { content: "Arriendo"; }
+  .principal-page .rcp-table td:nth-child(4)::before { content: "Total"; }
+  .principal-page .rcp-table td:nth-child(5)::before { content: "Pagado"; }
+  .principal-page .rcp-table td:nth-child(6)::before { content: "Saldo"; }
+  .principal-page .rcp-table td:nth-child(7)::before { content: "Estado"; }
+
+  .principal-page .rin-table td:nth-child(1)::before { content: "Fecha"; }
+  .principal-page .rin-table td:nth-child(2)::before { content: "Cliente"; }
+  .principal-page .rin-table td:nth-child(3)::before { content: "Producto"; }
+  .principal-page .rin-table td:nth-child(4)::before { content: "Incidencia"; }
+  .principal-page .rin-table td:nth-child(5)::before { content: "Valor"; }
+  .principal-page .rin-table td:nth-child(6)::before { content: "Estado"; }
+
+  .principal-page .rpa-table td:nth-child(1)::before { content: "Producto"; }
+  .principal-page .rpa-table td:nth-child(2)::before { content: "Categoria"; }
+  .principal-page .rpa-table td:nth-child(3)::before { content: "Cantidad"; }
+  .principal-page .rpa-table td:nth-child(4)::before { content: "Veces"; }
+  .principal-page .rpa-table td:nth-child(5)::before { content: "Valor"; }
+
+  .principal-page .cp-table td:nth-child(1)::before { content: "Producto"; }
+  .principal-page .cp-table td:nth-child(2)::before { content: "Categoria"; }
+  .principal-page .cp-table td:nth-child(3)::before { content: "Stock"; }
+  .principal-page .cp-table td:nth-child(4)::before { content: "Alquilado"; }
+  .principal-page .cp-table td:nth-child(5)::before { content: "Disponible"; }
+
+  .principal-page .rcd-table td:nth-child(1)::before { content: "Cliente"; }
+  .principal-page .rcd-table td:nth-child(2)::before { content: "Obra"; }
+  .principal-page .rcd-table td:nth-child(3)::before { content: "Arriendos"; }
+  .principal-page .rcd-table td:nth-child(4)::before { content: "Total"; }
+  .principal-page .rcd-table td:nth-child(5)::before { content: "Pagado"; }
+  .principal-page .rcd-table td:nth-child(6)::before { content: "Saldo"; }
+  .principal-page .rcd-table td:nth-child(7)::before { content: "Perdidas"; }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .principal-page :is(
+    .table-wrap,
+    .rpa-table-wrap,
+    .rpm-table-wrap,
+    .rin-table-wrap,
+    .cp-table-wrap,
+    .rcp-table-wrap,
+    .rid-table-wrap,
+    .table-responsive
+  ) {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}

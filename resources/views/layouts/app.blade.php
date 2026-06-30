@@ -17,6 +17,7 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
 
     @stack('styles')
+    <link rel="stylesheet" href="{{ asset('css/reportes-responsive.css') }}?v={{ file_exists(public_path('css/reportes-responsive.css')) ? filemtime(public_path('css/reportes-responsive.css')) : time() }}">
     <link rel="stylesheet" href="{{ asset('css/buttons.css') }}">
 </head>
 <body>
