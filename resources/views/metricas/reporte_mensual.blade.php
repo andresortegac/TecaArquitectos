@@ -76,6 +76,12 @@
     align-items:center;
     gap:14px;
   }
+  .header-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    flex-wrap:wrap;
+  }
   @media (max-width: 767.98px){
     .header-grid{ grid-template-columns: 1fr; }
     .header-actions .btn{ width:100%; }
@@ -133,7 +139,10 @@
 
             <div class="header-actions">
               <a class="btn btn-corp-outline" href="{{ route('metricas.reporte.anual', $year) }}">
-                ← Volver al anual
+                Ver detalles anuales
+              </a>
+              <a class="btn btn-corp" href="{{ route('arriendos.index') }}">
+                Volver
               </a>
             </div>
           </div>
