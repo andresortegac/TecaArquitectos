@@ -146,6 +146,15 @@
 
   .principal-page :is(
     .hero-actions a,
+    .rep-mov-hero > a,
+    .rpa-hero > a,
+    .rpm-hero > a,
+    .rin-hero > a,
+    .cp-hero > a,
+    .rcp-hero > a,
+    .rid-hero > a,
+    .rcd-hero > a,
+    .gr-hero > a,
     .btn-volver,
     .btn-exportar,
     .rpm-btn-back,
@@ -158,9 +167,10 @@
   ) {
     width: auto !important;
     min-width: 0 !important;
-    max-width: max-content !important;
+    max-width: fit-content !important;
     min-height: 27px !important;
     height: 27px !important;
+    max-height: 27px !important;
     padding: 0 10px !important;
     border-radius: 5px !important;
     border: 0 !important;
@@ -172,6 +182,7 @@
     font-weight: 800 !important;
     justify-self: start !important;
     align-self: start !important;
+    flex: 0 0 auto !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
