@@ -117,6 +117,81 @@
       font-size: 12px !important;
       color: rgba(100,116,139,.95) !important;
     }
+    .pro-ui .kpi-link{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      margin-top: 12px;
+      border-radius: 12px;
+      padding: 0 14px;
+      color: #fff !important;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 12px 24px rgba(15,23,42,.16);
+      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    }
+    .pro-ui .kpi-link:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(15,23,42,.2);
+      filter: brightness(1.03);
+    }
+    .pro-ui .kpi-link-primary{ background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    .pro-ui .kpi-link-success{ background: linear-gradient(135deg, #16a34a, #15803d); }
+
+    .pro-ui .metrics-shortcuts{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:12px;
+      margin:14px 0 0;
+    }
+    .pro-ui .metric-shortcut{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-height:68px;
+      border:1px solid rgba(37,99,235,.22);
+      border-radius:16px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      color:#0f172a;
+      padding:12px 14px;
+      text-decoration:none;
+      box-shadow: 0 10px 26px rgba(15,23,42,.09);
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .pro-ui .metric-shortcut:hover{
+      transform: translateY(-1px);
+      border-color: rgba(37,99,235,.55);
+      box-shadow: 0 16px 34px rgba(15,23,42,.14);
+    }
+    .pro-ui .metric-shortcut .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      background:#2563eb;
+      color:#fff;
+      font-size:12px;
+      font-weight:900;
+      flex:0 0 auto;
+    }
+    .pro-ui .metric-shortcut strong{
+      display:block;
+      color:#0f172a;
+      font-size:15px;
+      font-weight:900;
+      line-height:1.15;
+    }
+    .pro-ui .metric-shortcut span:last-child{
+      display:block;
+      margin-top:4px;
+      color:#64748b;
+      font-size:12px;
+      font-weight:700;
+    }
 
     /* Filtros */
     .pro-ui .filters-grid{ gap:12px !important; align-items:center; }
@@ -291,6 +366,8 @@
     }
     @media(max-width: 820px){
       .pro-ui .modal-grid{ grid-template-columns:1fr; }
+      .pro-ui .kpi-link{ width:100%; }
+      .pro-ui .metrics-shortcuts{ grid-template-columns:1fr; }
     }
     .pro-ui .modal-actions{
       display:flex;
@@ -452,14 +529,14 @@
               <div class="hint">{{ now()->format('m/Y') }} (confirmado)</div>
 
               @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual') || \Illuminate\Support\Facades\Route::has('metricas.reporte.mensual'))
-                <div style="margin-top:8px;">
+                <div>
                   @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.mensual'))
-                    <a class="btn-sm"
+                    <a class="kpi-link kpi-link-primary"
                        href="{{ route('metricas.reporte.mensual', ['year' => request('year', now()->year), 'month' => request('month', now()->month)]) }}">
                       Ver detalle del mes
                     </a>
                   @elseif(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual'))
-                    <a class="btn-sm"
+                    <a class="kpi-link kpi-link-primary"
                        href="{{ route('metricas.reporte.anual', ['year' => request('year', now()->year)]) }}">
                       Ver detalle anual
                     </a>
@@ -483,8 +560,8 @@
               <div class="hint">{{ now()->format('d/m/Y') }} (confirmado)</div>
 
               @if(\Illuminate\Support\Facades\Route::has('metricas.detalle.dia'))
-                <div style="margin-top:8px;">
-                  <a class="btn-sm"
+                <div>
+                  <a class="kpi-link kpi-link-success"
                      href="{{ route('metricas.detalle.dia', ['date' => now()->toDateString()]) }}">
                     Ver detalle de hoy
                   </a>
@@ -501,25 +578,37 @@
         </div>
 
         {{-- MINI REPORTES --}}
-        <div style="margin:10px 0 0; display:flex; gap:8px; flex-wrap:wrap;">
+        <div class="metrics-shortcuts">
           @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.anual'))
-            <a class="btn-sm"
+            <a class="metric-shortcut"
                href="{{ route('metricas.reporte.anual', ['year' => request('year', now()->year)]) }}">
-              Reporte anual
+              <span class="badge">AÑO</span>
+              <span>
+                <strong>Reporte anual</strong>
+                <span>Resumen del año seleccionado</span>
+              </span>
             </a>
           @endif
 
           @if(\Illuminate\Support\Facades\Route::has('metricas.reporte.mensual'))
-            <a class="btn-sm"
+            <a class="metric-shortcut"
                href="{{ route('metricas.reporte.mensual', ['year' => request('year', now()->year), 'month' => request('month', now()->month)]) }}">
-              Reporte mensual
+              <span class="badge">MES</span>
+              <span>
+                <strong>Reporte mensual</strong>
+                <span>Detalle del mes actual</span>
+              </span>
             </a>
           @endif
 
           @if(\Illuminate\Support\Facades\Route::has('metricas.detalle.dia'))
-            <a class="btn-sm"
+            <a class="metric-shortcut"
                href="{{ route('metricas.detalle.dia', ['date' => now()->toDateString()]) }}">
-              Detalle día (hoy)
+              <span class="badge">HOY</span>
+              <span>
+                <strong>Detalle día (hoy)</strong>
+                <span>Pagos confirmados de hoy</span>
+              </span>
             </a>
           @endif
         </div>
