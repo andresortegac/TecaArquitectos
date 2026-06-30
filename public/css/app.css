@@ -452,6 +452,43 @@ button {
   -webkit-overflow-scrolling: touch;
 }
 
+.principal-page :is(
+  .table-wrap,
+  .rpa-table-wrap,
+  .rpm-table-wrap,
+  .rin-table-wrap,
+  .cp-table-wrap,
+  .rcp-table-wrap,
+  .rid-table-wrap,
+  .table-responsive
+) {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.principal-page :is(
+  .rep-mov-page,
+  .rpa-page,
+  .rpm-page,
+  .rin-page,
+  .cp-page,
+  .rcp-page,
+  .rid-page,
+  .rcd-page,
+  .gr-page,
+  .report-container,
+  .report-page,
+  .report-wrap
+) {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .principal-page table {
   max-width: 100%;
 }
@@ -565,6 +602,7 @@ button {
     width: 100vw;
     height: 100vh;
     padding: 76px 12px 16px;
+    overflow-x: hidden;
   }
 
   .principal-content::before {
@@ -586,6 +624,103 @@ button {
   .principal-page {
     padding: 14px;
     border-radius: 10px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .principal-page :is(
+    .rep-mov-hero,
+    .rpa-hero,
+    .rpm-hero,
+    .rin-hero,
+    .cp-hero,
+    .rcp-hero,
+    .rid-hero,
+    .rcd-hero,
+    .gr-hero,
+    .report-hero
+  ) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .principal-page :is(
+    .rep-mov-hero h2,
+    .rpa-hero h2,
+    .rpm-hero h2,
+    .rin-hero h2,
+    .cp-hero h2,
+    .rcp-hero h2,
+    .rid-hero h2,
+    .rcd-hero h2,
+    .gr-hero h2,
+    .report-title
+  ) {
+    font-size: 20px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .principal-page :is(
+    .rep-mov-kpis,
+    .rpa-kpis,
+    .rpm-kpis,
+    .rin-kpis,
+    .cp-kpis,
+    .rcp-kpis,
+    .rid-kpis,
+    .rcd-kpis,
+    .gr-grid,
+    .report-grid
+  ) {
+    grid-template-columns: 1fr;
+  }
+
+  .principal-page :is(
+    .rep-mov-filters,
+    .rpa-filters,
+    .rpm-filters,
+    .rin-filters,
+    .cp-filters,
+    .rcp-filters,
+    .rid-filters,
+    .rcd-filters
+  ) {
+    grid-template-columns: 1fr;
+  }
+
+  .principal-page :is(.field, .field-grow, .actions) {
+    grid-column: 1 / -1;
+  }
+
+  .principal-page :is(.actions, .hero-actions) {
+    width: 100%;
+    justify-content: stretch;
+    flex-wrap: wrap;
+  }
+
+  .principal-page :is(
+    .actions button,
+    .actions a,
+    .hero-actions a,
+    .btn-volver,
+    .btn-exportar,
+    .rpm-btn-back,
+    .rid-btn-back,
+    .rcp-btn-back,
+    .rpa-btn-back,
+    .rin-btn-back,
+    .cp-btn-back,
+    .gr-btn-back
+  ) {
+    flex: 1 1 140px;
+    justify-content: center;
+    white-space: normal;
+    text-align: center;
   }
 
   .dashboard-cards,
@@ -611,6 +746,21 @@ button {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     white-space: nowrap;
+  }
+
+  .principal-page :is(
+    .table-wrap,
+    .rpa-table-wrap,
+    .rpm-table-wrap,
+    .rin-table-wrap,
+    .cp-table-wrap,
+    .rcp-table-wrap,
+    .rid-table-wrap,
+    .table-responsive
+  ) table {
+    display: table;
+    overflow: visible;
+    white-space: normal;
   }
 }
 

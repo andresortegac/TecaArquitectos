@@ -34,7 +34,7 @@
     </div>
 
     <div style="padding:14px;">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+      <div class="metric-kpi-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
         <div class="card" style="padding:12px;">
           <div class="small">Total recaudado año</div>
           <div style="font-size:22px;font-weight:700;">
@@ -82,7 +82,7 @@
       <div class="small" style="opacity:.75;">Click en “Ver mes” para detalle por días</div>
     </div>
 
-    <div style="padding:12px;">
+    <div class="table-scroll" style="padding:12px;">
       <table class="table-pro">
         <thead>
           <tr>

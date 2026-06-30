@@ -28,7 +28,7 @@
     </div>
 
     <div style="padding:14px;">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+      <div class="metric-kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
         <div class="card" style="padding:12px;">
           <div class="small">Total recaudado</div>
           <div style="font-size:22px;font-weight:700;">
@@ -66,7 +66,7 @@
       <h3 class="card-title" style="margin:0;">Recaudo por hora</h3>
     </div>
 
-    <div style="padding:12px;">
+    <div class="table-scroll" style="padding:12px;">
       <table class="table-pro">
         <thead>
           <tr>
@@ -96,7 +96,7 @@
       <h3 class="card-title" style="margin:0;">Pagos confirmados (detalle)</h3>
     </div>
 
-    <div style="padding:12px;">
+    <div class="table-scroll" style="padding:12px;">
       <table class="table-pro">
         <thead>
           <tr>
@@ -139,7 +139,7 @@
       <h3 class="card-title" style="margin:0;">Arriendos del día</h3>
     </div>
 
-    <div style="padding:12px;">
+    <div class="table-scroll" style="padding:12px;">
       <table class="table-pro">
         <thead>
           <tr>
