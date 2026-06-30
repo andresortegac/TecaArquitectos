@@ -44,6 +44,31 @@
   text-align: right;
 }
 
+.caja-head-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.caja-btn-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  border-radius: 8px;
+  background: #e2e8f0;
+  color: #0f172a;
+  padding: 0 14px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.caja-btn-back:hover {
+  background: #cbd5e1;
+  color: #0f172a;
+}
+
 .caja-date span,
 .caja-date strong {
   display: block;
@@ -385,6 +410,15 @@
 
   .caja-date {
     text-align: left;
+    width: 100%;
+  }
+
+  .caja-head-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .caja-btn-back {
     width: 100%;
   }
 

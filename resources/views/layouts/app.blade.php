@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>@yield('title', 'TECA ARQUITECTOS')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,9 +21,16 @@
 </head>
 <body>
     <div class="app">
+        {{-- Boton visible en celulares/tabletas para abrir el menu lateral --}}
+        <button type="button" class="mobile-menu-toggle" aria-label="Abrir menu" aria-controls="main-sidebar" aria-expanded="false">
+            <span aria-hidden="true">☰</span>
+        </button>
+
+        {{-- Capa oscura para cerrar el menu tocando fuera del panel --}}
+        <div class="sidebar-overlay" data-sidebar-close aria-hidden="true"></div>
 
         {{-- Sidebar --}}
-        <aside class="sidebar">
+        <aside class="sidebar" id="main-sidebar" aria-label="Menu principal">
             <div class="sidebar-header">
                 <a href="{{ route('dashboard') }}">
                     <img src="{{ asset('img/LOGIN/logotipo3.png') }}"

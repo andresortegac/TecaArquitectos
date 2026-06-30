@@ -30,9 +30,12 @@
                 <h2>Que operacion desea realizar?</h2>
                 <p>Seleccione si necesita revisar la caja del dia o consolidar el cierre del mes.</p>
             </div>
-            <div class="caja-date">
-                <span>{{ $todayBogota->format('d/m/Y') }}</span>
-                <strong>{{ $todayBogota->translatedFormat('l') }}</strong>
+            <div class="caja-head-actions">
+                <a href="{{ route('dashboard') }}" class="caja-btn-back">Volver</a>
+                <div class="caja-date">
+                    <span>{{ $todayBogota->format('d/m/Y') }}</span>
+                    <strong>{{ $todayBogota->translatedFormat('l') }}</strong>
+                </div>
             </div>
         </section>
 

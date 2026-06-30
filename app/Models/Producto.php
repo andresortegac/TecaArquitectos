@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Producto extends Model
 {
@@ -39,9 +40,31 @@ class Producto extends Model
             'cantidad_aprobada'
         )->withTimestamps();
     }
-        public function getImagenUrlAttribute()
+    public function getImagenUrlAttribute()
     {
-        return asset($this->imagen);
+        if (!$this->imagen) {
+            return asset('img/product-icon.svg');
+        }
+
+        if (filter_var($this->imagen, FILTER_VALIDATE_URL)) {
+            return $this->imagen;
+        }
+
+        $path = ltrim(str_replace('storage/', '', $this->imagen), '/');
+
+        if (Storage::disk('public')->exists($path)) {
+            return route('media.public', ['path' => $path]);
+        }
+
+        if (file_exists(public_path($path))) {
+            return asset($path);
+        }
+
+        if (file_exists(public_path('storage/' . $path))) {
+            return asset('storage/' . $path);
+        }
+
+        return asset('img/product-icon.svg');
     }
 
 }
