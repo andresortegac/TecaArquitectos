@@ -762,6 +762,187 @@ button {
     overflow: visible;
     white-space: normal;
   }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) thead {
+    display: none !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) :is(tbody, tr, td) {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) tr {
+    margin: 0 0 12px !important;
+    border: 1px solid #dbe3ee !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    overflow: hidden !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) td {
+    display: grid !important;
+    grid-template-columns: minmax(92px, 38%) minmax(0, 1fr) !important;
+    gap: 10px !important;
+    align-items: start !important;
+    padding: 10px 12px !important;
+    border-bottom: 1px solid #eef2f7 !important;
+    color: #0f172a !important;
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    text-align: left !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) td:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) td::before {
+    content: "Dato";
+    color: #475569;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+
+  .principal-page :is(.tipo, .badge, .badge-risk, .badge-ok, .badge-warning) {
+    max-width: 100%;
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+    text-align: center;
+  }
+
+  .principal-page .rep-table td:nth-child(1)::before { content: "Fecha"; }
+  .principal-page .rep-table td:nth-child(2)::before { content: "Producto"; }
+  .principal-page .rep-table td:nth-child(3)::before { content: "Tipo"; }
+  .principal-page .rep-table td:nth-child(4)::before { content: "Cantidad"; }
+  .principal-page .rep-table td:nth-child(5)::before { content: "Observaciones"; }
+
+  .principal-page .rpm-table td:nth-child(1)::before { content: "Fecha"; }
+  .principal-page .rpm-table td:nth-child(2)::before { content: "Producto"; }
+  .principal-page .rpm-table td:nth-child(3)::before { content: "Tipo"; }
+  .principal-page .rpm-table td:nth-child(4)::before { content: "Cantidad"; }
+  .principal-page .rpm-table td:nth-child(5)::before { content: "Costo"; }
+  .principal-page .rpm-table td:nth-child(6)::before { content: "Estado"; }
+  .principal-page .rpm-table td:nth-child(7)::before { content: "Observaciones"; }
+
+  .principal-page .rid-table td:nth-child(1)::before { content: "Fecha"; }
+  .principal-page .rid-table td:nth-child(2)::before { content: "Cliente"; }
+  .principal-page .rid-table td:nth-child(3)::before { content: "Obra"; }
+  .principal-page .rid-table td:nth-child(4)::before { content: "Valor"; }
+  .principal-page .rid-table td:nth-child(5)::before { content: "Metodo"; }
+  .principal-page .rid-table td:nth-child(6)::before { content: "Estado"; }
+
+  .principal-page .rcp-table td:nth-child(1)::before { content: "Cliente"; }
+  .principal-page .rcp-table td:nth-child(2)::before { content: "Obra"; }
+  .principal-page .rcp-table td:nth-child(3)::before { content: "Arriendo"; }
+  .principal-page .rcp-table td:nth-child(4)::before { content: "Total"; }
+  .principal-page .rcp-table td:nth-child(5)::before { content: "Pagado"; }
+  .principal-page .rcp-table td:nth-child(6)::before { content: "Saldo"; }
+  .principal-page .rcp-table td:nth-child(7)::before { content: "Estado"; }
+
+  .principal-page .rin-table td:nth-child(1)::before { content: "Fecha"; }
+  .principal-page .rin-table td:nth-child(2)::before { content: "Cliente"; }
+  .principal-page .rin-table td:nth-child(3)::before { content: "Producto"; }
+  .principal-page .rin-table td:nth-child(4)::before { content: "Incidencia"; }
+  .principal-page .rin-table td:nth-child(5)::before { content: "Valor"; }
+  .principal-page .rin-table td:nth-child(6)::before { content: "Estado"; }
+
+  .principal-page .rpa-table td:nth-child(1)::before { content: "Producto"; }
+  .principal-page .rpa-table td:nth-child(2)::before { content: "Categoria"; }
+  .principal-page .rpa-table td:nth-child(3)::before { content: "Cantidad"; }
+  .principal-page .rpa-table td:nth-child(4)::before { content: "Veces"; }
+  .principal-page .rpa-table td:nth-child(5)::before { content: "Valor"; }
+
+  .principal-page .cp-table td:nth-child(1)::before { content: "Producto"; }
+  .principal-page .cp-table td:nth-child(2)::before { content: "Categoria"; }
+  .principal-page .cp-table td:nth-child(3)::before { content: "Stock"; }
+  .principal-page .cp-table td:nth-child(4)::before { content: "Alquilado"; }
+  .principal-page .cp-table td:nth-child(5)::before { content: "Disponible"; }
+
+  .principal-page .rcd-table td:nth-child(1)::before { content: "Cliente"; }
+  .principal-page .rcd-table td:nth-child(2)::before { content: "Obra"; }
+  .principal-page .rcd-table td:nth-child(3)::before { content: "Arriendos"; }
+  .principal-page .rcd-table td:nth-child(4)::before { content: "Total"; }
+  .principal-page .rcd-table td:nth-child(5)::before { content: "Pagado"; }
+  .principal-page .rcd-table td:nth-child(6)::before { content: "Saldo"; }
+  .principal-page .rcd-table td:nth-child(7)::before { content: "Perdidas"; }
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
@@ -786,5 +967,34 @@ button {
 
   .principal-page {
     padding: 16px;
+  }
+
+  .principal-page :is(
+    .table-wrap,
+    .rpa-table-wrap,
+    .rpm-table-wrap,
+    .rin-table-wrap,
+    .cp-table-wrap,
+    .rcp-table-wrap,
+    .rid-table-wrap,
+    .table-responsive
+  ) {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .principal-page :is(
+    .rep-table,
+    .rpa-table,
+    .rpm-table,
+    .rin-table,
+    .cp-table,
+    .rcp-table,
+    .rid-table,
+    .rcd-table
+  ) {
+    min-width: 680px !important;
   }
 }
