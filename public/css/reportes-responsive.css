@@ -110,11 +110,20 @@
     select,
     .actions button,
     .actions a,
-    .hero-actions a,
     .rpa-filter button,
-    .rpa-filter a,
     .cp-filter button,
-    .cp-filter a,
+    .rpa-filter a,
+    .cp-filter a
+  ) {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  .principal-page :is(
+    .hero-actions a,
     .btn-volver,
     .btn-exportar,
     .rpm-btn-back,
@@ -125,11 +134,21 @@
     .cp-btn-back,
     .gr-btn-back
   ) {
-    width: 100% !important;
-    max-width: 100% !important;
+    width: auto !important;
+    min-width: 92px !important;
+    max-width: 180px !important;
+    min-height: 38px !important;
+    padding: 9px 14px !important;
+    justify-self: start !important;
+    align-self: start !important;
     justify-content: center !important;
     text-align: center !important;
     white-space: normal !important;
+  }
+
+  .principal-page .hero-actions {
+    grid-template-columns: repeat(2, minmax(0, max-content)) !important;
+    justify-content: start !important;
   }
 
   .principal-page :is(
