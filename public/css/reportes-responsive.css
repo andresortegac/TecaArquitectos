@@ -42,8 +42,11 @@
   ) {
     flex-direction: column !important;
     align-items: stretch !important;
-    padding: 14px !important;
-    gap: 12px !important;
+    padding: 12px !important;
+    gap: 8px !important;
+    border-radius: 10px !important;
+    background: #111827 !important;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, .18) !important;
   }
 
   .principal-page :is(
@@ -58,9 +61,28 @@
     .gr-hero h2,
     .report-title
   ) {
-    font-size: 20px !important;
-    line-height: 1.18 !important;
+    margin: 0 0 5px !important;
+    font-size: 14px !important;
+    line-height: 1.15 !important;
+    font-weight: 900 !important;
     overflow-wrap: anywhere !important;
+  }
+
+  .principal-page :is(
+    .rep-mov-hero p,
+    .rpa-hero p,
+    .rpm-hero p,
+    .rin-hero p,
+    .cp-hero p,
+    .rcp-hero p,
+    .rid-hero p,
+    .rcd-hero p,
+    .gr-hero p,
+    .report-subtitle
+  ) {
+    font-size: 9px !important;
+    line-height: 1.25 !important;
+    color: #dbeafe !important;
   }
 
   .principal-page :is(
@@ -137,11 +159,15 @@
     width: auto !important;
     min-width: 0 !important;
     max-width: max-content !important;
-    min-height: 30px !important;
-    height: 30px !important;
-    padding: 0 11px !important;
-    border-radius: 8px !important;
-    font-size: 11px !important;
+    min-height: 27px !important;
+    height: 27px !important;
+    padding: 0 10px !important;
+    border-radius: 5px !important;
+    border: 0 !important;
+    background: #eef2ff !important;
+    color: #172033 !important;
+    box-shadow: none !important;
+    font-size: 10px !important;
     line-height: 1 !important;
     font-weight: 800 !important;
     justify-self: start !important;
@@ -154,8 +180,11 @@
   }
 
   .principal-page .hero-actions {
-    grid-template-columns: repeat(2, minmax(0, max-content)) !important;
+    display: grid !important;
+    grid-template-columns: max-content max-content !important;
     justify-content: start !important;
+    align-items: center !important;
+    gap: 6px !important;
   }
 
   .principal-page :is(
