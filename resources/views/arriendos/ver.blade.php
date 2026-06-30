@@ -435,6 +435,17 @@
   gap:10px;
   align-items:end;
 }
+.debt-history{
+  margin-top:14px;
+  border-top:1px solid #fed7aa;
+  padding-top:12px;
+}
+.debt-history-title{
+  margin:0 0 10px;
+  font-size:14px;
+  font-weight:900;
+  color:#7c2d12;
+}
 @media(max-width:980px){
   .debt-grid,
   .debt-pay-form{
@@ -560,6 +571,7 @@
   }
   $semaforoActual = strtoupper((string)($arriendo->semaforo_pago ?? 'VERDE'));
   $diasMoraActual = (int)($arriendo->dias_mora ?? 0);
+  $tieneAbonosSaldo = ($abonosSaldo ?? collect())->isNotEmpty();
 
   // Helpers de tipo (mostrar bien claro)
   $labelTipo = function($tipo){
@@ -691,7 +703,7 @@
       </div>
     </div>
 
-    @if($estaCerrado && $saldoPendiente > 0)
+    @if($estaCerrado && ($saldoPendiente > 0 || $tieneAbonosSaldo))
       <div class="card debt-origin">
         <div class="row">
           <div>
@@ -701,7 +713,7 @@
             </div>
           </div>
           <span class="badge warn">
-            {{ $semaforoActual }}{{ $diasMoraActual > 0 ? ' - ' . $diasMoraActual . ' dias mora' : '' }}
+            {{ $saldoPendiente > 0 ? $semaforoActual : 'PAGADO' }}{{ $saldoPendiente > 0 && $diasMoraActual > 0 ? ' - ' . $diasMoraActual . ' dias mora' : '' }}
           </span>
         </div>
 
@@ -732,53 +744,90 @@
           </div>
         </div>
 
-        <form class="debt-pay-form" method="POST" action="{{ route('arriendos.abonar-saldo', $arriendo) }}">
-          @csrf
-          <div>
-            <label class="label">Abono</label>
-            <input
-              class="input"
-              type="number"
-              name="monto"
-              min="1"
-              max="{{ $saldoPendiente }}"
-              step="0.01"
-              value="{{ old('monto') }}"
-              placeholder="Ej: 500000"
-              required
-            >
-            @error('monto')
-              <div class="hint" style="color:#b91c1c;">{{ $message }}</div>
-            @enderror
-          </div>
+        @if($saldoPendiente > 0)
+          <form class="debt-pay-form" method="POST" action="{{ route('arriendos.abonar-saldo', $arriendo) }}">
+            @csrf
+            <div>
+              <label class="label">Abono</label>
+              <input
+                class="input"
+                type="number"
+                name="monto"
+                min="1"
+                max="{{ $saldoPendiente }}"
+                step="0.01"
+                value="{{ old('monto') }}"
+                placeholder="Ej: 500000"
+                required
+              >
+              @error('monto')
+                <div class="hint" style="color:#b91c1c;">{{ $message }}</div>
+              @enderror
+            </div>
 
-          <div>
-            <label class="label">Metodo</label>
-            <select class="input" name="payment_method" required>
-              <option value="efectivo" {{ old('payment_method') === 'efectivo' ? 'selected' : '' }}>Efectivo</option>
-              <option value="nequi" {{ old('payment_method') === 'nequi' ? 'selected' : '' }}>Nequi</option>
-              <option value="daviplata" {{ old('payment_method') === 'daviplata' ? 'selected' : '' }}>Daviplata</option>
-              <option value="transferencia" {{ old('payment_method') === 'transferencia' ? 'selected' : '' }}>Transferencia</option>
-            </select>
-            @error('payment_method')
-              <div class="hint" style="color:#b91c1c;">{{ $message }}</div>
-            @enderror
-          </div>
+            <div>
+              <label class="label">Metodo</label>
+              <select class="input" name="payment_method" required>
+                <option value="efectivo" {{ old('payment_method') === 'efectivo' ? 'selected' : '' }}>Efectivo</option>
+                <option value="nequi" {{ old('payment_method') === 'nequi' ? 'selected' : '' }}>Nequi</option>
+                <option value="daviplata" {{ old('payment_method') === 'daviplata' ? 'selected' : '' }}>Daviplata</option>
+                <option value="transferencia" {{ old('payment_method') === 'transferencia' ? 'selected' : '' }}>Transferencia</option>
+              </select>
+              @error('payment_method')
+                <div class="hint" style="color:#b91c1c;">{{ $message }}</div>
+              @enderror
+            </div>
 
-          <div>
-            <label class="label">Nota</label>
-            <input
-              class="input"
-              type="text"
-              name="nota"
-              maxlength="255"
-              value="{{ old('nota') }}"
-              placeholder="Abono deuda arriendo #{{ $arriendo->id }}"
-            >
-          </div>
+            <div>
+              <label class="label">Nota</label>
+              <input
+                class="input"
+                type="text"
+                name="nota"
+                maxlength="255"
+                value="{{ old('nota') }}"
+                placeholder="Abono deuda arriendo #{{ $arriendo->id }}"
+              >
+            </div>
 
-          <button class="btn primary" type="submit">Registrar abono</button>
-        </form>
+            <button class="btn primary" type="submit">Registrar abono</button>
+          </form>
+        @endif
+
+        <div class="debt-history">
+          <h4 class="debt-history-title">Registro de abonos</h4>
+          <div style="overflow:auto;">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Fecha y hora</th>
+                  <th>Metodo</th>
+                  <th class="right">Valor abonado</th>
+                  <th>Nota</th>
+                </tr>
+              </thead>
+              <tbody>
+                @forelse(($abonosSaldo ?? collect()) as $abono)
+                  @php
+                    $metodos = $abono->parts->map(fn($part) => ucfirst($part->method))->implode(', ');
+                  @endphp
+                  <tr>
+                    <td>{{ $abono->occurred_at?->format('d/m/Y h:i A') ?? '—' }}</td>
+                    <td>{{ $metodos ?: '—' }}</td>
+                    <td class="right" style="color:#047857; font-weight:900;">
+                      ${{ number_format((float)$abono->total_amount, 2) }}
+                    </td>
+                    <td>{{ $abono->note ?: '—' }}</td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="4" class="center">Todavia no hay abonos registrados para esta deuda.</td>
+                  </tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     @endif
 

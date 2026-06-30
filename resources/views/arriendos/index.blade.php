@@ -205,6 +205,17 @@
       white-space: nowrap;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
     }
+    .pro-ui .chip.blue{
+      color:#fff !important;
+      background:linear-gradient(180deg, #60a5fa, #2563eb) !important;
+      border-color:#93c5fd !important;
+      text-shadow:0 1px 1px rgba(15,23,42,.22);
+    }
+    .pro-ui .chip.gray{
+      color:#0f172a !important;
+      background:linear-gradient(180deg, #f8fafc, #cbd5e1) !important;
+      border-color:#94a3b8 !important;
+    }
 
     /* Dropdown */
     .pro-ui .actions{ display:flex; justify-content:flex-end; }
@@ -341,21 +352,81 @@
     .pro-ui .sum-v-ok{ color:#166534; }
 
     /* ==============================
-       ✅ SEMAFORIZACION POR FILA
+       SEMAFORIZACION POR FILA
        AZUL: activo
-       VERDE: cerrado/devuelto y saldo=0
-       NARANJA: cerrado/devuelto y saldo>0 y dias<=7
-       ROJO: cerrado/devuelto y saldo>0 y dias>=8 (hasta que pague)
+       VERDE: devuelto y al dia
+       NARANJA: saldo reciente
+       ROJO: saldo en mora
        ============================== */
-    .tr-flag-blue   { background: rgba(59,130,246,.12) !important; }
-    .tr-flag-green  { background: rgba(34,197,94,.14) !important; }
-    .tr-flag-amber  { background: rgba(245,158,11,.16) !important; }
-    .tr-flag-red    { background: rgba(239,68,68,.14) !important; }
+    .tr-flag-blue{
+      background: linear-gradient(90deg, rgba(37,99,235,.42), rgba(191,219,254,.98) 20%, rgba(219,234,254,.98)) !important;
+    }
+    .tr-flag-green{
+      background: linear-gradient(90deg, rgba(22,163,74,.42), rgba(187,247,208,.98) 20%, rgba(220,252,231,.98)) !important;
+    }
+    .tr-flag-amber{
+      background: linear-gradient(90deg, rgba(245,158,11,.55), rgba(253,230,138,.98) 20%, rgba(254,243,199,.98)) !important;
+    }
+    .tr-flag-red{
+      background: linear-gradient(90deg, rgba(220,38,38,.50), rgba(254,202,202,.98) 20%, rgba(254,226,226,.98)) !important;
+    }
 
-    .tr-flag-blue  td:first-child  { box-shadow: inset 4px 0 0 rgba(59,130,246,.55); }
-    .tr-flag-green td:first-child  { box-shadow: inset 4px 0 0 rgba(34,197,94,.55); }
-    .tr-flag-amber td:first-child  { box-shadow: inset 4px 0 0 rgba(245,158,11,.60); }
-    .tr-flag-red   td:first-child  { box-shadow: inset 4px 0 0 rgba(239,68,68,.60); }
+    .tr-flag-blue  td:first-child{ box-shadow: inset 8px 0 0 #1d4ed8; }
+    .tr-flag-green td:first-child{ box-shadow: inset 8px 0 0 #15803d; }
+    .tr-flag-amber td:first-child{ box-shadow: inset 8px 0 0 #d97706; }
+    .tr-flag-red   td:first-child{ box-shadow: inset 8px 0 0 #b91c1c; }
+
+    .pro-ui .traffic-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:11px;
+      line-height:1;
+      font-weight:950;
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      border:1px solid rgba(255,255,255,.78);
+      box-shadow: 0 10px 22px rgba(15,23,42,.18), inset 0 1px 0 rgba(255,255,255,.55);
+    }
+    .pro-ui .traffic-pill::before{
+      content:"";
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:currentColor;
+    }
+    .pro-ui .traffic-pill.blue{
+      color:#fff;
+      background:linear-gradient(180deg, #3b82f6, #1d4ed8);
+      text-shadow:0 1px 1px rgba(15,23,42,.22);
+    }
+    .pro-ui .traffic-pill.blue::before{ background:#bfdbfe; box-shadow:0 0 0 4px rgba(191,219,254,.22); }
+    .pro-ui .traffic-pill.green{
+      color:#fff;
+      background:linear-gradient(180deg, #22c55e, #15803d);
+      text-shadow:0 1px 1px rgba(15,23,42,.18);
+    }
+    .pro-ui .traffic-pill.green::before{ background:#bbf7d0; box-shadow:0 0 0 4px rgba(187,247,208,.22); }
+    .pro-ui .traffic-pill.amber{
+      color:#451a03;
+      background:linear-gradient(180deg, #fbbf24, #f97316);
+    }
+    .pro-ui .traffic-pill.amber::before{ background:#fff7ed; box-shadow:0 0 0 4px rgba(255,247,237,.24); }
+    .pro-ui .traffic-pill.red{
+      color:#fff;
+      background:linear-gradient(180deg, #ef4444, #b91c1c);
+      text-shadow:0 1px 1px rgba(15,23,42,.22);
+    }
+    .pro-ui .traffic-pill.red::before{ background:#fecaca; box-shadow:0 0 0 4px rgba(254,202,202,.24); }
+
+    .tr-flag-blue:hover,
+    .tr-flag-green:hover,
+    .tr-flag-amber:hover,
+    .tr-flag-red:hover{
+      filter:saturate(1.08) contrast(1.02) !important;
+    }
   </style>
 @endpush
 
@@ -589,8 +660,7 @@
                   <th class="td-right">Total</th>
                   <th class="td-right">Saldo</th>
                   <th>Mora</th>
-                  {{-- ✅ OCULTAMOS EL TITULO "SEMAFORO" --}}
-                  <th></th>
+                  <th>Semáforo</th>
                   <th>Estado</th>
                   <th style="width:260px;">Acciones</th>
                 </tr>
@@ -622,14 +692,24 @@
 
                     if ($estaActivo) {
                       $rowClass = 'tr-flag-blue';
+                      $trafficClass = 'blue';
+                      $trafficLabel = 'Activo';
                     } elseif ($estaCerrado && $saldo <= 0) {
                       $rowClass = 'tr-flag-green';
+                      $trafficClass = 'green';
+                      $trafficLabel = 'Al dia';
                     } elseif ($estaCerrado && $saldo > 0 && $diasDesdeCierre <= 7) {
                       $rowClass = 'tr-flag-amber';
+                      $trafficClass = 'amber';
+                      $trafficLabel = 'Pendiente';
                     } elseif ($estaCerrado && $saldo > 0) {
                       $rowClass = 'tr-flag-red';
+                      $trafficClass = 'red';
+                      $trafficLabel = 'Mora';
                     } else {
                       $rowClass = '';
+                      $trafficClass = 'blue';
+                      $trafficLabel = 'Revision';
                     }
 
                     $devAlquiler = (float)($a->dev_total_alquiler ?? 0);
@@ -681,8 +761,9 @@
 
                     <td>{{ (int)($a->dias_mora ?? 0) }}</td>
 
-                    {{-- ✅ columna vacía (semaforización solo por color de fila) --}}
-                    <td></td>
+                    <td>
+                      <span class="traffic-pill {{ $trafficClass }}">{{ $trafficLabel }}</span>
+                    </td>
 
                     <td>
                       @if($a->estado === 'devuelto')

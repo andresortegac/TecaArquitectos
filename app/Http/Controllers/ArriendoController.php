@@ -233,7 +233,14 @@ class ArriendoController extends Controller
             $totalHistorico['saldo']          += $sa;
         }
 
-        return view('arriendos.ver', compact('arriendo', 'totContrato', 'totalHistorico'));
+        $abonosSaldo = Payment::with('parts')
+            ->where('status', 'confirmed')
+            ->where('source_type', Arriendo::class)
+            ->where('source_id', $arriendo->id)
+            ->orderByDesc('occurred_at')
+            ->get();
+
+        return view('arriendos.ver', compact('arriendo', 'totContrato', 'totalHistorico', 'abonosSaldo'));
     }
 
     /* ============================================================
