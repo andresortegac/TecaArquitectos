@@ -28,6 +28,7 @@
         <form method="GET" action="{{ route('metricas.reporte.anual', $year) }}" style="display:flex;gap:8px;">
           <input class="input" type="number" name="year" min="2000" max="2100" value="{{ $year }}" style="width:120px;">
           <button class="btn-primary" type="submit" style="padding:8px 12px;">Ir</button>
+          <a class="btn-sm" href="{{ route('arriendos.index') }}">Volver</a>
         </form>
       </div>
     </div>

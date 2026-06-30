@@ -108,13 +108,20 @@
         </thead>
         <tbody>
           @forelse(($payments ?? []) as $p)
+            @php
+              $paymentParts = ($parts ?? collect())->get($p->id, collect());
+              $paymentAmount = (float)($p->total_amount ?? 0);
+              if ($paymentAmount <= 0 && $paymentParts->isNotEmpty()) {
+                $paymentAmount = (float)$paymentParts->sum('amount');
+              }
+            @endphp
             <tr>
-              <td>{{ $p['time'] ?? '' }}</td>
-              <td class="td-right">${{ number_format((float)($p['amount'] ?? 0), 0) }}</td>
-              <td>{{ $p['note'] ?? '—' }}</td>
+              <td>{{ $p->occurred_at?->format('H:i') ?? '' }}</td>
+              <td class="td-right">${{ number_format($paymentAmount, 0) }}</td>
+              <td>{{ $p->note ?? '—' }}</td>
               <td>
                 <span class="small" style="opacity:.8;">
-                  {{ $p['source_type'] ?? '—' }} #{{ $p['source_id'] ?? '' }}
+                  {{ $p->source_type ?? '—' }} #{{ $p->source_id ?? '' }}
                 </span>
               </td>
             </tr>
