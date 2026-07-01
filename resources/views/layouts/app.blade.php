@@ -13,7 +13,18 @@
     <link rel="stylesheet" href="{{ asset('css/productos.css') }}">
     <link rel="stylesheet" href="{{ asset('css/solicitud.css') }}">
     <link rel="stylesheet" href="{{ asset('css/movimiento.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
+    <script>
+        window.AppFlash = {
+            success: @json(session('success')),
+            error: @json(session('error')),
+            warning: @json(session('warning')),
+            info: @json(session('info')),
+            status: @json(session('status')),
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
 
     @stack('styles')

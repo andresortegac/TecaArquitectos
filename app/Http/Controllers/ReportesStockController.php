@@ -26,7 +26,7 @@ class ReportesStockController extends Controller
     public function movimientos(Request $request)
     {
         $filters = $request->validate([
-            'tipo' => 'nullable|in:ingreso,salida,ajuste_positivo,ajuste_negativo',
+            'tipo' => 'nullable|in:ingreso,salida,fuera_servicio',
             'fecha_desde' => 'nullable|date',
             'fecha_hasta' => 'nullable|date|after_or_equal:fecha_desde',
             'producto' => 'nullable|string|max:120',
@@ -63,10 +63,10 @@ class ReportesStockController extends Controller
             'total_registros' => (clone $query)->count(),
             'total_unidades' => (clone $query)->sum('cantidad'),
             'entradas' => (clone $query)
-                ->whereIn('tipo', ['ingreso', 'ajuste_positivo'])
+                ->whereIn('tipo', ['ingreso'])
                 ->sum('cantidad'),
             'salidas' => (clone $query)
-                ->whereIn('tipo', ['salida', 'ajuste_negativo'])
+                ->whereIn('tipo', ['salida', 'fuera_servicio'])
                 ->sum('cantidad'),
         ];
 

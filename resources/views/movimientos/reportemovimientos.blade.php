@@ -9,7 +9,7 @@
     </thead>
     <tbody>
         @foreach($movimientos as $m)
-            <tr class="{{ $m->tipo == 'salida' ? 'table-danger' : 'table-success' }}">
+            <tr class="{{ in_array($m->tipo, ['salida', 'fuera_servicio'], true) ? 'table-danger' : 'table-success' }}">
                 <td>{{ $m->created_at->format('d/m/Y') }}</td>
                 <td>{{ $m->producto->nombre }}</td>
                 <td>{{ strtoupper($m->tipo) }}</td>

@@ -933,7 +933,10 @@
                           @csrf
                           @method('DELETE')
                           <button class="btn danger"
-                                  onclick="return confirm('¿Seguro que deseas borrar este transporte?')">
+                                  data-confirm-action
+                                  data-confirm-title="Eliminar transporte"
+                                  data-confirm-text="¿Seguro que deseas borrar este transporte?"
+                                  data-confirm-button="Si, borrar">
                             Borrar
                           </button>
                         </form>
@@ -1055,7 +1058,10 @@
                         @csrf
                         @method('DELETE')
                         <button class="btn danger"
-                                onclick="return confirm('¿Seguro que deseas borrar este alquiler (item)?')">
+                                data-confirm-action
+                                data-confirm-title="Eliminar item"
+                                data-confirm-text="¿Seguro que deseas borrar este alquiler (item)?"
+                                data-confirm-button="Si, borrar">
                           Borrar
                         </button>
                       </form>

@@ -219,30 +219,8 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const successMessage = @json(session('success'));
-            const errorMessage = @json(session('error'));
-
-            if (successMessage) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Cierre guardado',
-                    text: successMessage,
-                    confirmButtonColor: '#0f172a'
-                });
-            }
-
-            if (errorMessage) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'No se pudo guardar',
-                    text: errorMessage,
-                    confirmButtonColor: '#0f172a'
-                });
-            }
-
             document.querySelectorAll('.js-cierre-form').forEach((form) => {
                 form.addEventListener('submit', async (event) => {
                     event.preventDefault();

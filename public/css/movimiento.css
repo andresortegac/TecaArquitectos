@@ -170,12 +170,7 @@ textarea.form-control {
   color: #991b1b;
 }
 
-.movi-badge.ajuste_positivo {
-  background: #dbeafe;
-  color: #1d4ed8;
-}
-
-.movi-badge.ajuste_negativo {
+.movi-badge.fuera_servicio {
   background: #ffedd5;
   color: #c2410c;
 }

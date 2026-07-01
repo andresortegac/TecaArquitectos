@@ -26,7 +26,7 @@ class MovimientoController extends Controller
         $request->validate([
             'producto_id' => 'required',
             'fecha' => 'required|date',
-            'tipo' => 'required',
+            'tipo' => 'required|in:ingreso,salida,fuera_servicio',
             'cantidad' => 'required|integer|min:1',
         ]);
 
@@ -40,7 +40,7 @@ class MovimientoController extends Controller
                 break;
 
             case 'salida':
-            case 'ajuste_negativo':
+            case 'fuera_servicio':
                 $producto->cantidad -= $request->cantidad;
                 break;
         }

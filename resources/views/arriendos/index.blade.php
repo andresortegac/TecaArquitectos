@@ -1330,7 +1330,11 @@
                               @csrf
                               @method('DELETE')
 
-                              <button class="menu-item item-delete" onclick="return confirm('¿Eliminar arriendo?')">
+                              <button class="menu-item item-delete"
+                                      data-confirm-action
+                                      data-confirm-title="Eliminar arriendo"
+                                      data-confirm-text="¿Seguro que deseas eliminar este arriendo?"
+                                      data-confirm-button="Si, eliminar">
                                 <span class="menu-left"><span class="dot"></span>Borrar</span>
                                 <span>›</span>
                               </button>
@@ -1595,7 +1599,7 @@
             window.addEventListener('scroll', closeAll, true);
 
             function parseNum(v) {
-              const n = Number(v);
+              const n = window.parseMoneyValue ? window.parseMoneyValue(v) : Number(v);
               return Number.isFinite(n) ? n : 0;
             }
 
@@ -1682,7 +1686,10 @@
                   const totalGenerado = subtotal + ivaValor;
                   const saldoActual = Math.max(0, totalGenerado - basePagado);
 
-                  if (pagoInput) pagoInput.value = saldoActual.toFixed(2);
+                  if (pagoInput) {
+                    pagoInput.value = saldoActual.toFixed(2);
+                    if (window.formatMoneyInput) window.formatMoneyInput(pagoInput);
+                  }
                   recalcCerrarForm(form);
                 });
               }

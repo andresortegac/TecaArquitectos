@@ -12,15 +12,13 @@
         $tipoLabels = [
             'ingreso' => 'Ingreso',
             'salida' => 'Salida',
-            'ajuste_positivo' => 'Ajuste positivo',
-            'ajuste_negativo' => 'Ajuste negativo',
+            'fuera_servicio' => 'Fuera de servicio',
         ];
 
         $tipoClasses = [
             'ingreso' => 'tipo tipo-ingreso',
             'salida' => 'tipo tipo-salida',
-            'ajuste_positivo' => 'tipo tipo-ajuste-pos',
-            'ajuste_negativo' => 'tipo tipo-ajuste-neg',
+            'fuera_servicio' => 'tipo tipo-fuera-servicio',
         ];
     @endphp
 

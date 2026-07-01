@@ -95,7 +95,10 @@
                                     @method('DELETE')
 
                                     <button class="btn-obra btn-eliminar"
-                                        onclick="return confirm('¿Eliminar esta obra?')">
+                                        data-confirm-action
+                                        data-confirm-title="Eliminar obra"
+                                        data-confirm-text="¿Seguro que deseas eliminar esta obra?"
+                                        data-confirm-button="Si, eliminar">
                                         Eliminar
                                     </button>
                                 </form>

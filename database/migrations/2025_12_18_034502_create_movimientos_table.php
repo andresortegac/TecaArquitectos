@@ -15,7 +15,8 @@ return new class extends Migration {
                 'ingreso',
                 'salida',
                 'ajuste_positivo',
-                'ajuste_negativo'
+                'ajuste_negativo',
+                'fuera_servicio'
             ]);
             $table->integer('cantidad');
             $table->text('observaciones')->nullable();

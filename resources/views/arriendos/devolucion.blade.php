@@ -989,7 +989,7 @@
                 const d = new Date(y, m-1, dd);
                 return isNaN(d) ? null : d;
               }
-              function parseNum(v){ v = (v ?? '').toString().trim(); return v === '' ? 0 : Number(v); }
+              function parseNum(v){ return window.parseMoneyValue ? window.parseMoneyValue(v) : ((v = (v ?? '').toString().trim()) === '' ? 0 : Number(v)); }
               function money(n){ return (Math.round((n + Number.EPSILON) * 100) / 100).toFixed(2); }
 
               function isChargeDay(dateObj, inicioObj, devolObj){
@@ -1136,8 +1136,11 @@
 
                 if ($btnFull) {
                   $btnFull.addEventListener('click', function(){
-                    const t = Number(uiTot.dataset.total || 0);
-                    if ($pago) $pago.value = money(t);
+                    const t = parseNum(uiTot.dataset.total || 0);
+                    if ($pago) {
+                      $pago.value = money(t);
+                      if (window.formatMoneyInput) window.formatMoneyInput($pago);
+                    }
                     recompute();
                   });
                 }

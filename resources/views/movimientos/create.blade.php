@@ -58,8 +58,7 @@
                             <select id="tipo" name="tipo" class="form-control" required>
                                 <option value="ingreso" @selected(old('tipo') === 'ingreso')>Ingreso</option>
                                 <option value="salida" @selected(old('tipo') === 'salida')>Salida</option>
-                                <option value="ajuste_positivo" @selected(old('tipo') === 'ajuste_positivo')>Ajuste positivo</option>
-                                <option value="ajuste_negativo" @selected(old('tipo') === 'ajuste_negativo')>Ajuste negativo</option>
+                                <option value="fuera_servicio" @selected(old('tipo') === 'fuera_servicio')>Fuera de servicio</option>
                             </select>
                         </div>
 
@@ -102,7 +101,7 @@
                                 <td>{{ $mov->producto->nombre }}</td>
                                 <td>
                                     <span class="movi-badge {{ $mov->tipo }}">
-                                        {{ ucfirst(str_replace('_', ' ', $mov->tipo)) }}
+                                        {{ $mov->tipo === 'fuera_servicio' ? 'Fuera de servicio' : ucfirst(str_replace('_', ' ', $mov->tipo)) }}
                                     </span>
                                 </td>
                                 <td>{{ $mov->cantidad }}</td>

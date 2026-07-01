@@ -93,7 +93,14 @@
                                     data-product-name="{{ $producto->nombre }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="open-delete-modal">Eliminar</button>
+                                    <button type="button"
+                                            class="open-delete-modal"
+                                            data-confirm-action
+                                            data-confirm-title="Eliminar producto"
+                                            data-confirm-text="¿Seguro que deseas eliminar el producto {{ $producto->nombre }}?"
+                                            data-confirm-button="Si, eliminar">
+                                        Eliminar
+                                    </button>
                                 </form>
                             </div>
                         @endrole
@@ -148,55 +155,6 @@
                 });
             })();
 
-            (function () {
-                const modal = document.getElementById('delete-modal');
-                const productNameEl = document.getElementById('delete-modal-product-name');
-                const cancelBtn = document.getElementById('delete-modal-cancel');
-                const confirmBtn = document.getElementById('delete-modal-confirm');
-                const openButtons = document.querySelectorAll('.open-delete-modal');
-                let activeForm = null;
-
-                if (!modal || !productNameEl || !cancelBtn || !confirmBtn || !openButtons.length) return;
-
-                const closeModal = () => {
-                    modal.classList.remove('is-open');
-                    modal.setAttribute('aria-hidden', 'true');
-                    activeForm = null;
-                };
-
-                const openModal = (form) => {
-                    activeForm = form;
-                    productNameEl.textContent = form.dataset.productName || 'seleccionado';
-                    modal.classList.add('is-open');
-                    modal.setAttribute('aria-hidden', 'false');
-                };
-
-                openButtons.forEach((button) => {
-                    button.addEventListener('click', () => {
-                        const form = button.closest('.delete-product-form');
-                        if (!form) return;
-                        openModal(form);
-                    });
-                });
-
-                cancelBtn.addEventListener('click', closeModal);
-                modal.addEventListener('click', (event) => {
-                    if (event.target.classList.contains('pro-modal-backdrop')) {
-                        closeModal();
-                    }
-                });
-
-                document.addEventListener('keydown', (event) => {
-                    if (event.key === 'Escape' && modal.classList.contains('is-open')) {
-                        closeModal();
-                    }
-                });
-
-                confirmBtn.addEventListener('click', () => {
-                    if (!activeForm) return;
-                    activeForm.submit();
-                });
-            })();
         </script>
     @endrole
 @endsection

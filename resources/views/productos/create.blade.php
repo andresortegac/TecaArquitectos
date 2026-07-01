@@ -57,11 +57,7 @@
                 <div class="field">
                     <label for="estado">Estado</label>
                     <select id="estado" name="estado" required>
-                        @foreach(['disponible', 'dañado', 'reservado'] as $estado)
-                            <option value="{{ $estado }}" @selected(old('estado', 'disponible') === $estado)>
-                                {{ ucfirst($estado) }}
-                            </option>
-                        @endforeach
+                        <option value="disponible" selected>Activo</option>
                     </select>
                 </div>
 
