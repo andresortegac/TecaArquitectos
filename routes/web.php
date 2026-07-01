@@ -8,7 +8,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\ReportesStockController;
-use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\MetricasController;
 use App\Http\Controllers\ObraController;
@@ -171,18 +170,6 @@ Route::middleware(['auth', 'role:admin|bodega'])->group(function () {
     Route::get('/reporte/mensual/export', [ReportesStockController::class, 'exportMensual'])
         ->name('reporte.mensual.export');
 
-    //ruta para configuracion
-    Route::get('/configuracion', [ConfigController::class, 'index'])
-        ->name('configuracion.index');
-
-    Route::post('/configuracion/stock', [ConfigController::class, 'stock'])
-        ->name('config.stock');
-
-    Route::post('/configuracion/reportes', [ConfigController::class, 'reportes'])
-        ->name('config.reportes');
-
-    Route::post('/configuracion/inventario', [ConfigController::class, 'inventario'])
-        ->name('config.inventario');
 });
 
 /*

@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Imports\ProductosImport;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\Configuracion;
 
 class ProductoadminController extends Controller
 {

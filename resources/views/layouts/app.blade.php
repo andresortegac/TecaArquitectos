@@ -61,7 +61,7 @@
                     </a>
 
                     {{-- MENÚ DESPLEGABLE GESTIÓN DE BODEGA --}}
-                    <div class="nav-dropdown {{ request()->routeIs('productos.*','solicitudes.*','movimientos.*','configuracion.*') ? 'open' : '' }}">
+                    <div class="nav-dropdown {{ request()->routeIs('productos.*','solicitudes.*','movimientos.*') ? 'open' : '' }}">
 
                         <a href="javascript:void(0)" class="nav-item dropdown-toggle">
                             
@@ -90,10 +90,6 @@
                                 Existencias
                             </a>
 
-                            <a href="{{ route('configuracion.index') }}"
-                            class="nav-item {{ request()->routeIs('configuracion.*') ? 'active' : '' }}">
-                                Configuración de Inventario
-                            </a>
                         </div>
                     </div>
 
