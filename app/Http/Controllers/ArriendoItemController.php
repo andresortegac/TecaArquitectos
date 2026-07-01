@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Arriendo;
 use App\Models\ArriendoItem;
+use App\Models\Movimiento;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -91,6 +92,14 @@ class ArriendoItemController extends Controller
                 // ✅ Descontar stock
                 $producto->update([
                     'cantidad' => $stockDisponible - $cantidadSolicitada
+                ]);
+
+                Movimiento::create([
+                    'producto_id' => $producto->id,
+                    'fecha' => now()->toDateString(),
+                    'tipo' => 'producto_alquilado',
+                    'cantidad' => $cantidadSolicitada,
+                    'observaciones' => 'El producto esta Alquilado',
                 ]);
             });
 

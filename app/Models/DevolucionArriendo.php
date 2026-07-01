@@ -14,6 +14,7 @@ class DevolucionArriendo extends Model
         'arriendo_item_id',
         'fecha_devolucion',
         'cantidad_devuelta',
+        'cantidad_danada',
         'dias_transcurridos',
         'domingos_desc',
         'dias_lluvia_desc',
@@ -38,6 +39,7 @@ class DevolucionArriendo extends Model
     protected $casts = [
         'fecha_devolucion' => 'date',
         'cantidad_devuelta' => 'integer',
+        'cantidad_danada' => 'integer',
         'dias_transcurridos' => 'integer',
         'domingos_desc' => 'integer',
         'dias_lluvia_desc' => 'integer',

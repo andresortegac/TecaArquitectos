@@ -101,7 +101,19 @@
                                 <td>{{ $mov->producto->nombre }}</td>
                                 <td>
                                     <span class="movi-badge {{ $mov->tipo }}">
-                                        {{ $mov->tipo === 'fuera_servicio' ? 'Fuera de servicio' : ucfirst(str_replace('_', ' ', $mov->tipo)) }}
+                                        @switch($mov->tipo)
+                                            @case('fuera_servicio')
+                                                Fuera de servicio
+                                                @break
+                                            @case('producto_alquilado')
+                                                Producto alquilado
+                                                @break
+                                            @case('producto_devuelto')
+                                                Producto devuelto
+                                                @break
+                                            @default
+                                                {{ ucfirst(str_replace('_', ' ', $mov->tipo)) }}
+                                        @endswitch
                                     </span>
                                 </td>
                                 <td>{{ $mov->cantidad }}</td>

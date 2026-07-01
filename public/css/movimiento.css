@@ -170,6 +170,16 @@ textarea.form-control {
   color: #991b1b;
 }
 
+.movi-badge.producto_alquilado {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.movi-badge.producto_devuelto {
+  background: #dcfce7;
+  color: #166534;
+}
+
 .movi-badge.fuera_servicio {
   background: #ffedd5;
   color: #c2410c;

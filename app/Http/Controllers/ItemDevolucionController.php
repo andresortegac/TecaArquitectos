@@ -6,6 +6,7 @@ use App\Models\Arriendo;
 use App\Models\ArriendoItem;
 use App\Models\DevolucionArriendo;
 use App\Models\Incidencia;
+use App\Models\Movimiento;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -29,6 +30,7 @@ class ItemDevolucionController extends Controller
         $resumen = [
             'total_devoluciones' => $item->devoluciones->count(),
             'total_devuelto'     => (int)$item->devoluciones->sum('cantidad_devuelta'),
+            'total_danado'       => (int)$item->devoluciones->sum('cantidad_danada'),
             'total_abonado'      => (float)$item->devoluciones->sum('pago_recibido'),
             'total_cobrado'      => (float)$item->devoluciones->sum('total_cobrado'),
         ];
@@ -40,6 +42,7 @@ class ItemDevolucionController extends Controller
     {
         $data = $request->validate([
             'cantidad_devuelta'       => 'required|integer|min:1',
+            'cantidad_danada'         => 'nullable|integer|min:0',
             'fecha_devolucion'        => 'required|date',
             'dias_lluvia'             => 'nullable|integer|min:0',
             'costo_merma'             => 'nullable|numeric|min:0',
@@ -61,10 +64,17 @@ class ItemDevolucionController extends Controller
         }
 
         $cantidadDevuelta = (int)$data['cantidad_devuelta'];
+        $cantidadDanada = (int)($data['cantidad_danada'] ?? 0);
 
         if ($cantidadDevuelta > (int)$item->cantidad_actual) {
             return back()
                 ->withErrors(['cantidad_devuelta' => 'No puedes devolver más de la cantidad actualmente alquilada en este producto.'])
+                ->withInput();
+        }
+
+        if ($cantidadDanada > $cantidadDevuelta) {
+            return back()
+                ->withErrors(['cantidad_danada' => 'La cantidad dañada o perdida no puede ser mayor que la cantidad devuelta.'])
                 ->withInput();
         }
 
@@ -97,6 +107,7 @@ class ItemDevolucionController extends Controller
             DB::transaction(function () use (
                 $item,
                 $cantidadDevuelta,
+                $cantidadDanada,
                 $fechaInicioItem,
                 $fechaDevol,
                 $diasLluvia,
@@ -109,6 +120,7 @@ class ItemDevolucionController extends Controller
                 $detalleTransporte,
                 $costoTransporte
             ) {
+                $cantidadBuena = max(0, $cantidadDevuelta - $cantidadDanada);
 
                 $producto = Producto::where('id', $item->producto_id)
                     ->lockForUpdate()
@@ -116,8 +128,28 @@ class ItemDevolucionController extends Controller
 
                 if ($producto) {
                     $producto->update([
-                        'cantidad' => (int)($producto->cantidad ?? 0) + $cantidadDevuelta
+                        'cantidad' => (int)($producto->cantidad ?? 0) + $cantidadBuena
                     ]);
+
+                    if ($cantidadBuena > 0) {
+                        Movimiento::create([
+                            'producto_id' => $producto->id,
+                            'fecha' => now()->toDateString(),
+                            'tipo' => 'producto_devuelto',
+                            'cantidad' => $cantidadBuena,
+                            'observaciones' => 'producto devuelto',
+                        ]);
+                    }
+
+                    if ($cantidadDanada > 0) {
+                        Movimiento::create([
+                            'producto_id' => $producto->id,
+                            'fecha' => now()->toDateString(),
+                            'tipo' => 'fuera_servicio',
+                            'cantidad' => $cantidadDanada,
+                            'observaciones' => 'Producto dañado o perdido en devolución. No vuelve al stock.',
+                        ]);
+                    }
                 }
 
                 // ========= DÍAS =========
@@ -226,6 +258,7 @@ class ItemDevolucionController extends Controller
 
                     'fecha_devolucion'  => $fechaDevol,
                     'cantidad_devuelta' => $cantidadDevuelta,
+                    'cantidad_danada'   => $cantidadDanada,
 
                     'dias_transcurridos' => $diasTrans,
                     'domingos_desc'      => $domingosDesc,

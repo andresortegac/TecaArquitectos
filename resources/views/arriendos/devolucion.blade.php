@@ -27,6 +27,7 @@
     $resumen = $resumen ?? [
         'total_devoluciones' => 0,
         'total_devuelto' => 0,
+        'total_danado' => 0,
         'total_abonado' => 0,
         'total_cobrado' => 0,
     ];
@@ -673,6 +674,15 @@
                             <input class="rp-input" type="number" min="0" step="0.01" name="costo_merma"
                                    value="{{ old('costo_merma', 0) }}"
                                    {{ $isCerrado ? 'disabled' : '' }}>
+                            <div class="rp-help">Valor en dinero que se cobra por el daño o pérdida.</div>
+                        </div>
+
+                        <div class="field">
+                            <label class="rp-label">Cantidad dañada o perdida</label>
+                            <input class="rp-input" type="number" min="0" max="{{ $maxDev }}" name="cantidad_danada"
+                                   value="{{ old('cantidad_danada', 0) }}"
+                                   {{ $isCerrado ? 'disabled' : '' }}>
+                            <div class="rp-help">Estas unidades quedan fuera de servicio y no vuelven al stock.</div>
                         </div>
                     </div>
 
@@ -865,6 +875,10 @@
                             <div class="v">{{ $resumen['total_devuelto'] }}</div>
                         </div>
                         <div class="kpi">
+                            <div class="k">Dañadas / perdidas</div>
+                            <div class="v">{{ $resumen['total_danado'] ?? 0 }}</div>
+                        </div>
+                        <div class="kpi">
                             <div class="k">Total cobrado</div>
                             <div class="v">${{ number_format((float)$resumen['total_cobrado'], 2) }}</div>
                         </div>
@@ -886,6 +900,8 @@
                                             <th class="center">Transporte</th>
                                             <th class="num">Transp $</th> {{-- ✅ NUEVO --}}
                                             <th class="center">Devuelto</th>
+                                            <th class="center">Buenas</th>
+                                            <th class="center">Dañadas</th>
                                             <th class="center">Días</th>
                                             <th class="center">Dom</th>
                                             <th class="center">Lluvia</th>
@@ -912,6 +928,8 @@
                                             <td class="num">${{ number_format($costoTrans, 2) }}</td>
 
                                             <td class="center">{{ (int)$d->cantidad_devuelta }}</td>
+                                            <td class="center">{{ max(0, (int)$d->cantidad_devuelta - (int)($d->cantidad_danada ?? 0)) }}</td>
+                                            <td class="center">{{ (int)($d->cantidad_danada ?? 0) }}</td>
                                             <td class="center">{{ (int)$d->dias_transcurridos }}</td>
                                             <td class="center">{{ (int)$d->domingos_desc }}</td>
                                             <td class="center">{{ (int)$d->dias_lluvia_desc }}</td>
@@ -934,7 +952,7 @@
 
                                         @if(!empty($notaExtra))
                                             <tr class="row-note">
-                                                <td colspan="15">
+                                                <td colspan="17">
                                                     {!! implode(' &nbsp; • &nbsp; ', $notaExtra) !!}
                                                 </td>
                                             </tr>
@@ -960,6 +978,7 @@
 
               const $root = document.querySelector('.return-page-pro');
               const $cant = $root.querySelector('[name="cantidad_devuelta"]');
+              const $dan  = $root.querySelector('[name="cantidad_danada"]');
               const $fec  = $root.querySelector('[name="fecha_devolucion"]');
               const $llu  = $root.querySelector('[name="dias_lluvia"]');
               const $mer  = $root.querySelector('[name="costo_merma"]');
@@ -1099,6 +1118,8 @@
 
               function recompute(){
                 const cantidad = Math.max(0, parseNum($cant?.value));
+                const danadas = Math.max(0, parseNum($dan?.value));
+                if ($dan && danadas > cantidad) $dan.value = cantidad;
                 const fdev = getFechaDevolucionActual();
 
                 const diasCobrables = calcDiasCobrables(fechaInicio, fdev);
@@ -1126,7 +1147,7 @@
               }
 
               if (!isReadonly){
-                [$cant,$fec,$llu,$mer,$tra,$pago].forEach(el => el && el.addEventListener('input', recompute)); // ✅ incluye transporte
+                [$cant,$dan,$fec,$llu,$mer,$tra,$pago].forEach(el => el && el.addEventListener('input', recompute)); // ✅ incluye transporte
 
                 $fec && $fec.addEventListener('change', function(){
                   const d = parseYMD($fec.value);

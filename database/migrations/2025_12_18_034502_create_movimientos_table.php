@@ -16,7 +16,9 @@ return new class extends Migration {
                 'salida',
                 'ajuste_positivo',
                 'ajuste_negativo',
-                'fuera_servicio'
+                'fuera_servicio',
+                'producto_alquilado',
+                'producto_devuelto'
             ]);
             $table->integer('cantidad');
             $table->text('observaciones')->nullable();
